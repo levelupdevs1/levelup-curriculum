@@ -1,0 +1,22 @@
+{
+  "id": "foundation",
+  "title": "Foundation Course",
+  "description": "Learn the fundamentals of the subject with this beginner-friendly course.",
+  "level": "Beginner",
+  "tags": ["Tag1", "Tag2", "Tag3"],
+  "modules": [
+    {
+      "id": "module-1-introduction",
+      "title": "Module 1: Introduction",
+      "lessons": [
+        {
+          "id": "lesson-1-intro",
+          "title": "Introduction",
+          "type": "lesson",
+          "filePath": "module-1-introduction/lesson-1-intro.md",
+          "points": 10
+        }
+      ]
+    }
+  ]
+}
