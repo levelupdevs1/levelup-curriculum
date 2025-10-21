@@ -254,3 +254,42 @@
     padding: 16px;
   }
 }
+
+/* Read-Only Mode Styles */
+.readOnlyContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 70vh;
+}
+
+.readOnlyCard {
+  max-width: 450px;
+  padding: 48px;
+  text-align: center;
+}
+
+.readOnlyContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.readOnlyIcon {
+  color: #4a154b;
+  margin-bottom: 8px;
+}
+
+.readOnlyContent h2 {
+  font-size: 28px;
+  color: #4a154b;
+  margin: 0;
+}
+
+.readOnlyContent p {
+  color: #6b7280;
+  margin: 0;
+  line-height: 1.6;
+  font-size: 16px;
+}

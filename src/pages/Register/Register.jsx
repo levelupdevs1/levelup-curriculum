@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, User, Trophy, Check } from "lucide-react";
 import { useUser } from "../../hooks/useUser";
+import { isSupabaseConfigured } from "../../services/authService";
 import Button from "../../components/Button/Button";
 import Input from "../../components/Input/Input";
 import Card from "../../components/Card/Card";
@@ -101,6 +102,29 @@ const Register = () => {
     "Get peer feedback on your projects",
     "Track your learning progress",
   ];
+
+  // Show read-only message in dev mode without Supabase
+  if (import.meta.env.DEV && !isSupabaseConfigured) {
+    return (
+      <div className={styles.registerPage}>
+        <div className={styles.readOnlyContainer}>
+          <Card className={styles.readOnlyCard}>
+            <div className={styles.readOnlyContent}>
+              <User size={48} className={styles.readOnlyIcon} />
+              <h2>Registration Disabled</h2>
+              <p>
+                You can browse courses and view lessons without creating an
+                account.
+              </p>
+              <Link to="/courses">
+                <Button variant="primary">Browse Courses</Button>
+              </Link>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.registerPage}>

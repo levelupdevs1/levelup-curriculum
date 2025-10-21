@@ -1,10 +1,14 @@
-import { supabase } from "./authService";
+import { supabase, isSupabaseConfigured } from "./authService";
 
 /**
  * Fetch all courses from Supabase
  * @returns {Promise<{success: boolean, courses?: array, error?: string}>}
  */
 export const fetchCourses = async () => {
+  if (!isSupabaseConfigured) {
+    return { success: true, courses: [] };
+  }
+
   try {
     const { data, error } = await supabase
       .from("courses")
@@ -101,6 +105,10 @@ export const enrollInCourse = async (userId, courseId) => {
  * @returns {Promise<{success: boolean, enrolled: boolean, error?: string}>}
  */
 export const isEnrolled = async (userId, courseId) => {
+  if (!isSupabaseConfigured) {
+    return { success: true, enrolled: false };
+  }
+
   try {
     const { data, error } = await supabase
       .from("enrollments")
@@ -127,6 +135,10 @@ export const isEnrolled = async (userId, courseId) => {
  * @returns {Promise<{success: boolean, enrollments?: array, error?: string}>}
  */
 export const getUserEnrollments = async (userId) => {
+  if (!isSupabaseConfigured) {
+    return { success: true, enrollments: [] };
+  }
+
   try {
     const { data, error } = await supabase
       .from("enrollments")
@@ -194,6 +206,10 @@ export const recordLessonCompletion = async (
  * @returns {Promise<{success: boolean, progress?: array, error?: string}>}
  */
 export const getCourseProgress = async (userId, courseId) => {
+  if (!isSupabaseConfigured) {
+    return { success: true, progress: [] };
+  }
+
   try {
     const { data, error } = await supabase
       .from("progress")
@@ -220,11 +236,36 @@ export const getCourseProgress = async (userId, courseId) => {
  */
 export const fetchLessonMarkdown = async (courseId, filePath) => {
   try {
-    // filePath might be:
-    // 1. "/src/courses/webdev/html/intro-to-html.md" (from local courses.json)
-    // 2. "webdev/html/intro-to-html.md" (relative path)
-    // 3. "html/intro-to-html.md" (just the lesson path)
+    // In dev mode, load from local files
+    if (import.meta.env.DEV) {
+      let lessonPath = filePath;
 
+      // Remove any prefixes to get clean path
+      if (lessonPath.startsWith("/src/courses/")) {
+        lessonPath = lessonPath.replace("/src/courses/", "");
+      } else if (lessonPath.startsWith("src/courses/")) {
+        lessonPath = lessonPath.replace("src/courses/", "");
+      }
+
+      // Remove courseId prefix if present (e.g., "web-dev/module-1/lesson.md" -> "module-1/lesson.md")
+      if (lessonPath.startsWith(`${courseId}/`)) {
+        lessonPath = lessonPath.replace(`${courseId}/`, "");
+      }
+
+      // Construct local file path
+      const localPath = `/src/courses/${courseId}/${lessonPath}`;
+      console.log(`📖 Loading lesson from local file: ${localPath}`);
+
+      const response = await fetch(localPath);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch local lesson: ${response.statusText}`);
+      }
+
+      const content = await response.text();
+      return { success: true, content };
+    }
+
+    // Production mode: fetch from GitHub raw URL
     let lessonPath = filePath;
 
     // Remove "/src/courses/" prefix if present
@@ -296,6 +337,10 @@ export const submitAssignment = async (
  * @returns {Promise<{success: boolean, submissions?: array, error?: string}>}
  */
 export const getSubmissionsForLesson = async (courseId, lessonId) => {
+  if (!isSupabaseConfigured) {
+    return { success: true, submissions: [] };
+  }
+
   try {
     const { data, error } = await supabase
       .from("submissions")

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, Trophy } from "lucide-react";
 import { useUser } from "../../hooks/useUser";
+import { isSupabaseConfigured } from "../../services/authService";
 import Button from "../../components/Button/Button";
 import Input from "../../components/Input/Input";
 import Card from "../../components/Card/Card";
@@ -77,6 +78,26 @@ const Login = () => {
       setIsSubmitting(false);
     }
   };
+
+  // Show read-only message in dev mode without Supabase
+  if (import.meta.env.DEV && !isSupabaseConfigured) {
+    return (
+      <div className={styles.loginPage}>
+        <div className={styles.readOnlyContainer}>
+          <Card className={styles.readOnlyCard}>
+            <div className={styles.readOnlyContent}>
+              <Lock size={48} className={styles.readOnlyIcon} />
+              <h2>Authentication Disabled</h2>
+              <p>You can browse courses and view lessons without logging in.</p>
+              <Link to="/courses">
+                <Button variant="primary">Browse Courses</Button>
+              </Link>
+            </div>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.loginPage}>

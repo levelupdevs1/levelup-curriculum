@@ -4,11 +4,26 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error("Missing Supabase environment variables");
-}
+// Check if Supabase is configured
+export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+// Create Supabase client (or null if not configured)
+export const supabase = isSupabaseConfigured
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
+
+// Log mode on initialization
+if (import.meta.env.DEV) {
+  if (!isSupabaseConfigured) {
+    console.log("📖 READ-ONLY MODE: Supabase not configured");
+    console.log("   - Courses will load from local files");
+    console.log("   - Auth and database features disabled");
+    console.log("   - Perfect for testing course content!");
+  } else {
+    console.log("🔧 DEV MODE: Connected to Supabase");
+    console.log("   - Full features enabled");
+  }
+}
 
 /**
  * Sign up a new user
@@ -19,6 +34,14 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
  * @returns {Promise<{success: boolean, user?: object, error?: string}>}
  */
 export const signUp = async (email, password, fullName, username) => {
+  if (!isSupabaseConfigured) {
+    return {
+      success: false,
+      error:
+        "Authentication disabled in read-only mode. Add Supabase credentials to .env.local to enable.",
+    };
+  }
+
   try {
     // Create auth user
     const { data: authData, error: authError } = await supabase.auth.signUp({
@@ -79,6 +102,14 @@ export const signUp = async (email, password, fullName, username) => {
  * @returns {Promise<{success: boolean, user?: object, error?: string}>}
  */
 export const signIn = async (email, password) => {
+  if (!isSupabaseConfigured) {
+    return {
+      success: false,
+      error:
+        "Authentication disabled in read-only mode. Add Supabase credentials to .env.local to enable.",
+    };
+  }
+
   try {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -105,6 +136,10 @@ export const signIn = async (email, password) => {
  * @returns {Promise<{success: boolean, error?: string}>}
  */
 export const signOut = async () => {
+  if (!isSupabaseConfigured) {
+    return { success: true };
+  }
+
   try {
     const { error } = await supabase.auth.signOut();
 
@@ -124,6 +159,10 @@ export const signOut = async () => {
  * @returns {Promise<{success: boolean, user?: object, error?: string}>}
  */
 export const getCurrentUser = async () => {
+  if (!isSupabaseConfigured) {
+    return { success: true, user: null };
+  }
+
   try {
     const {
       data: { user },
@@ -147,6 +186,10 @@ export const getCurrentUser = async () => {
  * @returns {Promise<{success: boolean, profile?: object, error?: string}>}
  */
 export const getUserProfile = async (userId) => {
+  if (!isSupabaseConfigured) {
+    return { success: true, profile: null };
+  }
+
   try {
     const { data, error } = await supabase
       .from("users")
@@ -172,6 +215,13 @@ export const getUserProfile = async (userId) => {
  * @returns {Promise<{success: boolean, profile?: object, error?: string}>}
  */
 export const updateUserProfile = async (userId, updates) => {
+  if (!isSupabaseConfigured) {
+    return {
+      success: false,
+      error: "Database updates disabled in read-only mode",
+    };
+  }
+
   try {
     const { data, error } = await supabase
       .from("users")
@@ -197,6 +247,12 @@ export const updateUserProfile = async (userId, updates) => {
  * @returns {function} Unsubscribe function
  */
 export const onAuthStateChange = (callback) => {
+  if (!isSupabaseConfigured) {
+    // In read-only mode, immediately call callback with no user
+    callback(null, null);
+    return () => {}; // Return no-op unsubscribe function
+  }
+
   return supabase.auth.onAuthStateChange((event, session) => {
     callback(session?.user || null, session);
   });

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUser } from "../../hooks/useUser";
 import { useCourse } from "../../hooks/useCourse";
+import { isSupabaseConfigured } from "../../services/authService";
 import {
   Play,
   CheckCircle,
@@ -257,8 +258,9 @@ const LessonViewer = () => {
     );
   }
 
-  // Prevent access to locked lessons
-  if (lesson.isLocked) {
+  // Prevent access to locked lessons (only in production or with Supabase configured)
+  // In dev mode without Supabase, all lessons are unlocked for testing
+  if (lesson.isLocked && (import.meta.env.PROD || isSupabaseConfigured)) {
     return (
       <div className={styles.container}>
         <div className={styles.lockedLessonContainer}>

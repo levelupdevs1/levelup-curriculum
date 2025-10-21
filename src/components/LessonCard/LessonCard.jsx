@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Play,
   CheckCircle,
@@ -13,6 +13,7 @@ import Card from "../Card/Card";
 import Button from "../Button/Button";
 import styles from "./LessonCard.module.css";
 import { fetchLessonMarkdown } from "../../services/courseService";
+import { isSupabaseConfigured } from "../../services/authService";
 
 const LessonCard = ({
   lesson,
@@ -111,8 +112,8 @@ const LessonCard = ({
           </div>
         ) : (
           <>
-            {/* Show View Submissions if user has submitted */}
-            {submissions.length > 0 && (
+            {/* Only show interactive features when Supabase is configured */}
+            {isSupabaseConfigured && submissions.length > 0 && (
               <Button
                 variant="outline"
                 size="sm"

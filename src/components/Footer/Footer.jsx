@@ -64,7 +64,10 @@ const Footer = () => {
                 </li>
               </ul>
             </div>
+          </div>
 
+          {/* Legal and Social Wrapper */}
+          <div className={styles.legalSocialWrapper}>
             <div className={styles.linkGroup}>
               <h4 className={styles.linkGroupTitle}>Legal</h4>
               <ul className={styles.linkList}>
@@ -85,30 +88,28 @@ const Footer = () => {
                 </li>
               </ul>
             </div>
-          </div>
 
-          {/* Social Section */}
-          <div className={styles.socialSection}>
-            <h4 className={styles.socialTitle}>Follow Us</h4>
-            <div className={styles.socialLinks}>
-              <a href="#" className={styles.socialLink} aria-label="GitHub">
-                <Github size={20} />
-              </a>
-              <a href="#" className={styles.socialLink} aria-label="Twitter">
-                <Twitter size={20} />
-              </a>
-              <a href="#" className={styles.socialLink} aria-label="LinkedIn">
-                <Linkedin size={20} />
-              </a>
+            {/* Social Section */}
+            <div className={styles.socialSection}>
+              <h4 className={styles.socialTitle}>Follow Us</h4>
+              <div className={styles.socialLinks}>
+                <a href="#" className={styles.socialLink} aria-label="GitHub">
+                  <Github size={20} />
+                </a>
+                <a href="#" className={styles.socialLink} aria-label="Twitter">
+                  <Twitter size={20} />
+                </a>
+                <a href="#" className={styles.socialLink} aria-label="LinkedIn">
+                  <Linkedin size={20} />
+                </a>
+              </div>
             </div>
           </div>
         </div>
 
         {/* Bottom Section */}
         <div className={styles.bottomSection}>
-          <p className={styles.copyright}>
-            © 2024 Level Up. All rights reserved.
-          </p>
+          <p className={styles.copyright}>© 2024 Level Up</p>
           <p className={styles.tagline}>Learn. Earn. Level Up.</p>
         </div>
       </div>

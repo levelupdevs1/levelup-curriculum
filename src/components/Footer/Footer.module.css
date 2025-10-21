@@ -167,6 +167,10 @@
   }
 }
 
+.legalSocialWrapper {
+  display: contents;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 32px 16px 16px;
@@ -194,10 +198,16 @@
     min-width: 140px;
   }
 
+  .legalSocialWrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: space-between;
+  }
+
   .socialSection {
-    flex: none;
-    margin-top: 20px;
-    align-self: flex-start;
+    flex: 1;
+    min-width: 140px;
   }
 
   .bottomSection {

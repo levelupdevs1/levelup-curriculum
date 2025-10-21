@@ -1,0 +1,45 @@
+.banner {
+  background-color: #3b82f6; /* info color from design system */
+  color: white;
+  padding: 10px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.icon {
+  flex-shrink: 0;
+}
+
+.text {
+  flex: 1;
+  line-height: 1.4;
+}
+
+.text strong {
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .banner {
+    padding: 8px 16px;
+  }
+
+  .content {
+    font-size: 13px;
+  }
+
+  .icon {
+    font-size: 16px;
+  }
+}
