@@ -15,26 +15,24 @@ export const loadCourse = async (courseId) => {
 };
 
 export const loadAllCourses = async () => {
-  // For now, we'll return the course IDs we know exist
-  const courseIds = [
-    "web-development-basics",
-    "react-fundamentals",
-    "javascript-advanced",
-  ];
+  // Dynamically import all course.json files from src/courses/
+  const courseModules = import.meta.glob("../courses/*/course.json", {
+    eager: true,
+  });
 
-  const courses = await Promise.all(
-    courseIds.map(async (courseId) => {
-      try {
-        const courseModule = await import(`../courses/${courseId}/course.json`);
-        return courseModule.default || courseModule;
-      } catch (error) {
-        console.error(`Error loading course ${courseId}:`, error);
-        return null;
-      }
-    })
-  );
+  const courses = [];
 
-  return courses.filter((course) => course !== null);
+  for (const [path, module] of Object.entries(courseModules)) {
+    try {
+      const course = module.default || module;
+      courses.push(course);
+    } catch (error) {
+      console.error(`Error loading course from ${path}:`, error);
+    }
+  }
+
+  console.log(`📚 Loaded ${courses.length} courses from local files`);
+  return courses;
 };
 
 export const loadLesson = async (courseId, moduleId, lessonId) => {

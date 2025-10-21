@@ -5,8 +5,8 @@ import {
   getCourseProgress,
   submitPeerReview as submitPeerReviewService,
   submitReviewRequest as submitReviewRequestService,
+  fetchCourses,
 } from "../services/courseService";
-import { loadAllCourses } from "../utils/courseLoader";
 import { useUser } from "../hooks/useUser";
 import { CourseContext } from "./createCourseContext";
 
@@ -26,12 +26,30 @@ export const CourseProvider = ({ children }) => {
     streak: 7,
   });
 
-  // Load courses from local files on mount, then mark enrollments and progress from Supabase
+  // Load courses: LOCAL FILES in dev mode, SUPABASE in production
   useEffect(() => {
     const loadCourses = async () => {
       try {
-        // Load courses from local course.json files (includes modules/lessons structure)
-        const loadedCourses = await loadAllCourses();
+        let loadedCourses = [];
+
+        // HYBRID LOADER: Development vs Production
+        if (import.meta.env.DEV) {
+          // DEV MODE: Load from local src/courses/ files for instant testing
+          console.log("🔧 DEV MODE: Loading courses from local files");
+          const { loadAllCourses } = await import("../utils/courseLoader");
+          loadedCourses = await loadAllCourses();
+        } else {
+          // PRODUCTION MODE: Fetch from Supabase (synced via GitHub Actions)
+          console.log("🚀 PRODUCTION MODE: Fetching courses from Supabase");
+          const { success, courses, error } = await fetchCourses();
+
+          if (!success) {
+            console.error("Failed to fetch courses:", error);
+            return;
+          }
+
+          loadedCourses = courses || [];
+        }
 
         if (loadedCourses && loadedCourses.length > 0) {
           let finalCourses = loadedCourses;
