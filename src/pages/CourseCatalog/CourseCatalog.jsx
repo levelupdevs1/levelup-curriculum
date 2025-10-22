@@ -21,7 +21,8 @@ import styles from "./CourseCatalog.module.css";
 import { useCourse } from "../../hooks/useCourse";
 
 const CourseCatalog = () => {
-  const { courses, enrollInCourse, addNotification } = useCourse();
+  const { courses, enrollInCourse, addNotification, getAllLessons } =
+    useCourse();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("all");
@@ -206,11 +207,11 @@ const CourseCatalog = () => {
                     <div className={styles.courseMeta}>
                       <div className={styles.metaItem}>
                         <Clock size={16} />
-                        <span>{course.duration || "Self-paced"}</span>
+                        <span>Self-paced</span>
                       </div>
                       <div className={styles.metaItem}>
                         <BookOpen size={16} />
-                        <span>{course.lessons_count || 0} lessons</span>
+                        <span>{getAllLessons(course).length} lessons</span>
                       </div>
                       <div className={styles.metaItem}>
                         <Users size={16} />

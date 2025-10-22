@@ -12,14 +12,23 @@ export const fetchCourses = async () => {
   try {
     const { data, error } = await supabase
       .from("courses")
-      .select("*")
+      .select(`
+        *,
+        enrolled_count:enrollments(count)
+      `)
       .order("created_at", { ascending: false });
 
     if (error) {
       return { success: false, error: error.message };
     }
 
-    return { success: true, courses: data || [] };
+    // Transform the enrolled_count from array format to number
+    const coursesWithCount = data?.map(course => ({
+      ...course,
+      enrolled_count: course.enrolled_count?.[0]?.count || 0
+    })) || [];
+
+    return { success: true, courses: coursesWithCount };
   } catch (err) {
     console.error("Fetch courses error:", err);
     return { success: false, error: err.message };

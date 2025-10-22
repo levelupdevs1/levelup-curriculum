@@ -97,7 +97,7 @@ const CourseDetail = () => {
           <div className={styles.meta}>
             <div className={styles.metaItem}>
               <Clock size={20} />
-              <span>{course.duration}</span>
+              <span>Self-paced</span>
             </div>
             <div className={styles.metaItem}>
               <BookOpen size={20} />
@@ -106,10 +106,6 @@ const CourseDetail = () => {
             <div className={styles.metaItem}>
               <Users size={20} />
               <span>{course.students} students</span>
-            </div>
-            <div className={styles.metaItem}>
-              <Star size={20} />
-              <span>{course.rating}</span>
             </div>
           </div>
 
