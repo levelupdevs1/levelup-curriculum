@@ -1,57 +1,53 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../hooks/useUser";
 import { useCourse } from "../../hooks/useCourse";
 import { Trophy, Coins, Flame, Star } from "lucide-react";
-import WelcomeSection from "../../components/Dashboard/WelcomeSection";
-import StatsGrid from "../../components/Dashboard/StatsGrid";
 import ContinueLearningSection from "../../components/Dashboard/ContinueLearningSection";
 import RecommendedCoursesSection from "../../components/Dashboard/RecommendedCoursesSection";
-import QuickActionsSection from "../../components/Dashboard/QuickActionsSection";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import styles from "./Dashboard.module.css";
 import StatCard from "../../components/StatCard/StatCard";
 
 const Dashboard = () => {
   const { user, profile } = useUser();
-  const { courses, enrollInCourse } = useCourse();
+  const { courses, _enrollInCourse } = useCourse();
   const navigate = useNavigate();
 
   const enrolledCourses = courses.filter((course) => course.isEnrolled);
-  const recentCourses = courses.slice(0, 3);
+  // const recentCourses = courses.slice(0, 3);
 
-  const handleEnrollCourse = (courseId) => {
-    enrollInCourse(courseId);
-    navigate(`/courses/${courseId}`);
-  };
+  // const handleEnrollCourse = (courseId) => {
+  //   enrollInCourse(courseId);
+  //   navigate(`/courses/${courseId}`);
+  // };
 
   const handleContinueLearning = (courseId) => {
     // For enrolled courses, go to course details page
     navigate(`/courses/${courseId}`);
   };
 
-  const handleContinueCourse = (courseId) => {
-    const course = courses.find((c) => c.id === courseId);
-    if (course && course.modules) {
-      // Find the first incomplete, unlocked lesson across all modules
-      let nextLesson = null;
-      for (const module of course.modules) {
-        if (module.lessons) {
-          nextLesson = module.lessons.find(
-            (lesson) => !lesson.isCompleted && !lesson.isLocked
-          );
-          if (nextLesson) break;
-        }
-      }
+  // const handleContinueCourse = (courseId) => {
+  //   const course = courses.find((c) => c.id === courseId);
+  //   if (course && course.modules) {
+  //     // Find the first incomplete, unlocked lesson across all modules
+  //     let nextLesson = null;
+  //     for (const module of course.modules) {
+  //       if (module.lessons) {
+  //         nextLesson = module.lessons.find(
+  //           (lesson) => !lesson.isCompleted && !lesson.isLocked
+  //         );
+  //         if (nextLesson) break;
+  //       }
+  //     }
 
-      if (nextLesson) {
-        navigate(`/courses/${courseId}/lessons/${nextLesson.id}`);
-      } else {
-        // If all lessons are completed, go to course detail
-        navigate(`/courses/${courseId}`);
-      }
-    }
-  };
+  //     if (nextLesson) {
+  //       navigate(`/courses/${courseId}/lessons/${nextLesson.id}`);
+  //     } else {
+  //       // If all lessons are completed, go to course detail
+  //       navigate(`/courses/${courseId}`);
+  //     }
+  //   }
+  // };
 
   const stats = [
     {
@@ -116,13 +112,13 @@ const Dashboard = () => {
               onContinueCourse={handleContinueLearning}
             />
 
-            <RecommendedCoursesSection
-              recommendedCourses={recentCourses}
-              onContinueCourse={handleContinueCourse}
-              onEnrollCourse={handleEnrollCourse}
-            />
-
-            <QuickActionsSection onNavigate={navigate} />
+            {/* <div className="recommend">
+              <RecommendedCoursesSection
+                recommendedCourses={recentCourses}
+                onContinueCourse={handleContinueCourse}
+                onEnrollCourse={handleEnrollCourse}
+              />
+            </div> */}
           </div>
         </>
       )}

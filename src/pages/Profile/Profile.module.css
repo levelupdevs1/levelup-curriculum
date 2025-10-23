@@ -92,6 +92,15 @@
   color: #111827;
 }
 
+.tokenBalance {
+  color: #6b7280;
+}
+
+.tokenBalance strong {
+  color: #ffd700;
+  font-weight: 600;
+}
+
 .copyButton {
   background: none;
   border: none;
@@ -111,10 +120,70 @@
   color: #10b981;
 }
 
-/* My Courses Card */
-.coursesCard {
-  padding: 24px;
+/* Tabbed Card */
+.tabbedCard {
+  padding: 0;
+  overflow: hidden;
 }
+
+.tabNav {
+  display: flex;
+  border-bottom: 2px solid #e5e7eb;
+  background-color: #f9fafb;
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  transition: all 0.2s;
+}
+
+.tab:hover {
+  color: #4a154b;
+  background-color: #f3f4f6;
+}
+
+.tabActive {
+  color: #4a154b;
+  border-bottom-color: #4a154b;
+  background-color: #ffffff;
+}
+
+.tabBadge {
+  background-color: #e5e7eb;
+  color: #6b7280;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tabActive .tabBadge {
+  background-color: #4a154b;
+  color: #ffffff;
+}
+
+.tabContent {
+  padding: 24px;
+  max-height: 600px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+}
+
+/* Tab Sections - Removed old card-specific styles */
 
 .cardHeader {
   display: flex;
@@ -460,11 +529,26 @@
     padding: 16px;
   }
 
-  .coursesCard {
-    padding: 16px;
+  .tabbedCard {
+    padding: 0;
   }
 
-  .tokensCard {
+  .tab {
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 8px;
+    font-size: 12px;
+  }
+
+  .tab svg {
+    display: none;
+  }
+
+  .tabBadge {
+    display: none;
+  }
+
+  .tabContent {
     padding: 16px;
   }
 

@@ -29,6 +29,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const [copiedWallet, setCopiedWallet] = useState(false);
   const [submissions, setSubmissions] = useState([]);
+  const [activeTab, setActiveTab] = useState("courses");
 
   // Fetch user submissions
   useEffect(() => {
@@ -167,176 +168,228 @@ const Profile = () => {
                 )}
               </button>
             </div>
+            <div className={styles.detailItem}>
+              <Coins size={16} />
+              <span className={styles.tokenBalance}>
+                Token Balance:{" "}
+                <strong>{profile?.token_balance || 0} DVT</strong>
+              </span>
+            </div>
           </div>
         </Card>
 
-        {/* My Courses Section */}
-        <Card className={styles.coursesCard}>
-          <div className={styles.cardHeader}>
-            <h3 className={styles.sectionTitle}>My Courses</h3>
-            <span className={styles.courseCount}>
-              {enrolledCourses.length}{" "}
-              {enrolledCourses.length === 1 ? "Course" : "Courses"}
-            </span>
+        {/* Tabbed Section */}
+        <Card className={styles.tabbedCard}>
+          {/* Tab Navigation */}
+          <div className={styles.tabNav}>
+            <button
+              className={`${styles.tab} ${
+                activeTab === "courses" ? styles.tabActive : ""
+              }`}
+              onClick={() => setActiveTab("courses")}
+            >
+              <BookOpen size={16} />
+              <span>My Courses</span>
+              <span className={styles.tabBadge}>{enrolledCourses.length}</span>
+            </button>
+            <button
+              className={`${styles.tab} ${
+                activeTab === "submissions" ? styles.tabActive : ""
+              }`}
+              onClick={() => setActiveTab("submissions")}
+            >
+              <FileText size={16} />
+              <span>Submissions</span>
+              <span className={styles.tabBadge}>{submissions.length}</span>
+            </button>
+            <button
+              className={`${styles.tab} ${
+                activeTab === "tokens" ? styles.tabActive : ""
+              }`}
+              onClick={() => setActiveTab("tokens")}
+            >
+              <Coins size={16} />
+              <span>Token History</span>
+            </button>
           </div>
 
-          {enrolledCourses.length === 0 ? (
-            <div className={styles.emptyState}>
-              <BookOpen size={48} className={styles.emptyIcon} />
-              <p className={styles.emptyText}>
-                You haven't enrolled in any courses yet
-              </p>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => navigate("/courses")}
-              >
-                Browse Courses
-              </Button>
-            </div>
-          ) : (
-            <div className={styles.coursesList}>
-              {enrolledCourses.map((course) => (
-                <div key={course.id} className={styles.courseItem}>
-                  <div className={styles.courseInfo}>
-                    <h4 className={styles.courseTitle}>{course.title}</h4>
-                    <p className={styles.courseLevel}>{course.level}</p>
+          {/* Tab Content */}
+          <div className={styles.tabContent}>
+            {/* My Courses Tab */}
+            {activeTab === "courses" && (
+              <div className={styles.coursesSection}>
+                {enrolledCourses.length === 0 ? (
+                  <div className={styles.emptyState}>
+                    <BookOpen size={48} className={styles.emptyIcon} />
+                    <p className={styles.emptyText}>
+                      You haven't enrolled in any courses yet
+                    </p>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={() => navigate("/courses")}
+                    >
+                      Browse Courses
+                    </Button>
                   </div>
-                  <div className={styles.courseProgress}>
-                    <ProgressBar progress={course.progress || 0} />
-                    <span className={styles.progressText}>
-                      {course.progress || 0}% Complete
-                    </span>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    icon={<ArrowRight size={16} />}
-                    onClick={() => handleViewCourse(course.id)}
-                  >
-                    Continue
-                  </Button>
-                </div>
-              ))}
-            </div>
-          )}
-        </Card>
-
-        {/* Submission History */}
-        <Card className={styles.submissionsCard}>
-          <div className={styles.cardHeader}>
-            <h3 className={styles.sectionTitle}>Submission History</h3>
-            <FileText size={20} className={styles.submissionsIcon} />
-          </div>
-
-          {submissions.length === 0 ? (
-            <div className={styles.emptyState}>
-              <FileText size={48} className={styles.emptyIcon} />
-              <p className={styles.emptyText}>
-                No submissions yet. Complete assignments to see them here!
-              </p>
-            </div>
-          ) : (
-            <div className={styles.submissionsList}>
-              {submissions.map((submission) => {
-                const lessonInfo = getLessonTitle(
-                  submission.course_id,
-                  submission.assignment_id
-                );
-                return (
-                  <div key={submission.id} className={styles.submissionItem}>
-                    <div className={styles.submissionInfo}>
-                      <div className={styles.submissionIcon}>
-                        {submission.status === "approved" ? (
-                          <CheckCircle2 size={20} className={styles.approved} />
-                        ) : submission.status === "rejected" ? (
-                          <XCircle size={20} className={styles.rejected} />
-                        ) : (
-                          <Clock size={20} className={styles.pending} />
-                        )}
-                      </div>
-                      <div className={styles.submissionDetails}>
-                        <p className={styles.submissionCourse}>
-                          {submission.courses?.title || "Unknown Course"}
-                        </p>
-                        {lessonInfo && (
-                          <button
-                            className={styles.submissionLesson}
-                            onClick={() =>
-                              navigate(
-                                `/courses/${submission.course_id}/lessons/${submission.assignment_id}`
-                              )
+                ) : (
+                  <div className={styles.coursesList}>
+                    {enrolledCourses.map((course) => (
+                      <div key={course.id} className={styles.courseItem}>
+                        <div className={styles.courseInfo}>
+                          <h4 className={styles.courseTitle}>{course.title}</h4>
+                          <p className={styles.courseLevel}>{course.level}</p>
+                        </div>
+                        <div className={styles.courseProgress}>
+                          <ProgressBar
+                            progress={course.progress || 0}
+                            max={100}
+                            color={
+                              course.progress === 100 ? "#10b981" : "#ffd700"
                             }
-                          >
-                            {lessonInfo.moduleTitle} • {lessonInfo.lessonTitle}
-                          </button>
-                        )}
-                        <p className={styles.submissionDate}>
-                          Submitted on{" "}
-                          {new Date(submission.created_at).toLocaleDateString()}
-                        </p>
+                          />
+                          <span className={styles.progressText}>
+                            {course.progress || 0}% Complete
+                          </span>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          icon={<ArrowRight size={16} />}
+                          onClick={() => handleViewCourse(course.id)}
+                        >
+                          Continue
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Submissions Tab */}
+            {activeTab === "submissions" && (
+              <div className={styles.submissionsSection}>
+                {submissions.length === 0 ? (
+                  <div className={styles.emptyState}>
+                    <FileText size={48} className={styles.emptyIcon} />
+                    <p className={styles.emptyText}>
+                      No submissions yet. Complete assignments to see them here!
+                    </p>
+                  </div>
+                ) : (
+                  <div className={styles.submissionsList}>
+                    {submissions.map((submission) => {
+                      const lessonInfo = getLessonTitle(
+                        submission.course_id,
+                        submission.assignment_id
+                      );
+                      return (
+                        <div
+                          key={submission.id}
+                          className={styles.submissionItem}
+                        >
+                          <div className={styles.submissionInfo}>
+                            <div className={styles.submissionIcon}>
+                              {submission.status === "approved" ? (
+                                <CheckCircle2
+                                  size={20}
+                                  className={styles.approved}
+                                />
+                              ) : submission.status === "rejected" ? (
+                                <XCircle
+                                  size={20}
+                                  className={styles.rejected}
+                                />
+                              ) : (
+                                <Clock size={20} className={styles.pending} />
+                              )}
+                            </div>
+                            <div className={styles.submissionDetails}>
+                              <p className={styles.submissionCourse}>
+                                {submission.courses?.title || "Unknown Course"}
+                              </p>
+                              {lessonInfo && (
+                                <button
+                                  className={styles.submissionLesson}
+                                  onClick={() =>
+                                    navigate(
+                                      `/courses/${submission.course_id}/lessons/${submission.assignment_id}`
+                                    )
+                                  }
+                                >
+                                  {lessonInfo.moduleTitle} •{" "}
+                                  {lessonInfo.lessonTitle}
+                                </button>
+                              )}
+                              <p className={styles.submissionDate}>
+                                Submitted on{" "}
+                                {new Date(
+                                  submission.created_at
+                                ).toLocaleDateString()}
+                              </p>
+                            </div>
+                          </div>
+                          <div className={styles.submissionMeta}>
+                            <span
+                              className={`${styles.submissionStatus} ${
+                                styles[submission.status]
+                              }`}
+                            >
+                              {submission.status === "pending"
+                                ? "Pending Review"
+                                : submission.status === "approved"
+                                ? "Approved"
+                                : submission.status === "rejected"
+                                ? "Needs Work"
+                                : submission.status}
+                            </span>
+                            {submission.points_earned > 0 && (
+                              <span className={styles.submissionPoints}>
+                                +{submission.points_earned} pts
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Token History Tab */}
+            {activeTab === "tokens" && (
+              <div className={styles.tokensSection}>
+                <div className={styles.tokensList}>
+                  {tokenTransactions.map((transaction) => (
+                    <div key={transaction.id} className={styles.tokenItem}>
+                      <div className={styles.tokenInfo}>
+                        <div className={styles.tokenIcon}>
+                          <Coins size={20} />
+                        </div>
+                        <div className={styles.tokenDetails}>
+                          <p className={styles.tokenDescription}>
+                            {transaction.description}
+                          </p>
+                          <p className={styles.tokenDate}>
+                            {new Date(transaction.date).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className={styles.tokenAmount}>
+                        <span className={styles.tokenValue}>
+                          +{transaction.tokens}
+                        </span>
+                        <span className={styles.tokenStatus}>
+                          {transaction.status}
+                        </span>
                       </div>
                     </div>
-                    <div className={styles.submissionMeta}>
-                      <span
-                        className={`${styles.submissionStatus} ${
-                          styles[submission.status]
-                        }`}
-                      >
-                        {submission.status === "pending"
-                          ? "Pending Review"
-                          : submission.status === "approved"
-                          ? "Approved"
-                          : submission.status === "rejected"
-                          ? "Needs Work"
-                          : submission.status}
-                      </span>
-                      {submission.points_earned > 0 && (
-                        <span className={styles.submissionPoints}>
-                          +{submission.points_earned} pts
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </Card>
-
-        {/* Token Transaction History */}
-        <Card className={styles.tokensCard}>
-          <div className={styles.cardHeader}>
-            <h3 className={styles.sectionTitle}>Token History</h3>
-            <Coins size={20} className={styles.tokensIcon} />
-          </div>
-
-          <div className={styles.tokensList}>
-            {tokenTransactions.map((transaction) => (
-              <div key={transaction.id} className={styles.tokenItem}>
-                <div className={styles.tokenInfo}>
-                  <div className={styles.tokenIcon}>
-                    <Coins size={20} />
-                  </div>
-                  <div className={styles.tokenDetails}>
-                    <p className={styles.tokenDescription}>
-                      {transaction.description}
-                    </p>
-                    <p className={styles.tokenDate}>
-                      {new Date(transaction.date).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-                <div className={styles.tokenAmount}>
-                  <span className={styles.tokenValue}>
-                    +{transaction.tokens}
-                  </span>
-                  <span className={styles.tokenStatus}>
-                    {transaction.status}
-                  </span>
+                  ))}
                 </div>
               </div>
-            ))}
+            )}
           </div>
         </Card>
 

@@ -35,7 +35,7 @@ const ContinueLearningSection = ({ enrolledCourses, onContinueCourse }) => {
                     <span className={styles.courseLevel}>{course.level}</span>
                     <span className={styles.courseDuration}>
                       <Clock size={16} />
-                      {course.duration}
+                      Self-paced
                     </span>
                   </div>
                 </div>
