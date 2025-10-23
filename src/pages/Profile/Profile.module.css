@@ -22,23 +22,19 @@
 .content {
   display: flex;
   flex-direction: column;
-  gap: 32px;
-}
-
-.profileSection {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 24px;
 }
 
+/* Profile Card */
 .profileCard {
-  padding: 32px;
+  padding: 24px;
 }
 
 .profileHeader {
   display: flex;
-  gap: 20px;
-  align-items: flex-start;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 24px;
 }
 
 .avatar {
@@ -49,7 +45,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #6b7280;
+  color: #9ca3af;
   flex-shrink: 0;
 }
 
@@ -61,27 +57,13 @@
   font-size: 24px;
   font-weight: 700;
   color: #111827;
-  margin: 0 0 8px 0;
+  margin: 0 0 4px 0;
 }
 
-.profileEmail {
-  font-size: 16px;
-  color: #6b7280;
-  margin: 0 0 16px 0;
-}
-
-.profileMeta {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.metaItem {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #6b7280;
+.profileUsername {
   font-size: 14px;
+  color: #6b7280;
+  margin: 0;
 }
 
 .profileActions {
@@ -89,132 +71,345 @@
   align-items: flex-start;
 }
 
-.statsCard {
+.profileDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.walletAddress {
+  font-family: monospace;
+  color: #111827;
+}
+
+.copyButton {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  color: #6b7280;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.copyButton:hover {
+  color: #4a154b;
+}
+
+.copied {
+  color: #10b981;
+}
+
+/* My Courses Card */
+.coursesCard {
   padding: 24px;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
 
 .sectionTitle {
   font-size: 20px;
   font-weight: 600;
   color: #111827;
-  margin: 0 0 20px 0;
+  margin: 0;
 }
 
-.statsGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
+.courseCount {
+  font-size: 14px;
+  color: #6b7280;
 }
 
-.statItem {
+.coursesList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.courseItem {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.statIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
+  gap: 16px;
+  padding: 16px;
   background-color: #f3f4f6;
   border-radius: 8px;
 }
 
-.statInfo {
+.courseInfo {
   flex: 1;
 }
 
-.statValue {
-  font-size: 18px;
-  font-weight: 700;
-  color: #111827;
-  margin: 0 0 4px 0;
-}
-
-.statTitle {
-  font-size: 12px;
-  color: #6b7280;
-  margin: 0;
-}
-
-.achievementsSection {
-  margin-bottom: 32px;
-}
-
-.achievementsCard {
-  padding: 24px;
-}
-
-.achievementsList {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-
-.achievementItem {
-  display: flex;
-  gap: 16px;
-  padding: 16px;
-  background-color: #f9fafb;
-  border-radius: 8px;
-}
-
-.achievementIcon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  background-color: #ffd700;
-  border-radius: 8px;
-  color: #000000;
-  flex-shrink: 0;
-}
-
-.achievementInfo {
-  flex: 1;
-}
-
-.achievementTitle {
+.courseTitle {
   font-size: 16px;
   font-weight: 600;
   color: #111827;
   margin: 0 0 4px 0;
 }
 
-.achievementDescription {
+.courseLevel {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.courseProgress {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 150px;
+}
+
+.progressText {
+  font-size: 12px;
+  color: #6b7280;
+  text-align: right;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.emptyIcon {
+  color: #d1d5db;
+  margin-bottom: 16px;
+}
+
+.emptyText {
   font-size: 14px;
   color: #6b7280;
-  margin: 0 0 8px 0;
+  margin: 0 0 16px 0;
 }
 
-.achievementMeta {
+/* Submission History Card */
+.submissionsCard {
+  padding: 24px;
+}
+
+.submissionsIcon {
+  color: #4a154b;
+}
+
+.submissionsList {
   display: flex;
-  gap: 16px;
-  font-size: 12px;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.achievementDate {
-  color: #9ca3af;
-}
-
-.achievementPoints {
-  color: #ffd700;
-  font-weight: 600;
-}
-
-.achievementsAction {
+.submissionItem {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+}
+
+.submissionInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.submissionIcon {
+  width: 40px;
+  height: 40px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
-.settingsSection {
-  margin-bottom: 32px;
+.submissionIcon .pending {
+  color: #f59e0b;
 }
 
+.submissionIcon .approved {
+  color: #10b981;
+}
+
+.submissionIcon .rejected {
+  color: #ef4444;
+}
+
+.submissionDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.submissionCourse {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+  margin: 0;
+}
+
+.submissionLesson {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  color: #4a154b;
+  margin: 2px 0 0 0;
+  cursor: pointer;
+  text-align: left;
+  transition: color 0.2s;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+
+.submissionLesson:hover {
+  color: #6d1f6e;
+  text-decoration-style: solid;
+}
+
+.submissionDate {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 2px 0 0 0;
+}
+
+.submissionMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.submissionStatus {
+  font-size: 11px;
+  text-transform: capitalize;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.submissionStatus.pending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.submissionStatus.approved {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.submissionStatus.rejected {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.submissionPoints {
+  font-size: 12px;
+  font-weight: 600;
+  color: #10b981;
+}
+
+/* Token History Card */
+.tokensCard {
+  padding: 24px;
+}
+
+.tokensIcon {
+  color: #4a154b;
+}
+
+.tokensList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tokenItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: #f3f4f6;
+  border-radius: 8px;
+}
+
+.tokenInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tokenIcon {
+  width: 40px;
+  height: 40px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.tokenDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tokenDescription {
+  font-size: 14px;
+  font-weight: 500;
+  color: #111827;
+  margin: 0;
+}
+
+.tokenDate {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.tokenAmount {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.tokenValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: #10b981;
+}
+
+.tokenStatus {
+  font-size: 11px;
+  text-transform: uppercase;
+  color: #6b7280;
+  background-color: #e5e7eb;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* Settings Card */
 .settingsCard {
   padding: 24px;
 }
@@ -222,19 +417,16 @@
 .settingsList {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .settingItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 0;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.settingItem:last-child {
-  border-bottom: none;
+  padding: 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
 }
 
 .settingInfo {
@@ -254,6 +446,7 @@
   margin: 0;
 }
 
+/* Mobile Responsive */
 @media (max-width: 768px) {
   .title {
     font-size: 24px;
@@ -263,29 +456,68 @@
     font-size: 16px;
   }
 
-  .profileSection {
-    grid-template-columns: 1fr;
-    gap: 16px;
+  .profileCard {
+    padding: 16px;
   }
 
-  .profileCard {
-    padding: 20px;
+  .coursesCard {
+    padding: 16px;
+  }
+
+  .tokensCard {
+    padding: 16px;
   }
 
   .profileHeader {
     flex-direction: column;
     align-items: flex-start;
-    gap: 16px;
   }
 
-  .achievementItem {
+  .avatar {
+    width: 64px;
+    height: 64px;
+  }
+
+  .profileName {
+    font-size: 20px;
+  }
+
+  .courseItem {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .courseProgress {
+    width: 100%;
+  }
+
+  .progressText {
+    text-align: left;
   }
 
   .settingItem {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+  }
+
+  .submissionItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .submissionMeta {
+    align-items: flex-start;
+  }
+
+  .tokenItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .tokenAmount {
+    align-items: flex-start;
   }
 }

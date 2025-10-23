@@ -168,19 +168,6 @@
   margin-right: 12px;
 }
 
-.courseRating {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  color: #f59e0b;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.starIcon {
-  fill: currentColor;
-}
-
 .courseDescription {
   font-size: 14px;
   color: #6b7280;
@@ -301,22 +288,6 @@
     grid-template-columns: 1fr;
     gap: 16px;
   }
-
-  .courseCard {
-    margin: 0;
-  }
-
-  .courseImage {
-    height: 160px;
-  }
-
-  .courseContent {
-    padding: 16px;
-  }
-
-  .courseMeta {
-    gap: 12px;
-  }
 }
 
 /* Enhanced Mobile Responsive */
@@ -352,43 +323,8 @@
     width: 100%;
   }
 
-  .courseCard {
-    padding: 16px;
-  }
-
-  .courseImage {
-    height: 120px;
-  }
-
-  .courseContent {
-    padding: 12px;
-  }
-
   .courseTitle {
     font-size: 16px;
-  }
-
-  .courseDescription {
-    font-size: 13px;
-  }
-
-  .courseMeta {
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-start;
-  }
-
-  .metaItem {
-    font-size: 12px;
-  }
-
-  .courseTags {
-    gap: 6px;
-  }
-
-  .tag {
-    font-size: 11px;
-    padding: 4px 8px;
   }
 
   .courseFooter {
@@ -436,26 +372,6 @@
     font-size: 16px; /* Prevents zoom on iOS */
   }
 
-  .courseCard {
-    padding: 12px;
-  }
-
-  .courseImage {
-    height: 100px;
-  }
-
-  .courseContent {
-    padding: 8px;
-  }
-
-  .courseTitle {
-    font-size: 14px;
-  }
-
-  .courseDescription {
-    font-size: 12px;
-  }
-
   .courseHeader {
     flex-direction: column;
     gap: 8px;
@@ -468,11 +384,6 @@
 
   .courseFooter {
     gap: 12px;
-  }
-
-  .levelBadge {
-    font-size: 10px;
-    padding: 4px 8px;
   }
 }
 

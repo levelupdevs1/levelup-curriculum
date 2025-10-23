@@ -105,7 +105,7 @@ const CourseDetail = () => {
             </div>
             <div className={styles.metaItem}>
               <Users size={20} />
-              <span>{course.students} students</span>
+              <span>{course.enrolled_count || 0} students</span>
             </div>
           </div>
 

@@ -128,10 +128,6 @@ const Rewards = () => {
               <Award size={16} />
               <span>{(currentLevel + 1) * 10} Platform Tokens</span>
             </div>
-            <div className={styles.rewardItem}>
-              <Star size={16} />
-              <span>Exclusive Badge</span>
-            </div>
           </div>
         </div>
       </Card>

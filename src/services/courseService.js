@@ -12,10 +12,12 @@ export const fetchCourses = async () => {
   try {
     const { data, error } = await supabase
       .from("courses")
-      .select(`
+      .select(
+        `
         *,
         enrolled_count:enrollments(count)
-      `)
+      `
+      )
       .order("created_at", { ascending: false });
 
     if (error) {
@@ -23,10 +25,11 @@ export const fetchCourses = async () => {
     }
 
     // Transform the enrolled_count from array format to number
-    const coursesWithCount = data?.map(course => ({
-      ...course,
-      enrolled_count: course.enrolled_count?.[0]?.count || 0
-    })) || [];
+    const coursesWithCount =
+      data?.map((course) => ({
+        ...course,
+        enrolled_count: course.enrolled_count?.[0]?.count || 0,
+      })) || [];
 
     return { success: true, courses: coursesWithCount };
   } catch (err) {
@@ -161,6 +164,34 @@ export const getUserEnrollments = async (userId) => {
     return { success: true, enrollments: data || [] };
   } catch (err) {
     console.error("Get user enrollments error:", err);
+    return { success: false, error: err.message };
+  }
+};
+
+/**
+ * Get user's submissions
+ * @param {string} userId - User ID
+ * @returns {Promise<{success: boolean, submissions?: array, error?: string}>}
+ */
+export const getUserSubmissions = async (userId) => {
+  if (!isSupabaseConfigured) {
+    return { success: true, submissions: [] };
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from("submissions")
+      .select("*, courses(title)")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, submissions: data || [] };
+  } catch (err) {
+    console.error("Get user submissions error:", err);
     return { success: false, error: err.message };
   }
 };
