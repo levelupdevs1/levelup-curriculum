@@ -256,6 +256,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 32px;
+  
 }
 
 .feature {
@@ -266,6 +267,7 @@
   border: 1px solid #e5e7eb;
   border-radius: 12px;
   transition: border-color 0.2s ease;
+  
 }
 
 .feature:hover {
@@ -423,6 +425,7 @@
   .featuresGrid {
     grid-template-columns: 1fr;
     gap: 24px;
+    
   }
 
   .statsGrid {
@@ -434,6 +437,10 @@
     grid-template-columns: 1fr;
     gap: 32px;
     text-align: center;
+  }
+
+  .ctaFeatures{
+    align-items: center;
   }
 }
 
@@ -474,6 +481,10 @@
   .ctaText h2 {
     font-size: 28px;
   }
+
+  .ctaFeatures{
+    align-items: center;
+  }
 }
 
 @media (max-width: 480px) {
@@ -495,6 +506,10 @@
 
   .feature {
     flex-direction: column;
-    text-align: center;
+    /* text-align: center; */
+  }
+
+  .ctaFeatures{
+    align-items: center;
   }
 }

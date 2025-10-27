@@ -73,10 +73,11 @@
 
 .profileDetails {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   gap: 12px;
   padding-top: 16px;
   border-top: 1px solid #e5e7eb;
+ 
 }
 
 .detailItem {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../hooks/useUser";
 import { useCourse } from "../../hooks/useCourse";
@@ -22,14 +22,23 @@ import Card from "../../components/Card/Card";
 import Button from "../../components/Button/Button";
 import ProgressBar from "../../components/ProgressBar/ProgressBar";
 import styles from "./Profile.module.css";
+import { userWalletContext } from "../../contexts/userWalletContext";
+// import { WalletConnectClient } from "../../client/walletConnectClient";
 
 const Profile = () => {
+  const { accountId, connectWallet, userProfile } =
+    useContext(userWalletContext);
+
   const { user, profile } = useUser();
   const { courses } = useCourse();
   const navigate = useNavigate();
   const [copiedWallet, setCopiedWallet] = useState(false);
   const [submissions, setSubmissions] = useState([]);
   const [activeTab, setActiveTab] = useState("courses");
+
+  const handleConnect = async () => {
+    connectWallet();
+  };
 
   // Fetch user submissions
   useEffect(() => {
@@ -49,8 +58,7 @@ const Profile = () => {
   const enrolledCourses = courses.filter((course) => course.isEnrolled);
 
   // Mock wallet address (will be replaced with real Hedera wallet)
-  const walletAddress =
-    profile?.wallet_address || "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb";
+  const walletAddress = profile?.wallet_address || accountId;
 
   // Mock token transaction history (will be fetched from token_claims table)
   const tokenTransactions = [
@@ -110,9 +118,9 @@ const Profile = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>Profile</h1>
-        <p className={styles.subtitle}>
+        {/* <p className={styles.subtitle}>
           Manage your account and track your learning journey
-        </p>
+        </p> */}
       </div>
 
       <div className={styles.content}>
@@ -138,42 +146,47 @@ const Profile = () => {
           </div>
 
           <div className={styles.profileDetails}>
-            <div className={styles.detailItem}>
-              <Mail size={16} />
-              <span>{user?.email}</span>
-            </div>
-            <div className={styles.detailItem}>
-              <Calendar size={16} />
-              <span>
-                Joined{" "}
-                {new Date(
-                  profile?.created_at || Date.now()
-                ).toLocaleDateString()}
-              </span>
-            </div>
-            <div className={styles.detailItem}>
-              <Wallet size={16} />
-              <span className={styles.walletAddress}>
-                {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
-              </span>
-              <button
-                className={styles.copyButton}
-                onClick={handleCopyWallet}
-                title="Copy wallet address"
-              >
-                {copiedWallet ? (
-                  <CheckCircle size={16} className={styles.copied} />
-                ) : (
-                  <Copy size={16} />
-                )}
-              </button>
-            </div>
-            <div className={styles.detailItem}>
-              <Coins size={16} />
-              <span className={styles.tokenBalance}>
-                Token Balance:{" "}
-                <strong>{profile?.token_balance || 0} DVT</strong>
-              </span>
+            <div className={styles.detailItems}>
+              <div className={styles.detailItem}>
+                <Mail size={16} />
+                <span>{user?.email}</span>
+              </div>
+              <div className={styles.detailItem}>
+                <Calendar size={16} />
+                <span>
+                  Joined{" "}
+                  {new Date(
+                    profile?.created_at || Date.now()
+                  ).toLocaleDateString()}
+                </span>
+              </div>
+              <div className={styles.detailItem}>
+                <Wallet size={16} />
+                <span className={styles.walletAddress}>{walletAddress}</span>
+                <button
+                  className={styles.copyButton}
+                  onClick={handleCopyWallet}
+                  title="Copy wallet address"
+                >
+                  {copiedWallet ? (
+                    <CheckCircle size={16} className={styles.copied} />
+                  ) : (
+                    <Copy size={16} />
+                  )}
+                </button>
+              </div>
+              <div className={styles.detailItem}>
+                <Coins size={16} />
+                <span className={styles.tokenBalance}>
+                  Token Balance:{" "}
+                  <strong>{profile?.token_balance || 0} DVT</strong>
+                </span>
+              </div>
+              </div>
+              <div>
+                <Button variant="outline" size="sm" onClick={handleConnect}>
+                  {accountId ? "Connected" : "Connect Wallet"}
+                </Button>
             </div>
           </div>
         </Card>

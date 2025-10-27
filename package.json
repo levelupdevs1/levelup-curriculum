@@ -10,9 +10,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hashgraph/hedera-wallet-connect": "^1.5.1",
+    "@hashgraph/sdk": "^2.69.0",
     "@supabase/supabase-js": "^2.75.1",
+    "@walletconnect/modal": "^2.7.0",
     "firebase": "^12.3.0",
     "lucide-react": "^0.544.0",
+    "prop-types": "^15.8.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-markdown": "^10.1.0",

@@ -349,7 +349,7 @@ const LessonViewer = () => {
         <Button
           variant="outline"
           size="lg"
-          icon={<ChevronLeft size={20} />}
+          icon={<ChevronLeft size={16} />}
           onClick={handlePreviousLesson}
           disabled={!getPreviousLesson() || getPreviousLesson()?.isLocked}
           className={styles.navButton}

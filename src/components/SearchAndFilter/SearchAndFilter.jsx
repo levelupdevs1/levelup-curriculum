@@ -41,26 +41,27 @@ const SearchAndFilter = ({
               icon={<Search size={20} />}
               className={styles.searchInput}
             />
-          </div>
-
           {onToggleFilters && (
             <Button
               variant="outline"
               size="sm"
               onClick={onToggleFilters}
-              icon={
-                showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />
-              }
+              // icon={
+              //   showFilters ? <ChevronUp size={16} /> : <ChevronDown size={16} />
+              // }
               className={styles.filterButton}
             >
-              Filters
+              <Filter size={20}/>
             </Button>
           )}
 
           {children}
+          </div>
+
         </>
       )}
     </div>
+    
   );
 };
 

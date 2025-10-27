@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Search,
@@ -10,12 +10,11 @@ import {
   ChevronDown,
   ChevronUp,
   Loader,
+  X,
 } from "lucide-react";
 import Card from "../../components/Card/Card";
 import Button from "../../components/Button/Button";
 import Input from "../../components/Input/Input";
-import SearchAndFilter from "../../components/SearchAndFilter/SearchAndFilter";
-import TagList from "../../components/TagList/TagList";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import styles from "./CourseCatalog.module.css";
 import { useCourse } from "../../hooks/useCourse";
@@ -25,11 +24,13 @@ const CourseCatalog = () => {
     useCourse();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedLevel, setSelectedLevel] = useState("all");
+  const [selectedLevels, setSelectedLevels] = useState([]);
   const [sortBy, setSortBy] = useState("popular");
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [showDesktopFilterMenu, setShowDesktopFilterMenu] = useState(false);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768);
   const [enrollingCourseId, setEnrollingCourseId] = useState(null);
+  const filterMenuRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => setIsDesktop(window.innerWidth > 768);
@@ -37,13 +38,34 @@ const CourseCatalog = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  const levels = ["all", "Beginner", "Intermediate", "Advanced"];
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (filterMenuRef.current && !filterMenuRef.current.contains(event.target)) {
+        setShowDesktopFilterMenu(false);
+      }
+    };
+
+    if (showDesktopFilterMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showDesktopFilterMenu]);
+
+  const levels = ["Beginner", "Intermediate", "Advanced"];
   const sortOptions = [
     { value: "popular", label: "Most Popular" },
     { value: "rating", label: "Highest Rated" },
     { value: "newest", label: "Newest" },
     { value: "price", label: "Price" },
   ];
+
+  const handleLevelChange = (level) => {
+    setSelectedLevels((prev) =>
+      prev.includes(level)
+        ? prev.filter((l) => l !== level)
+        : [...prev, level]
+    );
+  };
 
   const filteredCourses = courses
     .filter((course) => {
@@ -56,7 +78,7 @@ const CourseCatalog = () => {
           ));
 
       const matchesLevel =
-        selectedLevel === "all" || course.level === selectedLevel;
+        selectedLevels.length === 0 || selectedLevels.includes(course.level);
 
       return matchesSearch && matchesLevel;
     })
@@ -92,9 +114,7 @@ const CourseCatalog = () => {
     navigate(`/courses/${courseId}`);
   };
 
-  const toggleFilters = () => {
-    setShowFilters(!showFilters);
-  };
+  const activeFilterCount = selectedLevels.length + (sortBy !== "popular" ? 1 : 0);
 
   return (
     <div className={styles.catalog}>
@@ -106,47 +126,174 @@ const CourseCatalog = () => {
         </p>
       </div>
 
-      {/* Search and Filters */}
-      <SearchAndFilter
-        searchTerm={searchTerm}
-        onSearchChange={(e) => setSearchTerm(e.target.value)}
-        showFilters={showFilters}
-        onToggleFilters={isDesktop ? null : toggleFilters}
-        placeholder="Search courses, topics, or skills..."
-        inlineFilters={isDesktop}
-      >
-        {(isDesktop || showFilters) && (
-          <div className={styles.filterSection}>
-            <div className={styles.filterGroup}>
-              <select
-                value={selectedLevel}
-                onChange={(e) => setSelectedLevel(e.target.value)}
-                className={styles.filterSelect}
+      {/* Search and Filter Bar */}
+      <div className={styles.searchFilterBar}>
+        <div className={styles.searchWrapper}>
+          <Search className={styles.searchIcon} size={20} />
+          <input
+            type="text"
+            placeholder="Search courses, topics, or skills..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className={styles.searchInput}
+          />
+        </div>
+        <div className={styles.filterButtonWrapper} ref={filterMenuRef}>
+          <button
+            className={`${styles.filterButton} ${isDesktop ? styles.filterButtonDesktop : ''}`}
+            onClick={() => {
+              if (isDesktop) {
+                setShowDesktopFilterMenu(!showDesktopFilterMenu);
+              } else {
+                setShowFilterModal(true);
+              }
+            }}
+          >
+            {isDesktop ? (
+              <span >Filter</span>
+            ) : (
+              <Filter size={20} />
+            )}
+            {activeFilterCount > 0 && (
+              <span className={styles.filterBadge}>{activeFilterCount}</span>
+            )}
+          </button>
+
+          {/* Desktop Filter Dropdown Menu */}
+          {isDesktop && showDesktopFilterMenu && (
+            <div className={styles.desktopFilterMenu}>
+              <div className={styles.menuSection}>
+                <label className={styles.menuLabel}>Level</label>
+                <select
+                  className={styles.select}
+                  value={selectedLevels.length === 1 ? selectedLevels[0] : ""}
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      setSelectedLevels([e.target.value]);
+                    } else {
+                      setSelectedLevels([]);
+                    }
+                  }}
+                >
+                  <option value="">All Levels</option>
+                  {levels.map((level) => (
+                    <option key={level} value={level}>
+                      {level}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className={styles.menuSection}>
+                <label className={styles.menuLabel}>Sort By</label>
+                <select
+                  className={styles.select}
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
+                  {sortOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {activeFilterCount > 0 && (
+                <button
+                  className={styles.clearButton}
+                  onClick={() => {
+                    setSelectedLevels([]);
+                    setSortBy("popular");
+                  }}
+                >
+                  Clear All
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Mobile Filter Modal */}
+      {!isDesktop && showFilterModal && (
+        <>
+          <div
+            className={styles.modalOverlay}
+            onClick={() => setShowFilterModal(false)}
+          />
+          <div className={styles.filterModal}>
+            <div className={styles.modalHeader}>
+              <h3 className={styles.modalTitle}>Filter & Sort</h3>
+              <button
+                className={styles.closeButton}
+                onClick={() => setShowFilterModal(false)}
               >
-                {levels.map((level) => (
-                  <option key={level} value={level}>
-                    {level === "all" ? "All Levels" : level}
-                  </option>
-                ))}
-              </select>
+                <X size={20} />
+              </button>
             </div>
 
-            <div className={styles.filterGroup}>
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className={styles.filterSelect}
+            <div className={styles.modalContent}>
+              <div className={styles.filterSection}>
+                <h4 className={styles.sectionTitle}>Filter</h4>
+                <div className={styles.filterGroup}>
+                  <label className={styles.filterLabel}>Level</label>
+                  <div className={styles.checkboxGroup}>
+                    {levels.map((level) => (
+                      <label key={level} className={styles.checkboxLabel}>
+                        <input
+                          type="checkbox"
+                          checked={selectedLevels.includes(level)}
+                          onChange={() => handleLevelChange(level)}
+                          className={styles.checkbox}
+                        />
+                        <span>{level}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.sortSection}>
+                <h4 className={styles.sectionTitle}>Sort</h4>
+                <div className={styles.radioGroup}>
+                  {sortOptions.map((option) => (
+                    <label key={option.value} className={styles.radioLabel}>
+                      <input
+                        type="radio"
+                        name="sortBy"
+                        value={option.value}
+                        checked={sortBy === option.value}
+                        onChange={(e) => setSortBy(e.target.value)}
+                        className={styles.radio}
+                      />
+                      <span>{option.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.modalFooter}>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setSelectedLevels([]);
+                  setSortBy("popular");
+                }}
               >
-                {sortOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
+                Clear All
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => setShowFilterModal(false)}
+              >
+                Apply
+              </Button>
             </div>
           </div>
-        )}
-      </SearchAndFilter>
+        </>
+      )}
 
       {/* Results */}
       <div className={styles.results}>
@@ -271,7 +418,7 @@ const CourseCatalog = () => {
                     variant="outline"
                     onClick={() => {
                       setSearchTerm("");
-                      setSelectedLevel("all");
+                      setSelectedLevels([]);
                     }}
                   >
                     Clear Filters
