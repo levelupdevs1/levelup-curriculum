@@ -1,20 +1,94 @@
 {
   "id": "foundation",
-  "title": "Foundation Course",
-  "description": "Learn the fundamentals of the subject with this beginner-friendly course.",
+  "title": "Foundation Software Development Course",
+  "description": "A beginner friendly course designed to teach the essential fundamentals of becoming a developer. Students will learn mindset, problem solving, confidence building, how to learn effectively, and how to navigate early challenges in software development.",
   "level": "Beginner",
-  "tags": ["Tag1", "Tag2", "Tag3"],
+  "tags": [
+    "Programming Basics",
+    "Web Development",
+    "Fundamentals"
+  ],
+  "thumbnail": "https://images.unsplash.com/photo-1518770660439-4636190af475",
   "modules": [
     {
-      "id": "module-1-introduction",
-      "title": "Module 1: Introduction",
+      "id": "module-1-developer-mindset",
+      "title": "Module 1: Welcome and Developer Mindset",
       "lessons": [
         {
-          "id": "lesson-1-intro",
-          "title": "Introduction",
+          "id": "lesson-1-what-is-software-development",
+          "title": "What is Software Development",
           "type": "lesson",
-          "filePath": "module-1-introduction/lesson-1-intro.md",
+          "filePath": "module-1-developer-mindset/lesson-1-what-is-software-development.md",
           "points": 10
+        },
+        {
+          "id": "lesson-2-how-to-learn-effectively",
+          "title": "How to Learn Effectively",
+          "type": "lesson",
+          "filePath": "module-1-developer-mindset/lesson-2-how-to-learn-effectively.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-3-problem-solving-mindset",
+          "title": "The Problem Solving Mindset",
+          "type": "lesson",
+          "filePath": "module-1-developer-mindset/lesson-3-problem-solving-mindset.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-4-frustration-and-imposter-syndrome",
+          "title": "Dealing with Frustration and Imposter Syndrome",
+          "type": "lesson",
+          "filePath": "module-1-developer-mindset/lesson-4-frustration-and-imposter-syndrome.md",
+          "points": 10
+        },
+        {
+          "id": "assignment-1-learning-journal",
+          "title": "Assignment: Learning Journal",
+          "type": "assignment",
+          "filePath": "module-1-developer-mindset/assignment-1-learning-journal.md",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "id": "module-2-development-environment",
+      "title": "Module 2: Your Development Environment",
+      "lessons": [
+        {
+          "id": "lesson-1-choosing-editor",
+          "title": "Choosing and Installing a Code Editor",
+          "type": "lesson",
+          "filePath": "module-2-development-environment/lesson-1-choosing-editor.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-2-editor-features",
+          "title": "Essential Editor Features",
+          "type": "lesson",
+          "filePath": "module-2-development-environment/lesson-2-editor-features.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-3-file-systems",
+          "title": "Understanding File Systems and Directories",
+          "type": "lesson",
+          "filePath": "module-2-development-environment/lesson-3-file-systems.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-4-terminal-intro",
+          "title": "Introduction to the Terminal and Command Line",
+          "type": "lesson",
+          "filePath": "module-2-development-environment/lesson-4-terminal-intro.md",
+          "points": 10
+        },
+        {
+          "id": "assignment-2-environment-setup",
+          "title": "Assessment: Environment Setup",
+          "type": "assignment",
+          "filePath": "module-2-development-environment/assignment-2-environment-setup.md",
+          "points": 20
         }
       ]
     }

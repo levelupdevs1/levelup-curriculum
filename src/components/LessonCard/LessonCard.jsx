@@ -82,7 +82,15 @@ const LessonCard = ({
             </div>
           ) : (
             <div className={styles.markdown}>
-              <ReactMarkdown>{markdownContent}</ReactMarkdown>
+              <ReactMarkdown
+                components={{
+                  a: ({ node, ...props }) => (
+                    <a {...props} target="_blank" rel="noopener noreferrer" />
+                  ),
+                }}
+              >
+                {markdownContent}
+              </ReactMarkdown>
             </div>
           )
         ) : (
