@@ -3,19 +3,13 @@
   "title": "Foundation Software Development Course",
   "description": "A beginner friendly course designed to teach the essential fundamentals of becoming a developer. Students will learn mindset, problem solving, confidence building, how to learn effectively, and how to navigate early challenges in software development.",
   "level": "Beginner",
-  "tags": [
-    "Programming Basics",
-    "Web Development",
-    "Fundamentals"
-  ],
+  "tags": ["Programming Basics", "Web Development", "Fundamentals"],
   "thumbnail": "https://images.unsplash.com/photo-1518770660439-4636190af475",
   "modules": [
     {
       "id": "module-1-developer-mindset",
       "title": "Module 1: Welcome and Developer Mindset",
       "lessons": [
-
-
         {
           "id": "lesson-0-welcome-introduction",
           "title": "Welcome and Course Introduction",
@@ -97,6 +91,54 @@
           "title": "Assessment: Environment Setup",
           "type": "assignment",
           "filePath": "module-2-development-environment/assignment-2-environment-setup.md",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "id": "module-3-command-line-fundamentals",
+      "title": "Module 3: Command Line Fundamentals",
+      "lessons": [
+        {
+          "id": "lesson-1-command-line",
+          "title": "What is the command line and why it matters",
+          "type": "lesson",
+          "filePath": "module-3-command-line-fundamentals/lesson-1-command-line.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-2-navigation-commands",
+          "title": "Basic navigation commands (cd, ls/dir, pwd)",
+          "type": "lesson",
+          "filePath": "module-3-command-line-fundamentals/lesson-2-navigation-commands.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-3-file-operations",
+          "title": "File operations (mkdir, touch, rm, cp, mv)",
+          "type": "lesson",
+          "filePath": "module-3-command-line-fundamentals/lesson-3-file-operations.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-4-reading-command-output",
+          "title": "Reading command output and understanding errors",
+          "type": "lesson",
+          "filePath": "module-3-command-line-fundamentals/lesson-4-reading-command-output.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-5-tips-and-shortcuts",
+          "title": "Lesson 5: Command line tips and shortcuts",
+          "type": "lesson",
+          "filePath": "module-3-command-line-fundamentals/lesson-5-tips-and-shortcuts.md",
+          "points": 10
+        },
+        {
+          "id": "assignment-3-building-folder-structure",
+          "title": "Assessment: Building a folder structure",
+          "type": "assignment",
+          "filePath": "module-3-command-line-fundamentals/assignment-3-building-folder-structure.md",
           "points": 20
         }
       ]
