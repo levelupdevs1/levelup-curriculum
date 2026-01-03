@@ -142,6 +142,75 @@
           "points": 20
         }
       ]
+    },
+    {
+      "id": "module-4-version-control-with-git",
+      "title": "Module 4: Version Control with Git",
+      "lessons": [
+        {
+          "id": "lesson-1-version-control",
+          "title": "What is version control and git?",
+          "type": "lesson",
+          "filePath": "module-4-version-control-with-git/lesson-1-version-control.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-2-git-configuration",
+          "title": "Installing Git and basic configuration",
+          "type": "lesson",
+          "filePath": "module-4-version-control-with-git/lesson-2-git-configuration.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-3-first-repository",
+          "title": "Your first repository (init, add, commit)",
+          "type": "lesson",
+          "filePath": "module-4-version-control-with-git/lesson-3-first-repository.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-4-understanding-commit-history",
+          "title": "Understanding commit history (log, diff)",
+          "type": "lesson",
+          "filePath": "module-4-version-control-with-git/lesson-4-understanding-commit-history.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-5-branches",
+          "title": "Branches and why they matter",
+          "type": "lesson",
+          "filePath": "module-4-version-control-with-git/lesson-5-branches.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-6-github-introduction",
+          "title": "Introduction to GitHub/Gitlab",
+          "type": "lesson",
+          "filePath": "module-4-version-control-with-git/lesson-6-github-introduction.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-7-cloning-pushing-pulling",
+          "title": "Cloning, pushing, and pulling",
+          "type": "lesson",
+          "filePath": "module-4-version-control-with-git/lesson-7-cloning-pushing-pulling.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-8-collaboration-workflow",
+          "title": "Basic collaboration workflow",
+          "type": "lesson",
+          "filePath": "module-4-version-control-with-git/lesson-8-collaboration-workflow.md",
+          "points": 10
+        },
+        {
+          "id": "assignment-4-creating-a-repository",
+          "title": "Assessment: Creating a repository",
+          "type": "assignment",
+          "filePath": "module-4-version-control-with-git/assignment-4-creating-a-repository.md",
+          "points": 20
+        }
+      ]
     }
   ]
 }
