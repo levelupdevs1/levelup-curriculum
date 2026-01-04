@@ -211,6 +211,54 @@
           "points": 20
         }
       ]
+    },
+    {
+      "id": "module-5-how-the-internet-works",
+      "title": "Module 5: How the Internet Works",
+      "lessons": [
+        {
+          "id": "lesson-1-clients-servers-and-requests",
+          "title": "Clients, servers, and requests",
+          "type": "lesson",
+          "filePath": "module-5-how-the-internet-works/lesson-1-clients-servers-and-requests.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-2-visiting-a-website",
+          "title": "What happens when you visit a website?",
+          "type": "lesson",
+          "filePath": "module-5-how-the-internet-works/lesson-2-visiting-a-website.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-3-ip-addresses-domains-and-dns",
+          "title": "IP addresses, domains, and DNS",
+          "type": "lesson",
+          "filePath": "module-5-how-the-internet-works/lesson-3-ip-addresses-domains-and-dns.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-4-http-https-basics",
+          "title": "HTTP/HTTPS basics",
+          "type": "lesson",
+          "filePath": "module-5-how-the-internet-works/lesson-4-http-https-basics.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-5-apis-and-data-exchange",
+          "title": "APIs and data exchange (conceptual overview)",
+          "type": "lesson",
+          "filePath": "module-5-how-the-internet-works/lesson-5-apis-and-data-exchange.md",
+          "points": 10
+        },
+        {
+          "id": "assignment-5-flow-of-web-request",
+          "title": "Assessment: Flow of a web request",
+          "type": "assignment",
+          "filePath": "module-5-how-the-internet-works/assignment-5-flow-of-web-request.md",
+          "points": 20
+        }
+      ]
     }
   ]
 }
