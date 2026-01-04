@@ -3,19 +3,13 @@
   "title": "Foundation Software Development Course",
   "description": "A beginner friendly course designed to teach the essential fundamentals of becoming a developer. Students will learn mindset, problem solving, confidence building, how to learn effectively, and how to navigate early challenges in software development.",
   "level": "Beginner",
-  "tags": [
-    "Programming Basics",
-    "Web Development",
-    "Fundamentals"
-  ],
+  "tags": ["Programming Basics", "Web Development", "Fundamentals"],
   "thumbnail": "https://images.unsplash.com/photo-1518770660439-4636190af475",
   "modules": [
     {
       "id": "module-1-developer-mindset",
       "title": "Module 1: Welcome and Developer Mindset",
       "lessons": [
-
-
         {
           "id": "lesson-0-welcome-introduction",
           "title": "Welcome and Course Introduction",
@@ -97,6 +91,171 @@
           "title": "Assessment: Environment Setup",
           "type": "assignment",
           "filePath": "module-2-development-environment/assignment-2-environment-setup.md",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "id": "module-3-command-line-fundamentals",
+      "title": "Module 3: Command Line Fundamentals",
+      "lessons": [
+        {
+          "id": "lesson-1-command-line",
+          "title": "What is the command line and why it matters",
+          "type": "lesson",
+          "filePath": "module-3-command-line-fundamentals/lesson-1-command-line.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-2-navigation-commands",
+          "title": "Basic navigation commands (cd, ls/dir, pwd)",
+          "type": "lesson",
+          "filePath": "module-3-command-line-fundamentals/lesson-2-navigation-commands.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-3-file-operations",
+          "title": "File operations (mkdir, touch, rm, cp, mv)",
+          "type": "lesson",
+          "filePath": "module-3-command-line-fundamentals/lesson-3-file-operations.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-4-reading-command-output",
+          "title": "Reading command output and understanding errors",
+          "type": "lesson",
+          "filePath": "module-3-command-line-fundamentals/lesson-4-reading-command-output.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-5-tips-and-shortcuts",
+          "title": "Command line tips and shortcuts",
+          "type": "lesson",
+          "filePath": "module-3-command-line-fundamentals/lesson-5-tips-and-shortcuts.md",
+          "points": 10
+        },
+        {
+          "id": "assignment-3-building-folder-structure",
+          "title": "Assessment: Building a folder structure",
+          "type": "assignment",
+          "filePath": "module-3-command-line-fundamentals/assignment-3-building-folder-structure.md",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "id": "module-4-version-control-with-git",
+      "title": "Module 4: Version Control with Git",
+      "lessons": [
+        {
+          "id": "lesson-1-version-control",
+          "title": "What is version control and git?",
+          "type": "lesson",
+          "filePath": "module-4-version-control-with-git/lesson-1-version-control.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-2-git-configuration",
+          "title": "Installing Git and basic configuration",
+          "type": "lesson",
+          "filePath": "module-4-version-control-with-git/lesson-2-git-configuration.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-3-first-repository",
+          "title": "Your first repository (init, add, commit)",
+          "type": "lesson",
+          "filePath": "module-4-version-control-with-git/lesson-3-first-repository.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-4-understanding-commit-history",
+          "title": "Understanding commit history (log, diff)",
+          "type": "lesson",
+          "filePath": "module-4-version-control-with-git/lesson-4-understanding-commit-history.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-5-branches",
+          "title": "Branches and why they matter",
+          "type": "lesson",
+          "filePath": "module-4-version-control-with-git/lesson-5-branches.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-6-github-introduction",
+          "title": "Introduction to GitHub/Gitlab",
+          "type": "lesson",
+          "filePath": "module-4-version-control-with-git/lesson-6-github-introduction.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-7-cloning-pushing-pulling",
+          "title": "Cloning, pushing, and pulling",
+          "type": "lesson",
+          "filePath": "module-4-version-control-with-git/lesson-7-cloning-pushing-pulling.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-8-collaboration-workflow",
+          "title": "Basic collaboration workflow",
+          "type": "lesson",
+          "filePath": "module-4-version-control-with-git/lesson-8-collaboration-workflow.md",
+          "points": 10
+        },
+        {
+          "id": "assignment-4-creating-a-repository",
+          "title": "Assessment: Creating a repository",
+          "type": "assignment",
+          "filePath": "module-4-version-control-with-git/assignment-4-creating-a-repository.md",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "id": "module-5-how-the-internet-works",
+      "title": "Module 5: How the Internet Works",
+      "lessons": [
+        {
+          "id": "lesson-1-clients-servers-and-requests",
+          "title": "Clients, servers, and requests",
+          "type": "lesson",
+          "filePath": "module-5-how-the-internet-works/lesson-1-clients-servers-and-requests.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-2-visiting-a-website",
+          "title": "What happens when you visit a website?",
+          "type": "lesson",
+          "filePath": "module-5-how-the-internet-works/lesson-2-visiting-a-website.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-3-ip-addresses-domains-and-dns",
+          "title": "IP addresses, domains, and DNS",
+          "type": "lesson",
+          "filePath": "module-5-how-the-internet-works/lesson-3-ip-addresses-domains-and-dns.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-4-http-https-basics",
+          "title": "HTTP/HTTPS basics",
+          "type": "lesson",
+          "filePath": "module-5-how-the-internet-works/lesson-4-http-https-basics.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-5-apis-and-data-exchange",
+          "title": "APIs and data exchange (conceptual overview)",
+          "type": "lesson",
+          "filePath": "module-5-how-the-internet-works/lesson-5-apis-and-data-exchange.md",
+          "points": 10
+        },
+        {
+          "id": "assignment-5-flow-of-web-request",
+          "title": "Assessment: Flow of a web request",
+          "type": "assignment",
+          "filePath": "module-5-how-the-internet-works/assignment-5-flow-of-web-request.md",
           "points": 20
         }
       ]
