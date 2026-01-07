@@ -173,19 +173,19 @@ A community specifically for learning. Search their subreddit.
 
 ### Good Signs a Result Might Help
 
-✅ The title matches your problem exactly
-✅ It has multiple answers (different solutions to try)
-✅ It's from Stack Overflow or official documentation
-✅ It has a recent date (answers for current versions)
-✅ It has positive votes/ratings
+- The title matches your problem exactly
+- It has multiple answers (different solutions to try)
+- It's from Stack Overflow or official documentation
+- It has a recent date (answers for current versions)
+- It has positive votes/ratings
 
 ### Bad Signs, Skip This Result
 
-❌ The title is vague and doesn't match your problem
-❌ The answer is just "try this code" with no explanation
-❌ It's from 10 years ago (technology may have changed)
-❌ The answer says "this doesn't work" with no solution
-❌ It's from a sketchy or unknown website
+- The title is vague and doesn't match your problem
+- The answer is just "try this" with no explanation
+- It's from 10 years ago (technology may have changed)
+- The answer says "this doesn't work" with no solution
+- It's from a sketchy or unknown website
 
 ## What If You Still Can't Find It?
 

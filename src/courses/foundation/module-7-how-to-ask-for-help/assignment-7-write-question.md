@@ -1,10 +1,10 @@
-# Assessment: Writing a Well-Formatted Question
+# Assessment: Asking Clear Questions About Problems
 
 ## Overview
 
-In this assessment, you'll demonstrate that you can write a professional, well-formatted question that other developers would actually want to help with.
+In this assessment, you'll demonstrate that you can write clear, helpful questions that explain your problem so others can help you.
 
-You're not solving a coding problem. You're ASKING about a coding problem.
+You're learning to **ask good questions**, not to code.
 
 ## Instructions
 
@@ -14,113 +14,105 @@ Your question must include:
 
 1. **Clear title** - Specific problem in 5-10 words
 2. **Context** - What are you trying to do?
-3. **The code** - Minimal reproducible example
+3. **What's happening** - Describe the problem clearly
 4. **Expected vs actual** - What should happen vs what does
-5. **What you've tried** - Show your effort
-6. **Your environment** - Language/tool versions
-7. **Proper formatting** - Clean, readable
+5. **What you've tried** - Show you attempted solutions
+6. **Specific details** - Give examples, error messages
+7. **Professional tone** - Respectful and clear
 
-## Scenario 1: The Button That Doesn't Work
+## Scenario 1: The Tutorial Didn't Work
 
 ### The Situation
 
-You're building a website. You have a button that should show a popup dialog when clicked. You've triple-checked your code, and the button HTML is there. But when you click it, nothing happens. No errors in the console, no popup. It's driving you crazy.
+You followed a beginner tutorial about creating a simple program. You followed all the steps exactly as shown. But when you tried to run it, something went wrong. You got an error message you don't understand, and the tutorial didn't explain what to do if something breaks.
 
-The HTML looks right. The JavaScript is imported correctly. But it just... doesn't work.
+You have no idea why it failed.
 
 ### What You've Tried
 
-- Added console.log to verify the button element exists (it does)
-- Tried both getElementById and querySelector (both find the button)
-- Tried addEventListener and also onclick attribute (both do nothing)
-- Checked that your JavaScript runs after the HTML loads
-- Verified the button has an id attribute
+- Reread the tutorial steps carefully
+- Made sure you typed everything the same way
+- Restarted your computer
+- Looked at the error message but couldn't understand it
 
 ### Your Task
 
-Write the complete question you would post to Stack Overflow.
+Write the question you would ask for help.
 
 Include:
 
-- Your HTML (just the button)
-- Your JavaScript code
-- Expected vs actual behavior
-- What you've already tried
+- What tutorial you were following (name and link if possible)
+- What step you were on
+- What you expected to happen
+- What actually happened
+- The exact error message you received
 - A clear title
+
+Example title: "Tutorial failed at step 5 with error about missing files"
 
 ---
 
-## Scenario 2: The Data That Disappeared
+## Scenario 2: Understanding a Concept
 
 ### The Situation
 
-You're building a Python script that reads data from a CSV file, processes it, and saves the results.
+You're learning about how programming languages work. You read an explanation about something called a "loop" but it doesn't make sense to you. You read it three times and you're still confused. The explanation uses words that are new to you.
 
-Your script:
-
-1. Opens a CSV file
-2. Reads rows one by one
-3. Does some calculations
-4. Appends results to a list
-5. Saves the list to a new file
-
-It works fine when you test with 10 rows. But when you run it on 1,000 rows, something goes wrong. The output file is empty. No errors, just... empty results.
+You want to understand this concept but don't know who to ask or how to ask clearly.
 
 ### What You've Tried
 
-- Checked that the input file has 1,000 rows (it does)
-- Added print statements throughout (they print correctly)
-- Verified the calculations are correct
-- Tried saving to a different file
-- Checked disk space (plenty available)
-- It works with 10 rows but fails with 1,000 rows
+- Reread the explanation multiple times
+- Looked for YouTube videos but they all assumed knowledge you don't have
+- Searched Google but the results were too technical
 
 ### Your Task
 
-Write the complete question you would post to Stack Overflow.
+Write the question you would ask for help.
 
 Include:
 
-- Your code (simplified to show the structure)
-- Sample input data (hardcoded, not reading from CSV)
-- Expected vs actual behavior
-- The pattern you've noticed (works with small data, fails with large)
-- What you've already tried
+- What concept you're trying to understand
+- What you've read or watched about it
+- What specifically confuses you (example: "I don't understand what 'iterate' means")
+- What you already understand about related topics
 - A clear title
+
+Example title: "I don't understand what a loop is and when to use one"
 
 ---
 
-## Scenario 3: The Function That Returns Wrong Values
+## Scenario 3: Tool Setup Problem
 
 ### The Situation
 
-You're working with React. You have a function that fetches user data from an API, stores it in state, and displays it.
+You're trying to set up a programming tool on your computer. You followed the installation steps, but something went wrong. The tool won't start properly, or it's not working as expected.
 
-The function gets called, the API returns data, but the component displays undefined or null instead of the data.
-
-You can see the data in the network tab of your browser's dev tools. The API is working. But your component shows nothing.
+You don't know if it's your computer, the installation, or something else.
 
 ### What You've Tried
 
-- Checked the network tab (API returns correct data)
-- Added console.log in the fetch callback (data is there)
-- Verified useState is initialized (it is)
-- Tried both .then() and async/await syntax
-- Set an initial state of empty array (tried with null too)
-- The component renders but shows "undefined"
+- Followed the installation guide exactly
+- Restarted your computer
+- Tried uninstalling and reinstalling
+- Checked that you have enough disk space
+- Got an error message but don't understand it
 
 ### Your Task
 
-Write the complete question you would post to Stack Overflow.
+Write the question you would ask for help.
 
 Include:
 
-- Your React component code (simplified)
-- The API call
-- What's being displayed vs what should be displayed
-- Console logs showing the data exists
-- What you've already tried
+- What tool you're trying to set up
+- What operating system you're using
+- What steps you followed
+- What the error message says (copy it exactly)
+- What you expected to happen
+- What actually happened
 - A clear title
+
+Example title: "Getting 'command not found' error after installing Python"
 
 ---
 
@@ -130,14 +122,13 @@ Before submitting your questions, verify:
 
 ### For Each Question:
 
-- [ ] **Title is specific** (not "React not working" but "React component displays undefined after API fetch")
-- [ ] **Code is minimal** (not your entire app, just the relevant parts)
-- [ ] **Code can be copied and pasted** (it's complete and runnable)
-- [ ] **Expected vs actual is clear** ("Should show user data, shows undefined instead")
+- [ ] **Title is specific** (not "Help!" but "Getting error when trying to install Python")
+- [ ] **The problem is clear** (someone reading it would understand what's wrong)
+- [ ] **Expected vs actual is clear** ("Should show X, shows Y instead")
 - [ ] **Your effort is shown** ("I've tried [this] and [that]")
-- [ ] **Environment is specified** (Python 3.9, React 18.2, JavaScript ES6, etc.)
-- [ ] **Formatting is clean** (proper indentation, readable)
+- [ ] **Specific details included** (exact error message, exact steps, what you see)
 - [ ] **Professional tone** (respectful, clear, not frustrated)
+- [ ] **Context provided** (what tool, what OS, what step, etc.)
 
 ### Question Quality Checklist
 
@@ -145,95 +136,70 @@ For each question, ask yourself:
 
 - [ ] Would I help someone with this question?
 - [ ] Is it specific enough to understand the problem?
-- [ ] Is there enough code to see what's happening?
 - [ ] Would I know what to try next if I read this?
 - [ ] Does it show the person tried before asking?
+- [ ] Is there enough detail to actually help?
 
 ## Evaluation Criteria
 
 Your questions will be evaluated on:
 
-| Criteria            | Weight | Details                                    |
-| ------------------- | ------ | ------------------------------------------ |
-| **Clarity**         | 25%    | Is the problem clear and specific?         |
-| **Completeness**    | 25%    | Does it include all necessary information? |
-| **MCVE Quality**    | 25%    | Is the code minimal and reproducible?      |
-| **Effort**          | 15%    | Does it show you tried before asking?      |
-| **Professionalism** | 10%    | Is the tone respectful and well-formatted? |
+| Criteria            | Weight | Details                                      |
+| ------------------- | ------ | -------------------------------------------- |
+| **Clarity**         | 30%    | Is the problem clear and easy to understand? |
+| **Specificity**     | 30%    | Are the details specific enough to help?     |
+| **Effort**          | 20%    | Does it show you tried before asking?        |
+| **Context**         | 15%    | Is there enough background information?      |
+| **Professionalism** | 5%     | Is the tone respectful and well-organized?   |
 
-## Example of an Excellent Answer
+## Example of an Excellent Question
 
 ### Title
 
-"React component displays undefined after API fetch, but network shows data is returned"
+"Getting 'module not found' error when following Python tutorial step 3"
 
 ### Content
 
+I'm working through the beginner Python tutorial on [website name].
+
+I'm on step 3 where I'm supposed to create my first program. I followed the steps exactly as shown.
+
+When I try to run it, I get this error:
+
 ```
-I'm building a React component that fetches user data from an API and displays it on the page.
+ModuleNotFoundError: No module named 'requests'
+```
 
-Here's my component:
+I expected the program to run and display some text.
 
-import React, { useState, useEffect } from 'react';
+Instead, I got this error and nothing happened.
 
-function UserProfile() {
-  const [user, setUser] = useState(null);
+What I've tried:
 
-  useEffect(() => {
-    fetch('https://api.example.com/user/1')
-      .then(response => response.json())
-      .then(data => {
-        console.log('Data from API:', data);
-        setUser(data);
-      });
-  }, []);
+- Reread the tutorial step
+- Made sure I typed everything exactly the same
+- Restarted my computer
+- Looked up the error message but didn't understand it
 
-  return (
-    <div>
-      <h1>{user.name}</h1>
-      <p>Email: {user.email}</p>
-    </div>
-  );
-}
+I'm using:
 
-export default UserProfile;
+- Windows 10
+- Python 3.9
+
+What should I do next?
 
 ---
-
-Expected Behavior:
-The page should display the user's name and email from the API.
-
-Actual Behavior:
-The page is blank. The browser console shows:
-"TypeError: Cannot read property 'name' of undefined"
-
-However, in the Network tab of DevTools, I can see the API returned:
-{
-  "id": 1,
-  "name": "John Doe",
-  "email": "john@example.com"
-}
-
----
-
-What I've Tried:
-- Added console.log after setUser() - it shows the correct data
-- Checked the network tab - data is definitely being returned
-- Tried initializing useState with an empty object {} instead of null - same error
-- Added a loading check with if (!user) return <div>Loading...</div> - shows "Loading" forever
-
-What's going wrong?
-```
 
 Why this is excellent:
 
-- Title is specific
-- Full component code shown
-- Expected vs actual very clear
-- Multiple approaches tried shown
-- Network evidence provided
-- Error message included
-- Professional, clear tone
+- Title is specific and mentions the exact error
+- Context explains what they're doing
+- Expected vs actual is clear
+- Error message is copied exactly
+- Multiple attempts are shown
+- Operating system and version given
+- Professional and respectful tone
+- Easy to understand
 
 ---
 
@@ -248,19 +214,21 @@ Why this is excellent:
 
 ## Final Tips
 
-### Before You Hit "Post"
+### Before You Submit
 
 1. Read your question out loud
-2. Put yourself in the answerer's shoes - do YOU understand?
-3. Check for typos and formatting
-4. Make sure your code is correctly formatted
-5. Verify you've answered "Why?" for what you tried
+2. Imagine you're the person who will help - do you understand?
+3. Check for typos and clarity
+4. Make sure you've explained exactly what went wrong
+5. Verify you've described what you tried and what the result was
 
 ### Remember
 
-A great question is an investment. Spending 5 extra minutes writing a clear question saves 5 hours waiting for an answer.
+**A beginner asking a great question is already halfway to solving the problem.**
 
-Good luck! You're learning a skill that professionals use every single day.
+You're learning one of the most valuable skills in any field: **asking clearly for help**.
+
+Good luck!
 
 ## Beginner-friendly resources
 

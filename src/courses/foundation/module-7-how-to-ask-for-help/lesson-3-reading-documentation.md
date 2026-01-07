@@ -58,11 +58,13 @@ But you can learn to read it.
 
 ### Look for These Signs of Official Docs
 
-✅ The URL contains "official" or is the main site
-✅ It looks professional and organized
-✅ It has version information
-✅ It's updated regularly (check the date)
-✅ It has clear sections and navigation
+### Look for These Signs of Official Docs
+
+- The URL contains "official" or is the main site
+- It looks professional and organized
+- It has version information
+- It's updated regularly (check the date)
+- It has clear sections and navigation
 
 ## How to Read Documentation
 
@@ -95,16 +97,10 @@ Don't read every word. Look for:
 
 ### Step 3: Find the Code Example
 
-Most documentation has code examples.
+Most documentation has code examples that show what happens.
 
-**Example from Python docs:**
-
-```python
->>> a = [1, 2, 3, 4]
->>> a.sort()
->>> a
-[1, 2, 3, 4]
-```
+**Example:**
+The documentation shows how to sort a list of items in order. It explains which command to use, what that command does, and shows what the result will look like.
 
 ### Step 4: Try It Yourself
 
@@ -163,28 +159,22 @@ Ctrl+F to search for your question.
 
 ## Real-World Documentation Reading
 
-### Scenario: You want to format a date in Python
+### Scenario: You want to format a date
 
-**Step 1:** Search "Python documentation date formatting"
+**Step 1:** Search for "documentation on formatting dates"
 
-**Step 2:** Find datetime module documentation
+**Step 2:** Find the section about date formatting
 
-**Step 3:** Look for "strftime" method (formats dates as strings)
+**Step 3:** Look for the method that formats dates
 
-**Step 4:** Read the example:
-
-```python
-from datetime import datetime
-now = datetime.now()
-print(now.strftime("%Y-%m-%d"))
-# Output: 2024-01-06
-```
+**Step 4:** Read the example showing how it works
 
 **Step 5:** Adapt to your problem:
 
-- You want: "06/01/2024"
-- Find the format code: "%m/%d/%Y"
-- Your code: `now.strftime("%m/%d/%Y")`
+- Documentation shows: How to format a date as YYYY-MM-DD (like "2024-01-06")
+- You want: Format it as MM/DD/YYYY (like "01/06/2024")
+- Find: The section about date format patterns
+- Adapt: Change the format pattern according to the documentation
 
 Done! Solution found without asking anyone.
 
@@ -200,15 +190,15 @@ It's usually clearer than the description.
 
 ### Tip 3: Check the Version
 
-Make sure the documentation matches your installed version.
+Make sure the documentation matches the version you're using.
 
-### Tip 4: Read the Comments in Code
+### Tip 4: Read the Comments in Examples
 
-Often the example code has helpful comments.
+Often the example code has helpful explanations.
 
-### Tip 5: Check the "See Also" Section
+### Tip 5: Check the "See Also" or "Related" Section
 
-Links to related documentation.
+Links to connected documentation.
 
 ## When Documentation Isn't Enough
 

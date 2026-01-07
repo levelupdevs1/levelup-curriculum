@@ -101,11 +101,11 @@ After 30 minutes of trying, fresh eyes from someone else will help faster than y
 
 You've:
 
-- ✓ Read the error message carefully
-- ✓ Used print statements
-- ✓ Rubber duck debugged
-- ✓ Searched online for the error
-- ✓ Tried multiple solutions
+- Read the error message carefully
+- Used print statements
+- Rubber duck debugged
+- Searched online for the error
+- Tried multiple solutions
 
 **And nothing worked?**
 
@@ -159,42 +159,33 @@ If you answered YES to most of these, you're ready to ask.
 
 ## How to Ask for Help Effectively
 
-### ❌ Bad Way
+### Bad Way
 
 "My code doesn't work. Can you fix it?"
 
-### ✅ Good Way
+### Good Way
 
-"I'm trying to add two numbers. My code is:
+"I'm trying to add two numbers. My approach was to combine them, but the result is wrong.
 
-```python
-result = str(number1) + str(number2)
-```
+Expected: 5 + 3 = 8
+Actual: Shows 53 instead
 
-I expect 5 + 3 to equal 8, but it shows "53" instead. I think I'm converting to strings instead of adding. Is that the bug?"
+I think I might be treating them as text instead of numbers. Is that the bug?"
 
-### ❌ Bad Way
+### Bad Way
 
 "I'm getting an error and I don't know why."
 
-### ✅ Good Way
+### Good Way
 
-"I'm getting this error:
+"I'm getting this error message: [describe the error]
 
-```
-TypeError: undefined is not iterable
-```
+It happens when I try to [what you're doing].
 
-It happens when I run this code:
+Expected: [what should happen]
+Actual: [what actually happens]
 
-```javascript
-let scores = undefined;
-for (let score of scores) {
-  console.log(score);
-}
-```
-
-I think the variable 'scores' isn't being set correctly. Can you help me figure out how to initialize it?"
+I think the issue might be [your guess about what's wrong]. Can you help me figure out how to fix it?"
 
 ## The Difference Between Debugging and Learning
 
@@ -303,3 +294,7 @@ This is how professionals work.
 - [YouTube: Asking for help as a programmer](https://www.youtube.com/watch?v=F1PZVLDEqr8)
 - [Dev.to: The art of asking for help](https://dev.to/codebubb/the-art-of-asking-for-help-as-a-junior-developer-2d4d)
 - [Codecademy: Communication in programming](https://www.codecademy.com/resources/blog/communication-skills-developers/)
+
+```
+
+```

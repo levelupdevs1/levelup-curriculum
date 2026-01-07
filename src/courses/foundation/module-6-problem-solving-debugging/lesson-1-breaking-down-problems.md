@@ -95,20 +95,21 @@ Try breaking this down yourself. Write the steps:
 
 ## Common Mistakes
 
-### ❌ Trying to Solve Everything at Once
+### Trying to Solve Everything at Once
 
-"I'll write the whole program right now"
+Bad approach: "I'll write the whole program right now"
 
-### ✅ Breaking It Into Pieces First
+### Breaking It Into Pieces First
 
-"I'll do one thing, make sure it works, then move to the next thing"
+Good approach: "I'll do one thing, make sure it works, then move to the next thing"
 
-### ❌ Breaking Down Too Little
+### Breaking Down Too Little
 
-"Step 1: Make the program work"
+Bad approach: "Step 1: Make the program work"
 
-### ✅ Breaking Down Into Clear, Simple Steps
+### Breaking Down Into Clear, Simple Steps
 
+Good approach:
 "Step 1: Get input from the user"
 "Step 2: Add 1 to the input"
 "Step 3: Show the result"

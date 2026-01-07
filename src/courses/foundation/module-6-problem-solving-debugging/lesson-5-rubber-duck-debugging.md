@@ -25,28 +25,20 @@ When you force yourself to explain every line of code, you often catch the mista
 
 ## Real Example
 
-**Scenario:** You have buggy code that's supposed to check if a password is valid.
+**Scenario:** You have buggy logic that's supposed to check if a password is valid.
 
-```python
-password = "abc123"
-
-if len(password) > 5:
-    print("Password is strong")
-else:
-    print("Password is weak")
-```
+**The logic:**
+If the password has more than 5 characters, mark it as strong. Otherwise, mark it as weak.
 
 **Without rubber duck debugging:**
-You might stare at the code for 10 minutes and not see the problem.
+You might stare at this for 10 minutes and not see the problem.
 
 **With rubber duck debugging:**
-You say out loud: "If the password length is greater than 5, I print it's strong."
+You explain it out loud: "If the password has more than 5 characters, I mark it as strong."
 
-Wait... the password is `abc123`, which is 6 characters. That's greater than 5, so it should print "strong."
+Wait... but I wanted passwords to need 8+ characters to be strong, not just 5!
 
-But I wanted it to say the password is strong only if it's 8+ characters!
-
-**The bug:** Should be `if len(password) > 8:` not `if len(password) > 5:`
+**The bug:** The rule should check for more than 8 characters, not more than 5.
 
 You found the bug by explaining it!
 
@@ -74,19 +66,16 @@ Starting from the top, **explain what each line does**.
 
 Be specific. Here's a bad example:
 
-```
-Duck, this code gets data and does stuff.
-```
+"This code gets data and does stuff."
 
 Here's a good example:
 
-```
-Duck, this code:
-1. Creates a variable called password and sets it to "abc123"
-2. Checks if the length of password is greater than 5
-3. If yes, it prints "Password is strong"
-4. If no, it prints "Password is weak"
-```
+"This code:
+
+1. Saves the password as 'abc123'
+2. Checks if the password is longer than 5 characters
+3. If yes, it says 'Password is strong'
+4. If no, it says 'Password is weak'"
 
 ### Step 4: Listen to Yourself
 
@@ -101,72 +90,52 @@ As you explain, you'll often say something that doesn't sound right.
 
 ### Example 1: The Loop Problem
 
-**Code:**
+**The Logic:**
+You have a list of numbers: 1, 2, 3, 4, 5
 
-```python
-numbers = [1, 2, 3, 4, 5]
-total = 0
+You start with a total of 0. Then for each number, you're supposed to add it to the total.
 
-for num in numbers:
-    total = num
-
-print(total)
-```
-
-**Explanation to the duck:**
+**Your explanation to the duck:**
 "I start with total = 0.
 Then for each number in the list:
 
-- 1st loop: total becomes 1
-- 2nd loop: total becomes 2
-- 3rd loop: total becomes 3
-- 4th loop: total becomes 4
-- 5th loop: total becomes 5
+- First number: I set total to 1
+- Second number: I set total to 2
+- Third number: I set total to 3
+- And so on..."
 
-So the total is 5."
+Wait! I'm replacing the total each time, not adding to it!
 
-Wait, that's wrong! I'm replacing the total each time, not adding to it!
+I should be doing: total = total + the new number
 
-**What the code should do:**
-"I want total to be 1 + 2 + 3 + 4 + 5 = 15"
+So:
 
-**The fix:**
+- First number: total becomes 0 + 1 = 1
+- Second number: total becomes 1 + 2 = 3
+- Third number: total becomes 3 + 3 = 6
+- And so on...
 
-```python
-total = total + num  # Add to total instead of replacing it
-```
+That way the total is 1 + 2 + 3 + 4 + 5 = 15!
 
-Just by explaining it, you realized the mistake.
+**Just by explaining it, you realized the mistake.**
 
 ### Example 2: The Name Check
 
-**Code:**
+**The Logic:**
+You ask the user for their name. Then you check if their name is "Alice".
 
-```python
-name = input("What is your name? ")
+If it is, you say "Hello Alice!"
 
-if name = "Alice":
-    print("Hello Alice!")
-else:
-    print("You are not Alice")
-```
+If it isn't, you say "You are not Alice"
 
-**Explanation:**
-"I ask for the user's name.
-Then I check if name equals Alice.
-If it does, I say hello..."
+**Your explanation:**
+"I ask for the user's name. Then I check if the name equals Alice. If it does, I say hello..."
 
-Wait, something looks wrong with that line. Let me look at it again: `if name = "Alice":`
+Wait, something looks wrong with that check. When I compare two things, I need to use the "compare" symbol, not the "assignment" symbol!
 
-That's using `=` (assignment) instead of `==` (comparison)! That's a syntax error.
+**The fix:** Use the correct comparison way, not the assignment way.
 
-**The fix:**
-
-```python
-if name == "Alice":  # Use == not =
-```
-
-You caught the error before even running the code.
+You caught the error before even testing the code!
 
 ## When to Use Rubber Duck Debugging
 
@@ -233,11 +202,12 @@ The technique is officially used in software development, even at big companies.
 ## Summary
 
 Rubber duck debugging is:
-✓ Free
-✓ Simple
-✓ Surprisingly effective
-✓ No special tools needed
-✓ Works on any programming language
+
+- Free
+- Simple
+- Surprisingly effective
+- No special tools needed
+- Works on any type of problem
 
 ## Beginner-friendly resources
 

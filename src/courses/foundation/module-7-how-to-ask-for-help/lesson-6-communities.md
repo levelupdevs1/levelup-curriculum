@@ -161,43 +161,43 @@ Reddit is great for discussions.
 
 ### Discord Etiquette
 
-✅ Use threads to keep conversation organized
-✅ Be grateful for help
-✅ Share your learnings with the community
-✅ Help others once you figure it out
-❌ Don't spam messages
-❌ Don't ask the same thing multiple times
-❌ Don't share secrets or credentials
+- Use threads to keep conversation organized
+- Be grateful for help
+- Share your learnings with the community
+- Help others once you figure it out
+- Don't spam messages
+- Don't ask the same thing multiple times
+- Don't share secrets or credentials
 
 ### Slack Etiquette
 
-✅ Introduce yourself in #introductions
-✅ Read pinned messages first
-✅ Use threads for conversations
-✅ Search before asking
-❌ Don't use @channel unless urgent
-❌ Don't share company secrets
-❌ Don't mix work with off-topic chat
+- Introduce yourself in introductions channels
+- Read pinned messages first
+- Use threads for conversations
+- Search before asking
+- Don't use @channel unless urgent
+- Don't share company secrets
+- Don't mix work with off-topic chat
 
 ### Reddit Etiquette
 
-✅ Read community rules first
-✅ Use proper formatting
-✅ Search for duplicates
-✅ Engage with responses
-❌ Don't delete posts that got answers (others will search for it)
-❌ Don't post the same thing to multiple subreddits at once
-❌ Don't ask for upvotes
+- Read community rules first
+- Use proper formatting
+- Search for duplicates
+- Engage with responses
+- Don't delete posts that got answers (others will search for it)
+- Don't post the same thing to multiple communities at once
+- Don't ask for upvotes
 
 ### Official Forum Etiquette
 
-✅ Search existing discussions
-✅ Be respectful and professional
-✅ Use proper grammar
-✅ Mark questions as answered when solved
-❌ Don't bump old threads unnecessarily
-❌ Don't post off-topic
-❌ Don't spam links
+- Search existing discussions
+- Be respectful and professional
+- Use proper grammar
+- Mark questions as answered when solved
+- Don't bump old threads unnecessarily
+- Don't post off-topic
+- Don't spam links
 
 ## Real-World Scenario
 

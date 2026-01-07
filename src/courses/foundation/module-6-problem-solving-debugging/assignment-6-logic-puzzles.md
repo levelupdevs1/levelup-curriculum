@@ -189,12 +189,6 @@ Your solutions will be evaluated on:
 
 **Hint 5:** If your pseudocode doesn't work, use rubber duck debugging—explain it line by line and you'll find the error.
 
-## Extra Challenge (Optional)
-
-Pick one of the puzzles and write **actual code** in your favorite programming language.
-
-You don't have to, but this is a great way to see if your pseudocode actually works!
-
 ---
 
 ## Summary

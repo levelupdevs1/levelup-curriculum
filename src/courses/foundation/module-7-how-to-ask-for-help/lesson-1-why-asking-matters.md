@@ -10,38 +10,34 @@ Learning to ask good questions is one of the most valuable skills you can develo
 
 ## What Makes a Question "Good"?
 
-### ❌ Bad Question
+### Bad Question
 
-```
 "My code doesn't work. What's wrong?"
-```
 
 Why this is bad:
 
 - No context about what should happen
-- No code shown
+- No actual code shown
 - No error message provided
-- Could be anything
+- Could be almost anything
 
-### ✅ Good Question
+### Good Question
 
-```
-"I wrote a Python function to find the largest number in a list.
-It returns None instead of the number. Here's my code:
+"I wrote a program to find the largest number in a list.
+It returns nothing instead of the number. Here's my code:
 
 [code shown]
 
-I expected it to return 5, but it returns None. The error is: [error message].
+I expected it to return 5, but it returns nothing. The error message is: [error details].
 What's wrong?"
-```
 
 Why this is good:
 
 - Clear problem statement
-- Code provided
+- Actual code provided
 - Expected vs actual behavior explained
 - Error message included
-- Someone can solve this in seconds
+- Someone can solve this quickly
 
 ## The Three Parts of a Good Question
 
@@ -107,19 +103,19 @@ Without code, error messages, or expected behavior, people can't help even if th
 
 When you ask a good question:
 
-✅ **You get answers faster**
+**You get answers faster**
 People understand immediately and can help right away
 
-✅ **You get better answers**
+**You get better answers**
 People take your question seriously and provide quality responses
 
-✅ **You help others**
+**You help others**
 Your question and the answer become searchable for the next person
 
-✅ **You learn more**
+**You learn more**
 Because people explain WHY, not just HOW
 
-✅ **You build respect**
+**You build respect**
 Experienced developers respect people who ask good questions
 
 ## Real-World Example

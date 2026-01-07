@@ -14,37 +14,33 @@ It's not real code. You can't run it. But it describes exactly what your program
 
 ### Example
 
-**Real Python code:**
+**What you want to do:**
 
-```python
-scores = [85, 92, 78, 95, 88]
-highest = max(scores)
-print(highest)
-```
+Find the highest score in a list of test scores and show it.
 
-**Pseudocode for the same thing:**
+**Pseudocode for this:**
 
 ```
 1. Create a list of scores
 2. Find the highest score in the list
-3. Print the highest score
+3. Show the highest score
 ```
 
 ## Why Write Pseudocode?
 
-### ✅ Benefit 1: You Think Before You Code
+**Benefit 1: You Think Before You Code**
 
 When you write pseudocode, you must think through the logic before typing code. This catches problems early.
 
-### ✅ Benefit 2: It's Easier to Understand
+**Benefit 2: It's Easier to Understand**
 
 Pseudocode is in English. Anyone can read it and understand what your program does.
 
-### ✅ Benefit 3: It's Easier to Fix
+**Benefit 3: It's Easier to Fix**
 
 If your plan is wrong, it's much easier to fix pseudocode than real code.
 
-### ✅ Benefit 4: You Can Check Your Logic
+**Benefit 4: You Can Check Your Logic**
 
 Before writing code, you can test your plan by hand to see if it works.
 
@@ -123,7 +119,9 @@ Before writing code, you can test your plan by hand to see if it works.
 
 ## Common Mistakes in Pseudocode
 
-### ❌ Being Too Vague
+### Being Too Vague
+
+Bad example:
 
 ```
 1. Do the thing
@@ -133,7 +131,9 @@ Before writing code, you can test your plan by hand to see if it works.
 
 You can't follow these steps because they're not specific enough.
 
-### ✅ Being Specific
+### Being Specific
+
+Good example:
 
 ```
 1. Ask the user to enter their name
@@ -144,16 +144,16 @@ You can't follow these steps because they're not specific enough.
 
 Each step is clear and specific.
 
-### ❌ Writing Actual Code
+### Writing Actual Code
 
-```
-scores = [85, 92, 78]
-highest = max(scores)
-```
+Bad example:
+This would show actual programming syntax
 
 This is code, not pseudocode.
 
-### ✅ Using Simple English
+### Using Simple English
+
+Good example:
 
 ```
 1. Create a list of test scores

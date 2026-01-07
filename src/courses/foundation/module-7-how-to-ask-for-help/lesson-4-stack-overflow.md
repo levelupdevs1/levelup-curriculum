@@ -87,17 +87,17 @@ If you find a similar question, read all the answers. One might solve your probl
 
 ### Rule 2: Never Ask for Code Without Effort
 
-✅ **Good question:**
-"I tried doing this [code], but got [error]. I've tried [what you tried] but it still doesn't work. Any ideas?"
+**Good question:**
+"I tried doing this [what you attempted], but got this error [error description]. I've tried [what else you tried] but it still doesn't work. Any ideas?"
 
-❌ **Bad question:**
+**Bad question:**
 "How do I make a web server? Give me the code."
 
 If you ask without showing effort, you'll get:
 
-- Downvotes
+- Downvotes (negative ratings)
 - Negative comments
-- Question deleted
+- Question removed
 
 ### Rule 3: Provide Minimal Reproducible Example (Next lesson)
 
@@ -119,10 +119,10 @@ Stack Overflow threads should focus on one problem.
 
 Treat answerers like professionals.
 
-✅ **Good response:**
+**Good response:**
 "Thanks for the explanation! That helped me understand what was wrong."
 
-❌ **Bad response:**
+**Bad response:**
 "This doesn't work. You're wrong."
 
 ## The Stack Overflow Question Structure
@@ -133,8 +133,8 @@ Successful Stack Overflow questions follow this pattern:
 
 **Clear, specific problem in 5-10 words**
 
-❌ Bad: "Help with my code"
-✅ Good: "JavaScript array.map() returns undefined values"
+Bad: "Help with my code"
+Good: "My program returns empty/nothing when it should return a number"
 
 ### Description
 
@@ -238,11 +238,11 @@ The best answers often appear within minutes. The Stack Overflow community is us
 
 Your question gets closed if:
 
-- ❌ It's an exact duplicate of an existing question
-- ❌ It's too vague (needs more detail)
-- ❌ It's asking for code without showing effort
-- ❌ It's asking for homework help
-- ❌ It's asking to debug code without any code shown
+- It's an exact duplicate of an existing question
+- It's too vague (needs more detail)
+- It's asking for code without showing effort
+- It's asking for homework help
+- It's asking to debug code without any code shown
 
 Closed questions don't disappear, but they stop getting answers.
 

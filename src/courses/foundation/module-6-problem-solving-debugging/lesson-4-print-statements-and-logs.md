@@ -8,15 +8,9 @@ This shows you what's actually happening, which helps you find bugs.
 
 ## What is a Print Statement?
 
-A print statement displays information on your screen.
+A print statement displays information on your screen so you can see what's happening inside your code.
 
-Different languages have different names:
-
-- **Python:** `print()`
-- **JavaScript:** `console.log()`
-- **Java:** `System.out.println()`
-
-They all do the same thing: show you what's in your code.
+Different programming languages have different names for this feature, but they all do the same thing: they show you the values and information you want to check.
 
 ## Why Print Statements Are Powerful
 
@@ -31,73 +25,51 @@ Print statements let you see:
 
 ### Step 1: Identify Where to Check
 
-Based on where you think the bug is, add print statements to see the values.
+Based on where you think the bug is, add display statements to show the values.
 
-**Example:** A program that's supposed to double a number
+**Example scenario:** A program that's supposed to double a number
 
-```python
-number = 5
-result = number + number  # Should be 10
+You want to check: Is the number correct? Is the doubling working?
 
-print(result)  # Shows: 10
-```
+So you add checks at different points:
 
-But what if you got the wrong answer? You might print the variable right before it's used:
+- Check 1: Display the original number
+- Check 2: Display the doubled result
 
-```python
-number = 5
-print("number is:", number)  # Check 1: Is the input correct?
+**If the original is 5 and the result is 10, the math works correctly.**
 
-result = number + number
-print("result is:", result)  # Check 2: Did the calculation work?
-```
+But what if you got the wrong answer? You might add more checks to see where the problem is.
 
 ### Step 2: Look at the Output
 
-Read what you printed and compare it to what you expected.
+Check what was displayed and compare it to what you expected.
 
-**Expected:**
+**Expected results:**
 
-- number should be 5
-- result should be 10
+- The number should be 5
+- The doubled result should be 10
 
-**Actual:**
+**If what displays matches what you expected**, the bug is elsewhere.
+**If something doesn't match**, you found where the problem is.
 
-- number is 5 ✓
-- result is 10 ✓
+### Step 3: Add More Display Checks
 
-If everything matches, the bug is elsewhere.
+If the first checks didn't reveal the problem, add more.
 
-### Step 3: Add More Print Statements
+Add checks **inside loops, inside conditional statements, and everywhere the code gets interesting.**
 
-If the first prints didn't reveal the problem, add more.
+**Example scenario:** A program that adds up scores
 
-Print **inside loops, inside if statements, everywhere the code gets interesting.**
+You could add checks to see:
 
-```python
-scores = [85, 92, 78, 95, 88]
-total = 0
+- What's the starting total? (should be 0)
+- What's the first score being added?
+- What's the total after adding the first score?
+- Continue checking after each score is added
+- What's the final total?
+- What's the average?
 
-print("Starting total:", total)
-
-for score in scores:
-    print("Current score:", score)
-    total = total + score
-    print("Total after adding:", total)
-
-average = total / len(scores)
-print("Final total:", total)
-print("Average:", average)
-```
-
-Output:
-
-```
-Starting total: 0
-Current score: 85
-Total after adding: 85
-Current score: 92
-Total after adding: 177
+By displaying values at each step, you can see exactly where the calculation goes wrong.
 Current score: 78
 Total after adding: 255
 Current score: 95
@@ -106,187 +78,106 @@ Current score: 88
 Total after adding: 438
 Final total: 438
 Average: 87.6
+
 ```
 
-Now you can see exactly what happens in each loop.
+Now you can see exactly what happens in each step.
 
-## Examples of Good Debug Print Statements
+## Examples of Good vs Bad Display Checks
 
-### ❌ Bad Print Statement
+### Bad Display Check
 
-```python
-print(x)
-```
+Just show a value without context.
 
-Why? You don't know what `x` is supposed to be. Is it the input? The result? A counter?
+"Shows: 34"
 
-### ✅ Good Print Statement
+You don't know what the 34 represents.
 
-```python
-print("The user entered:", x)
-```
+### Good Display Check
 
-Now you know exactly what this print statement shows.
+Show a value with a clear label explaining what it is.
 
-### ❌ Bad
+"Calculated age: 34"
 
-```python
-print(result)
-```
+Now it's obvious what the 34 means.
 
-### ✅ Good
-
-```python
-print("Calculation result before rounding:", result)
-```
-
-### ❌ Bad
-
-```python
-print("Error!")
-```
-
-### ✅ Good
-
-```python
-print("Error! The password must be at least 8 characters. User entered:", len(password), "characters")
-```
-
-## Print Statements in Different Situations
+## Using Display Checks in Different Situations
 
 ### Situation 1: Checking If Code Runs
 
-Sometimes you need to know if a line of code even runs.
+Sometimes you need to know if a section of code even runs.
 
-```python
-if age > 18:
-    print("This person is an adult")
-    can_vote = True
-else:
-    print("This person is not an adult")
-    can_vote = False
-```
+You can add a check that says "This part ran!"
 
-If you never see "This person is an adult," you know the `if` statement isn't working as expected.
+If you never see that check displayed, you know that section isn't being executed when it should be.
 
 ### Situation 2: Finding Where a Loop Gets Stuck
 
-```python
-for i in range(100):
-    print("Loop iteration:", i)
-    result = 100 / i  # This will crash when i = 0
-```
+You can add a check inside a loop that shows which iteration you're on.
 
-The print statements will show you exactly which iteration caused the crash.
+This tells you exactly which loop cycle caused the problem.
 
 ### Situation 3: Checking Function Input and Output
 
-```python
-def add_numbers(a, b):
-    print("Function input - a:", a, "b:", b)
-    result = a + b
-    print("Function output - result:", result)
-    return result
+Add checks before and after a function runs.
 
-answer = add_numbers(5, 3)
-```
+Show what information goes into the function and what comes back out.
 
-You can see what goes into the function and what comes out.
+This helps you see if the function is receiving the right input or producing the right output.
 
 ## Real-World Debugging Example
 
 **Problem:** A program that calculates age is giving wrong results.
 
-**Code:**
+**Your checks might show:**
+- Birth year: 1990
+- Current year: 2024
+- Calculated age: 34
 
-```python
-birth_year = 1990
-current_year = 2024
-age = current_year - birth_year
+**But you expected 33.**
 
-print(age)  # Shows: 34
-```
+**Adding more checks:**
+- Birth year: 1990
+- Current year: 2024
+- (Wait, is the current year really 2024? Let me check again...)
 
-But you expected 33 (maybe you're born late in the year).
-
-**Add more print statements:**
-
-```python
-birth_year = 1990
-print("Birth year:", birth_year)
-
-current_year = 2024
-print("Current year:", current_year)
-
-age = current_year - birth_year
-print("Calculated age:", age)
-
-# Wait, the current year should be 2025!
-```
-
-The print statements revealed the real bug: the current_year was wrong, not the calculation.
+The checks revealed the real bug: the current year value was wrong, not the calculation formula.
 
 ## Cleaning Up Your Code
 
-Once you find the bug and fix it, **remove the print statements** (or comment them out).
+Once you find the bug and fix it, **remove the display checks** or mark them as comments.
 
-```python
-# Before (with debugging prints)
-number = 5
-print("number is:", number)
-result = number + number
-print("result is:", result)
-print(result)
+Keep your code clean so it's easy to read.
 
-# After (clean)
-number = 5
-result = number + number
-print(result)
-```
+**Before (with debugging):**
+Display the number being used, display the result being calculated, display the final answer.
 
-Or keep them commented out in case you need them later:
+**After (clean):**
+Only display the final answer the user needs to see.
 
-```python
-number = 5
-# print("number is:", number)
-result = number + number
-# print("result is:", result)
-print(result)
-```
+Or keep the debug checks as comments in case you need them later to debug something else.
 
-## Advanced: Logging
-
-In larger programs, print statements can get messy. Professional developers use **logging** instead.
-
-Logging is like print statements but better because you can:
+Logging is like display checks but better because you can:
 
 - Save messages to a file
 - Filter messages by importance
 - Turn debugging on/off without changing code
 
-**Basic JavaScript logging example:**
+Different tools and languages have different ways to do logging and show messages in different colors so you can spot errors quickly.
 
-```javascript
-console.log("User logged in"); // Regular info
-console.warn("Low disk space"); // Warning
-console.error("Login failed"); // Error
-```
-
-Different tools (like browsers and Node.js) show these in different colors so you can spot errors quickly.
-
-But for now, **simple print statements are enough.**
+But for now, **simple display checks are enough.**
 
 ## Key Takeaway
 
-Print statements are your best friend when debugging.
+Display checks are your best friend when debugging.
 
-**Don't be shy—print everything!**
+**Don't be shy—display everything!**
 
-When you can't figure out what's happening, print the values and you'll see what's going on.
+When you can't figure out what's happening, display the values and you'll see what's going on.
 
 ## Next Steps
 
-Print statements work well, but sometimes you need a different approach.
+Display checks work well, but sometimes you need a different approach.
 
 The next lesson: **Rubber Duck Debugging** teaches you a technique that doesn't require any tools—just you and your code.
 
@@ -296,3 +187,4 @@ The next lesson: **Rubber Duck Debugging** teaches you a technique that doesn't 
 - [YouTube: Using print statements to debug Python](https://www.youtube.com/watch?v=ePLfPKI-rIs)
 - [Real Python: Debugging with print()](https://realpython.com/python-debugging-pdb/)
 - [Codecademy: Debugging with logs](https://www.codecademy.com/resources/blog/debugging-with-javascript-console/)
+```

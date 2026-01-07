@@ -80,46 +80,29 @@ Look at your code and guess where the problem might be.
 - Have I seen this mistake before?
 
 **Example:**
-Looking at the code that adds numbers:
+Looking at the logic that adds numbers:
 
-```python
-result = str(number1) + str(number2)
-```
+You see it's combining the numbers as text instead of as math.
 
-**Guess:** "I'm converting the numbers to text and joining them together instead of adding them mathematically."
+**Guess:** "The program is treating the numbers like words and putting them together, instead of adding them like math problems."
 
 ### Step 4: Test Your Guess
 
-Use print statements or logs to see if your guess is correct.
-
-Print out the values in your code to see what's really happening.
+Use display checks or print statements to show values at each step. This helps you see what's really happening.
 
 **Example:**
 
-```python
-number1 = 5
-number2 = 3
+You add checks at each step:
 
-print("number1 is:", number1)
-print("number2 is:", number2)
-
-result = str(number1) + str(number2)
-print("result is:", result)
-```
-
-Output:
-
-```
-number1 is: 5
-number2 is: 3
-result is: 53
-```
+1. First check: "What is number1?" → Shows: 5
+2. Second check: "What is number2?" → Shows: 3
+3. Third check: "What is the result?" → Shows: 53
 
 Now you can see that:
 
-1. The numbers are correct (5 and 3)
+1. The individual numbers are correct (5 and 3)
 2. The result is wrong (53 instead of 8)
-3. The code is joining them as text, not adding them
+3. The program is treating them like text and putting them together, not adding them mathematically
 
 Your guess was correct!
 
@@ -128,28 +111,12 @@ Your guess was correct!
 Now that you know what's wrong, fix it.
 
 **Before (wrong):**
-
-```python
-result = str(number1) + str(number2)
-```
+The program treats the numbers as text and combines them together. So "5" + "3" becomes "53".
 
 **After (correct):**
+The program treats the numbers as mathematical values. So 5 + 3 becomes 8.
 
-```python
-result = number1 + number2
-```
-
-**Or if you need the result as text:**
-
-```python
-result = str(number1 + number2)
-```
-
-Test that your fix works.
-
-## Debugging Mindset
-
-### ✅ What Helps
+You need to change your instructions so the program adds the numbers mathematically, not as text.
 
 **"I'll find this bug step by step."**
 
@@ -169,17 +136,7 @@ Test that your fix works.
 - You'll recognize the same mistake next time
 - Debugging skills improve with practice
 
-### ❌ What Doesn't Help
-
-**"This is impossible!"**
-
-- No, it's not
-- Every bug is fixable
-
-**"The computer is being stupid."**
-
-- The computer is doing exactly what you told it
-- It's not stupid; you just need to find what you told it to do wrong
+###s not stupid; you just need to find what you told it to do wrong
 
 **"Let me change a bunch of things and hope something works."**
 
@@ -189,27 +146,27 @@ Test that your fix works.
 
 ## Common Debugging Mistakes
 
-### ❌ Mistake 1: Guessing Without Testing
+### Mistake 1: Guessing Without Testing
 
 You have a guess about what's wrong, but you don't check. You change code randomly.
 
-### ✅ Solution: Always Test Your Guess
+**Solution:** Always Test Your Guess
 
-Use print statements or a debugger to verify before changing anything.
+Use display checks to verify before changing anything.
 
-### ❌ Mistake 2: Changing Too Much at Once
+### Mistake 2: Changing Too Much at Once
 
 You change five things at the same time and can't tell which change fixed it.
 
-### ✅ Solution: Change One Thing at a Time
+**Solution:** Change One Thing at a Time
 
-Change one line, test, then move to the next.
+Change one instruction, test, then move to the next.
 
-### ❌ Mistake 3: Not Understanding the Symptoms
+### Mistake 3: Not Understanding the Symptoms
 
 You know something is wrong but don't fully understand what.
 
-### ✅ Solution: Study the Problem
+**Solution:** Study the Problem
 
 Run it several times. Try different inputs. Understand exactly what's happening.
 
@@ -225,35 +182,41 @@ Run it several times. Try different inputs. Understand exactly what's happening.
 
 **Scenario:** You're writing a program that calculates the total price of items in a store.
 
-The code should add up the prices, but it's giving wrong answers.
+The program has a list of prices: 10, 20, 15
 
-```python
-prices = [10, 20, 15]
-total = 0
+It should add them up to get a total of 45.
 
-for price in prices:
-    total = price
+But when you run it, the answer is wrong. It shows 15 instead of 45.
 
-print("Total:", total)
-```
+**Follow the debugging process:**
 
-**What's wrong?** Follow the debugging process:
+**Step 1: Understand the problem**
 
-1. What should happen? Total should be 45 (10 + 20 + 15)
-2. What's actually happening? Total is 15
-3. Where's the problem? Look at the loop
-4. What's the bug? The code says `total = price` (replace) instead of `total = total + price` (add)
-5. The fix:
+- Should do: Add all prices together = 45
+- Actually does: Shows 15
 
-```python
-total = total + price
-```
+**Step 2: Reproduce it**
 
-or
+- Run the program with prices 10, 20, 15
+- The result is 15 (wrong)
 
-```python
-total += price
-```
+**Step 3: Make a guess**
+
+- There's a loop that goes through each price
+- The issue is probably in how the total is being updated
+- Guess: "Instead of adding to the total, the code is replacing the total each time"
+
+**Step 4: Test your guess**
+
+- Add display checks inside the loop to see what the total becomes after each price
+- You'd see: 10, then 20, then 15
+- This shows the total is being replaced, not added!
+
+**Step 5: Fix it**
+
+- Change: "Replace total with the new price"
+- To: "Add the new price to the total"
+- Result: 10 + 20 + 15 = 45 ✓
 
 ## Next Steps
 
