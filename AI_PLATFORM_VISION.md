@@ -48,12 +48,14 @@ Level Up is evolving from a community-managed learning platform into an **AI-pow
 ### What We Have Today
 
 **Technical Stack:**
+
 - React + Vite frontend
 - Supabase (PostgreSQL + Edge Functions)
 - Hedera Hashgraph integration
 - Git-based content management
 
 **Features:**
+
 - Structured learning paths (static courses)
 - Points and levels system (10+ levels)
 - Platform token rewards (10-400 tokens per level)
@@ -62,6 +64,7 @@ Level Up is evolving from a community-managed learning platform into an **AI-pow
 - Peer review system
 
 **Current Limitations:**
+
 - Static content same for all users
 - Manual content creation required
 - Limited scalability
@@ -75,6 +78,7 @@ Level Up is evolving from a community-managed learning platform into an **AI-pow
 ### From Static to AI-Powered
 
 **Before (Community-Managed):**
+
 - Static courses available to all users
 - Same content for everyone
 - Manual course creation via pull requests
@@ -82,6 +86,7 @@ Level Up is evolving from a community-managed learning platform into an **AI-pow
 - One-size-fits-all approach
 
 **After (AI-Powered):**
+
 - AI generates unique courses per user
 - Content personalized to skill level, goals, and learning style
 - Infinite course possibilities
@@ -91,6 +96,7 @@ Level Up is evolving from a community-managed learning platform into an **AI-pow
 ### Core Principle: Structured Learning Remains Sacred
 
 **No matter the subscription tier:**
+
 - ❌ No skipping lessons
 - ❌ No jumping to advanced content
 - ❌ No unlocking modules without completing previous ones
@@ -107,6 +113,7 @@ Level Up is evolving from a community-managed learning platform into an **AI-pow
 When users log in for the first time, they complete a comprehensive onboarding process:
 
 **Onboarding Questions:**
+
 - What do you want to learn?
 - What's your current skill level?
 - What's your primary goal? (Job, Project, Learning, Business)
@@ -116,6 +123,7 @@ When users log in for the first time, they complete a comprehensive onboarding p
 
 **AI Processing:**
 The AI uses these answers to:
+
 - Generate a personalized course catalog
 - Determine optimal difficulty levels
 - Create custom learning paths
@@ -125,6 +133,7 @@ The AI uses these answers to:
 ### 2. Personalized Course Generation
 
 **Course Discovery Phase:**
+
 - AI generates 5-10 recommended courses unique to each user
 - Courses aligned with user's goals and skill level
 - Custom titles and descriptions
@@ -133,6 +142,7 @@ The AI uses these answers to:
 
 **Course Structure Generation:**
 When a user enrolls in a course:
+
 - AI creates custom module structure (4-8 modules)
 - Generates lesson titles and objectives
 - Plans assessments and projects
@@ -142,6 +152,7 @@ When a user enrolls in a course:
 ### 3. Just-in-Time Lesson Content
 
 **On-Demand Generation:**
+
 - Lessons are NOT pre-generated
 - When user opens a lesson → AI generates content in real-time
 - Content includes:
@@ -152,6 +163,7 @@ When a user enrolls in a course:
   - Related resources
 
 **Contextual Awareness:**
+
 - AI knows what user learned previously
 - Builds on prior knowledge
 - References earlier concepts
@@ -161,6 +173,7 @@ When a user enrolls in a course:
 ### 4. AI-Powered Assessments
 
 **Assessment Types:**
+
 - Quizzes (multiple choice, true/false)
 - Coding challenges
 - Written assignments
@@ -168,6 +181,7 @@ When a user enrolls in a course:
 - Practical tasks
 
 **AI Review System:**
+
 - Automatically grades submissions
 - Provides detailed feedback
 - Suggests improvements
@@ -175,6 +189,7 @@ When a user enrolls in a course:
 - Offers hints when stuck (optional, costs AI tokens)
 
 **Special Cases:**
+
 - Projects requiring browser rendering → Manual review or automated testing
 - Complex projects → Hybrid AI + automated testing approach
 - Subjective work → AI provides detailed rubric-based feedback
@@ -182,6 +197,7 @@ When a user enrolls in a course:
 ### 5. Adaptive Learning Path
 
 **AI Monitoring:**
+
 - Tracks user performance across lessons
 - Identifies struggling areas
 - Adjusts difficulty dynamically
@@ -189,6 +205,7 @@ When a user enrolls in a course:
 - Celebrates improvements
 
 **Personalized Pacing:**
+
 - Fast learners get more challenging content
 - Struggling learners get additional support
 - AI can generate supplementary materials
@@ -197,6 +214,7 @@ When a user enrolls in a course:
 ### 6. AI Tutor Assistance
 
 **Available Features:**
+
 - Ask questions about lesson content
 - Get explanations in different ways
 - Request additional examples
@@ -204,6 +222,7 @@ When a user enrolls in a course:
 - Clarify confusing concepts
 
 **Token-Based Access:**
+
 - Each interaction costs AI tokens
 - Premium tiers get more tokens
 - Encourages thoughtful questions
@@ -216,6 +235,7 @@ When a user enrolls in a course:
 ### AI Provider: Google Gemini
 
 **Rationale:**
+
 - Generous free tier (15 requests/min, 1,500/day)
 - Affordable paid tier ($0.35/1M tokens)
 - Strong code understanding
@@ -225,6 +245,7 @@ When a user enrolls in a course:
 ### Content Generation Approach
 
 **What Gets Generated:**
+
 - Course recommendations based on user profile
 - Course structures (modules + lesson outlines)
 - Lesson content (full text, examples, exercises)
@@ -234,6 +255,7 @@ When a user enrolls in a course:
 - Project descriptions and requirements
 
 **What Gets Cached:**
+
 - All generated content is saved to database
 - Users see same content on revisit
 - Enables offline access later
@@ -244,6 +266,7 @@ When a user enrolls in a course:
 
 **How AI Maintains User Context:**
 Each AI generation receives:
+
 - User profile (goals, level, learning style)
 - Learning history (completed lessons/courses)
 - Current course context
@@ -252,6 +275,7 @@ Each AI generation receives:
 - Recent interactions
 
 This ensures:
+
 - Continuity across lessons
 - Personalized examples
 - Appropriate difficulty
@@ -261,22 +285,26 @@ This ensures:
 ### Cost Control Strategies
 
 **Database Caching:**
+
 - Every AI-generated content saved
 - No regeneration on revisit
 - Reduces API calls by 90%+
 
 **Token-Based Limits:**
+
 - Free users: 100 AI tokens/day
 - Paid users: Monthly token allocations
 - Prevents unlimited usage
 - Encourages upgrade for heavy users
 
 **Smart Batching:**
+
 - Generate multiple related items in one call
 - Pre-generate next lesson while user reads current
 - Background generation during idle time
 
 **Usage Monitoring:**
+
 - Track every AI call and cost
 - Set budget alerts
 - Automatically adjust limits if needed
@@ -289,6 +317,7 @@ This ensures:
 ### AI Tokens System
 
 **What Are AI Tokens?**
+
 - Virtual currency for AI operations
 - Each AI action costs tokens
 - Different actions cost different amounts
@@ -296,18 +325,19 @@ This ensures:
 
 **AI Token Costs:**
 
-| Action | AI Tokens | Description |
-|--------|-----------|-------------|
-| Generate course catalog | 50 | Creates personalized course recommendations |
-| Generate course structure | 100 | Creates modules + lesson outlines |
-| Generate lesson content | 150 | Full lesson with examples and exercises |
-| Generate assessment | 80 | Quiz, assignment, or project |
-| Review submission | 60 | AI grades and provides feedback |
-| AI tutor question | 30 | Answer user questions |
-| Generate hint | 20 | Help when stuck |
-| Project evaluation | 200 | Complex project review |
+| Action                    | AI Tokens | Description                                 |
+| ------------------------- | --------- | ------------------------------------------- |
+| Generate course catalog   | 50        | Creates personalized course recommendations |
+| Generate course structure | 100       | Creates modules + lesson outlines           |
+| Generate lesson content   | 150       | Full lesson with examples and exercises     |
+| Generate assessment       | 80        | Quiz, assignment, or project                |
+| Review submission         | 60        | AI grades and provides feedback             |
+| AI tutor question         | 30        | Answer user questions                       |
+| Generate hint             | 20        | Help when stuck                             |
+| Project evaluation        | 200       | Complex project review                      |
 
 **Example Usage:**
+
 - Completing 1 full lesson ≈ 150 (content) + 80 (assessment) + 60 (review) = **290 AI tokens**
 - Free tier (100/day) ≈ 1 lesson every 3 days
 - Starter tier (5,000/month) ≈ 17 lessons/month
@@ -318,11 +348,13 @@ This ensures:
 #### 🆓 FREE TIER
 
 **AI Token Allocation:**
+
 - 100 AI tokens per day
 - Resets daily at midnight
 - Roughly 1-2 lessons per day
 
 **Features:**
+
 - 1 active course at a time
 - Sequential learning (no skipping)
 - Basic AI feedback
@@ -331,6 +363,7 @@ This ensures:
 - Mint NFT certificates
 
 **Limitations:**
+
 - Daily token limit
 - Cannot bank unused tokens
 - Standard generation speed
@@ -344,11 +377,13 @@ This ensures:
 #### 💎 STARTER TIER - $10/month
 
 **AI Token Allocation:**
+
 - 5,000 AI tokens per month
 - ~150-200 lessons per month
 - Unused tokens DON'T roll over
 
 **Features:**
+
 - 3 active courses simultaneously
 - Sequential learning (no skipping)
 - Standard AI feedback
@@ -358,6 +393,7 @@ This ensures:
 - Ad-free experience
 
 **Bonus:**
+
 - 500 bonus AI tokens on signup
 - Early access to new features
 
@@ -370,11 +406,13 @@ This ensures:
 #### ⚡ PRO TIER - $25/month
 
 **AI Token Allocation:**
+
 - 25,000 AI tokens per month
 - ~750-850 lessons per month
 - Unused tokens DON'T roll over
 
 **Features:**
+
 - Unlimited active courses
 - Sequential learning (no skipping)
 - Advanced AI tutor chat
@@ -387,6 +425,7 @@ This ensures:
 - Premium support (24-hour response)
 
 **Bonus:**
+
 - 2,500 bonus AI tokens on signup
 - Beta feature access
 - Custom course requests
@@ -400,12 +439,14 @@ This ensures:
 #### 🏆 ENTERPRISE (Token Payment Option)
 
 **Pay with Platform Tokens:**
+
 - 1,000 platform tokens = $5 subscription credit
 - Users can "earn their subscription"
 - Encourages long-term engagement
 - Gives real value to earned tokens
 
 **Example:**
+
 - Earn 2,000 platform tokens → Get $10 credit → 1 month Starter free
 - Earn 5,000 platform tokens → Get $25 credit → 1 month Pro free
 
@@ -416,6 +457,7 @@ This ensures:
 ### Dual Token System
 
 **1. AI Tokens:**
+
 - Purpose: Access AI features
 - Allocation: Based on subscription tier
 - Reset: Daily (free) or Monthly (paid)
@@ -423,6 +465,7 @@ This ensures:
 - Platform internal currency
 
 **2. Platform Tokens:**
+
 - Purpose: Rewards and utility
 - Distribution: Earned through learning
 - Blockchain: Hedera Token Service (HTS)
@@ -434,49 +477,51 @@ This ensures:
 **Level-Up Rewards:**
 
 | Level | Tokens Awarded | Cumulative Points Required |
-|-------|----------------|---------------------------|
-| 1 | 10 | 0 |
-| 2 | 50 | 500 |
-| 3 | 70 | 1,500 |
-| 4 | 100 | 3,000 |
-| 5 | 150 | 5,000 |
-| 6 | 200 | 7,500 |
-| 7 | 250 | 10,500 |
-| 8 | 300 | 14,000 |
-| 9 | 350 | 18,000 |
-| 10 | 400 | 22,500 |
+| ----- | -------------- | -------------------------- |
+| 1     | 10             | 0                          |
+| 2     | 50             | 500                        |
+| 3     | 70             | 1,500                      |
+| 4     | 100            | 3,000                      |
+| 5     | 150            | 5,000                      |
+| 6     | 200            | 7,500                      |
+| 7     | 250            | 10,500                     |
+| 8     | 300            | 14,000                     |
+| 9     | 350            | 18,000                     |
+| 10    | 400            | 22,500                     |
 
 **Activity Rewards:**
 
-| Activity | Base Tokens | Description |
-|----------|-------------|-------------|
-| Complete AI lesson | 5 | Per lesson finished |
-| Pass assessment | 10 | Pass any quiz/assignment |
-| Perfect score | 25 | 100% on assessment |
-| Complete project | 50 | Finish module project |
-| Complete course | 100 | Finish entire course |
-| Claim NFT certificate | 50 | Mint course certificate |
-| Help peer review | 8 | Review someone's work |
-| Daily streak | 10 | Complete 1+ lesson daily |
-| Community contribution | 15 | Quality discussion post |
-| Win bounty | Variable | Complete bounty challenge |
+| Activity               | Base Tokens | Description               |
+| ---------------------- | ----------- | ------------------------- |
+| Complete AI lesson     | 5           | Per lesson finished       |
+| Pass assessment        | 10          | Pass any quiz/assignment  |
+| Perfect score          | 25          | 100% on assessment        |
+| Complete project       | 50          | Finish module project     |
+| Complete course        | 100         | Finish entire course      |
+| Claim NFT certificate  | 50          | Mint course certificate   |
+| Help peer review       | 8           | Review someone's work     |
+| Daily streak           | 10          | Complete 1+ lesson daily  |
+| Community contribution | 15          | Quality discussion post   |
+| Win bounty             | Variable    | Complete bounty challenge |
 
 **Premium Multipliers:**
 
-| Tier | Multiplier | Effect |
-|------|------------|--------|
-| Free | 1.0x | Base rewards |
-| Starter | 1.2x | 20% more tokens |
-| Pro | 1.5x | 50% more tokens |
+| Tier    | Multiplier | Effect          |
+| ------- | ---------- | --------------- |
+| Free    | 1.0x       | Base rewards    |
+| Starter | 1.2x       | 20% more tokens |
+| Pro     | 1.5x       | 50% more tokens |
 
 **Example Earnings:**
 
 Free user completes 1 lesson + assessment:
+
 - Lesson: 5 tokens
 - Assessment: 10 tokens
 - Total: **15 tokens**
 
 Pro user completes same:
+
 - Lesson: 5 × 1.5 = 7.5
 - Assessment: 10 × 1.5 = 15
 - Total: **22.5 tokens** (rounded to 23)
@@ -486,31 +531,37 @@ Pro user completes same:
 **What Can You Do With Platform Tokens?**
 
 1. **Subscribe to Platform:**
+
    - 1,000 tokens = $5 credit
    - 2,000 tokens = $10 (Starter for 1 month)
    - 5,000 tokens = $25 (Pro for 1 month)
 
 2. **Buy AI Tokens:**
+
    - 100 platform tokens = 500 AI tokens
    - Extend your monthly limit
    - Emergency top-up when needed
 
 3. **Enter Bounties:**
+
    - Entry fees paid in platform tokens
    - Winners get larger token rewards
    - Higher level bounties = higher rewards
 
 4. **Priority Features:**
+
    - Skip review queue (50 tokens)
    - Fast-track NFT minting (100 tokens)
    - Custom course request (500 tokens)
 
 5. **Tip Community:**
+
    - Reward helpful community members
    - Support quality contributors
    - Build reputation
 
 6. **Trade on DEX:**
+
    - Sell for other crypto (when on mainnet)
    - Hold for potential appreciation
    - Provide liquidity
@@ -521,6 +572,7 @@ Pro user completes same:
    - Community decisions
 
 **Token Economics:**
+
 - Fixed supply or controlled inflation
 - Burn mechanism for certain actions
 - Staking rewards (future feature)
@@ -550,18 +602,21 @@ Regardless of whether you're free or Pro, the learning structure is non-negotiab
 ### Why This Matters
 
 **Educational Integrity:**
+
 - Ensures solid foundation building
 - Prevents knowledge gaps
 - Maintains learning quality
 - Validates actual skill development
 
 **Fair Play:**
+
 - Premium users don't get unfair advantages
 - Everyone earns their progress
 - Level means something
 - Certificates have value
 
 **Engagement:**
+
 - Creates consistent milestones
 - Provides sense of achievement
 - Gamification works better
@@ -570,6 +625,7 @@ Regardless of whether you're free or Pro, the learning structure is non-negotiab
 ### Points System
 
 **How Points Work:**
+
 - Points determine your level
 - Each level requires 500 × level number points
 - Points never decrease
@@ -577,52 +633,56 @@ Regardless of whether you're free or Pro, the learning structure is non-negotiab
 
 **Earning Points:**
 
-| Activity | Points Awarded |
-|----------|---------------|
-| Complete lesson | 50 |
-| Pass quiz | 50 |
-| Pass assignment | 100 |
-| Complete project | 200 |
-| Perfect score | +25 bonus |
-| Daily streak | 25 |
-| Help peer review | 30 |
-| Win bounty | 100-500 |
+| Activity         | Points Awarded |
+| ---------------- | -------------- |
+| Complete lesson  | 50             |
+| Pass quiz        | 50             |
+| Pass assignment  | 100            |
+| Complete project | 200            |
+| Perfect score    | +25 bonus      |
+| Daily streak     | 25             |
+| Help peer review | 30             |
+| Win bounty       | 100-500        |
 
 **Level Progression:**
 
 | Level | Total Points Needed | Points from Previous Level |
-|-------|---------------------|---------------------------|
-| 1 | 0 | Start |
-| 2 | 500 | 500 |
-| 3 | 1,500 | 1,000 |
-| 4 | 3,000 | 1,500 |
-| 5 | 5,000 | 2,000 |
-| 6 | 7,500 | 2,500 |
-| 7 | 10,500 | 3,000 |
-| 8 | 14,000 | 3,500 |
-| 9 | 18,000 | 4,000 |
-| 10 | 22,500 | 4,500 |
+| ----- | ------------------- | -------------------------- |
+| 1     | 0                   | Start                      |
+| 2     | 500                 | 500                        |
+| 3     | 1,500               | 1,000                      |
+| 4     | 3,000               | 1,500                      |
+| 5     | 5,000               | 2,000                      |
+| 6     | 7,500               | 2,500                      |
+| 7     | 10,500              | 3,000                      |
+| 8     | 14,000              | 3,500                      |
+| 9     | 18,000              | 4,000                      |
+| 10    | 22,500              | 4,500                      |
 
 ### Unlocking System
 
 **Lesson Level:**
+
 - Lesson 1 starts unlocked
 - Complete Lesson 1 → Lesson 2 unlocks
 - Must pass assessment to mark complete
 - Content generated when opened
 
 **Module Level:**
+
 - Module 1 starts unlocked
 - Complete all Module 1 lessons → Module 2 unlocks
 - Progress bar shows completion
 - Can't jump to Module 3 from Module 1
 
 **Course Level:**
+
 - Can enroll in multiple courses (tier-dependent)
 - Each course has independent progression
 - Course completion unlocks certificate
 
 **Bounty Level:**
+
 - Bounties gated by user level
 - Higher level = access to better bounties
 - Can't enter if below minimum level
@@ -640,100 +700,109 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 #### 🟢 Beginner Bounties (Level 1-3)
 
 **Requirements:**
+
 - Minimum Level: 1
 - Entry Fee: 5-10 platform tokens
 - Difficulty: Easy
 
 **Examples:**
 
-| Title | Description | Reward | Entry Fee |
-|-------|-------------|--------|-----------|
-| Todo App | Build a functional todo list with add/delete/complete | 100 tokens | 10 tokens |
-| CSS Challenge | Recreate a design mockup pixel-perfect | 75 tokens | 5 tokens |
-| Form Validator | Build a form with validation and error messages | 90 tokens | 8 tokens |
-| Calculator App | Create a working calculator with basic operations | 80 tokens | 7 tokens |
+| Title          | Description                                           | Reward     | Entry Fee |
+| -------------- | ----------------------------------------------------- | ---------- | --------- |
+| Todo App       | Build a functional todo list with add/delete/complete | 100 tokens | 10 tokens |
+| CSS Challenge  | Recreate a design mockup pixel-perfect                | 75 tokens  | 5 tokens  |
+| Form Validator | Build a form with validation and error messages       | 90 tokens  | 8 tokens  |
+| Calculator App | Create a working calculator with basic operations     | 80 tokens  | 7 tokens  |
 
 ---
 
 #### 🟡 Intermediate Bounties (Level 4-6)
 
 **Requirements:**
+
 - Minimum Level: 4
 - Entry Fee: 20-30 platform tokens
 - Difficulty: Medium
 
 **Examples:**
 
-| Title | Description | Reward | Entry Fee |
-|-------|-------------|--------|-----------|
-| REST API Integration | Fetch and display data from public API | 300 tokens | 25 tokens |
+| Title                 | Description                            | Reward     | Entry Fee |
+| --------------------- | -------------------------------------- | ---------- | --------- |
+| REST API Integration  | Fetch and display data from public API | 300 tokens | 25 tokens |
 | Authentication System | Implement JWT auth with login/register | 400 tokens | 30 tokens |
-| Real-time Chat | Build a basic chat using WebSockets | 350 tokens | 28 tokens |
-| E-commerce Cart | Shopping cart with add/remove/checkout | 380 tokens | 27 tokens |
+| Real-time Chat        | Build a basic chat using WebSockets    | 350 tokens | 28 tokens |
+| E-commerce Cart       | Shopping cart with add/remove/checkout | 380 tokens | 27 tokens |
 
 ---
 
 #### 🟠 Advanced Bounties (Level 7-9)
 
 **Requirements:**
+
 - Minimum Level: 7
 - Entry Fee: 50-100 platform tokens
 - Difficulty: Hard
 
 **Examples:**
 
-| Title | Description | Reward | Entry Fee |
-|-------|-------------|--------|-----------|
-| DEX Interface | Build a basic decentralized exchange UI | 1,000 tokens | 75 tokens |
-| AI Model Integration | Implement and train a basic ML model | 1,500 tokens | 100 tokens |
-| Video Streaming | Build a video platform with upload/streaming | 1,200 tokens | 80 tokens |
-| GraphQL API | Design and implement a GraphQL backend | 1,100 tokens | 70 tokens |
+| Title                | Description                                  | Reward       | Entry Fee  |
+| -------------------- | -------------------------------------------- | ------------ | ---------- |
+| DEX Interface        | Build a basic decentralized exchange UI      | 1,000 tokens | 75 tokens  |
+| AI Model Integration | Implement and train a basic ML model         | 1,500 tokens | 100 tokens |
+| Video Streaming      | Build a video platform with upload/streaming | 1,200 tokens | 80 tokens  |
+| GraphQL API          | Design and implement a GraphQL backend       | 1,100 tokens | 70 tokens  |
 
 ---
 
 #### 🔴 Expert Bounties (Level 10+)
 
 **Requirements:**
+
 - Minimum Level: 10
 - Entry Fee: 200-250 platform tokens
 - Difficulty: Expert
 
 **Examples:**
 
-| Title | Description | Reward | Entry Fee |
-|-------|-------------|--------|-----------|
-| Full-Stack Platform | Build a complete SaaS application | 5,000 tokens | 250 tokens |
-| Blockchain Protocol | Implement a consensus mechanism | 7,500 tokens | 300 tokens |
-| AI Agent System | Create autonomous AI agents with tool use | 6,000 tokens | 275 tokens |
-| Distributed Database | Build a distributed database system | 5,500 tokens | 260 tokens |
+| Title                | Description                               | Reward       | Entry Fee  |
+| -------------------- | ----------------------------------------- | ------------ | ---------- |
+| Full-Stack Platform  | Build a complete SaaS application         | 5,000 tokens | 250 tokens |
+| Blockchain Protocol  | Implement a consensus mechanism           | 7,500 tokens | 300 tokens |
+| AI Agent System      | Create autonomous AI agents with tool use | 6,000 tokens | 275 tokens |
+| Distributed Database | Build a distributed database system       | 5,500 tokens | 260 tokens |
 
 ### Bounty Mechanics
 
 **Entry:**
+
 - Must meet minimum level requirement
 - Pay entry fee in platform tokens
 - Entry fee goes to prize pool (90%) and platform (10%)
 - Multiple users can enter same bounty
 
 **Submission:**
+
 - Submit code repository or live demo
 - Include documentation
 - AI reviews code quality and functionality
 - Community can vote on submissions (optional)
 
 **Evaluation:**
+
 - AI provides initial scoring
 - Platform admins verify functionality
 - Complex projects may need manual review
 - Browser-based projects tested in sandbox
 
 **Winners:**
+
 - Top submission wins full reward
 - Runner-up may get partial reward
 - Winning entry showcased on platform
 - Winners earn reputation points
 
 **Failed Entry:**
+
 - Entry fee not refunded
 - Can resubmit with improvements
 - Detailed feedback provided
@@ -746,6 +815,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 ### 1. First-Time User: Onboarding
 
 **Steps:**
+
 1. User signs up (email/Google/GitHub)
 2. Welcome screen explains AI-powered learning
 3. Onboarding questionnaire (5 questions):
@@ -768,6 +838,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 ### 2. Course Discovery & Enrollment
 
 **Steps:**
+
 1. User browses AI-generated courses
 2. Each course shows:
    - Custom title and description
@@ -793,6 +864,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 ### 3. First Lesson Experience
 
 **Steps:**
+
 1. User clicks "Start Lesson 1"
 2. Loading screen: "Preparing your personalized lesson..."
 3. AI generates lesson content (10-15 seconds)
@@ -815,6 +887,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 ### 4. Assessment & Review
 
 **Steps:**
+
 1. Assessment page shows:
    - Question type (quiz/coding/written)
    - Instructions
@@ -848,6 +921,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 ### 5. Progressing Through Course
 
 **Steps:**
+
 1. User continues lesson by lesson
 2. Completes assessments
 3. Accumulates points and tokens
@@ -858,6 +932,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 8. New module structure revealed
 
 **Ongoing:**
+
 - Regular token earnings
 - Points accumulating toward level up
 - Achievement notifications
@@ -868,6 +943,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 ### 6. Level Up!
 
 **Steps:**
+
 1. User reaches level threshold (e.g., 500 points)
 2. Big celebration animation
 3. "Level Up!" notification
@@ -887,6 +963,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 ### 7. Course Completion
 
 **Steps:**
+
 1. User completes final lesson of final module
 2. Course marked complete
 3. Completion animation
@@ -908,6 +985,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 ### 8. NFT Certificate Minting
 
 **Steps:**
+
 1. User clicks "Claim Certificate"
 2. Certificate preview generated
 3. Shows:
@@ -933,6 +1011,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 ### 9. Exploring Bounties
 
 **Steps:**
+
 1. User navigates to Bounties page
 2. Bounties filtered by level access
 3. User sees available challenges
@@ -958,6 +1037,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 **Options Available:**
 
 **A. Subscribe with Tokens:**
+
 1. Navigate to Subscription page
 2. See option: "Pay with Platform Tokens"
 3. 2,000 tokens = 1 month Starter
@@ -966,6 +1046,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 6. Tokens deducted
 
 **B. Buy AI Tokens:**
+
 1. Running low on AI tokens
 2. Click "Get More Tokens"
 3. Option: "Use Platform Tokens"
@@ -974,6 +1055,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 6. AI tokens added
 
 **C. Tip Community Member:**
+
 1. See helpful discussion post
 2. Click "Tip" button
 3. Enter token amount (5-50)
@@ -982,6 +1064,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 6. Both parties notified
 
 **D. Trade on DEX:**
+
 1. Navigate to wallet
 2. Click "Trade Tokens"
 3. Redirects to decentralized exchange
@@ -995,7 +1078,9 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 ### System Components
 
 #### Frontend (React + Vite)
+
 **Current Setup Maintained:**
+
 - React 18+ with Hooks
 - React Router for navigation
 - CSS Modules for styling
@@ -1003,6 +1088,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 - Vite for build tooling
 
 **New Components Needed:**
+
 - Onboarding wizard
 - AI lesson viewer
 - Token dashboard
@@ -1013,11 +1099,13 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 #### Backend (Supabase)
 
 **Authentication:**
+
 - Existing Supabase Auth maintained
 - Email, Google, GitHub OAuth
 - Row Level Security (RLS)
 
 **Database (PostgreSQL):**
+
 - Existing tables for users, progress, certificates
 - New tables needed:
   - ai_user_profiles
@@ -1031,6 +1119,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
   - bounty_submissions
 
 **Supabase Edge Functions:**
+
 - AI content generation endpoints
 - Gemini API integration
 - Rate limiting
@@ -1040,12 +1129,14 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 #### AI Integration (Google Gemini)
 
 **API Integration:**
+
 - Gemini API via Supabase Edge Functions
 - Secure API key management
 - Request/response caching
 - Error handling and retries
 
 **Prompt Engineering:**
+
 - Structured prompts for course generation
 - Lesson content templates
 - Assessment generation patterns
@@ -1053,6 +1144,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 - Context injection strategies
 
 **Response Processing:**
+
 - Parse AI responses
 - Validate content structure
 - Format for frontend display
@@ -1062,11 +1154,13 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 #### Blockchain (Hedera)
 
 **Existing Integration:**
+
 - Hedera Token Service (HTS) for platform tokens
 - NFT minting for certificates
 - Hedera Consensus Service for discussions
 
 **Maintained Features:**
+
 - Token transfers
 - NFT metadata storage
 - Certificate verification
@@ -1075,6 +1169,7 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 #### Storage Strategy
 
 **Database (Supabase PostgreSQL):**
+
 - User profiles and preferences
 - Generated course structures
 - Lesson content (full text)
@@ -1085,12 +1180,14 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 - Progress tracking
 
 **Blockchain (Hedera):**
+
 - Platform token ownership
 - NFT certificates
 - Discussion threads
 - Immutable records
 
 **Caching Strategy:**
+
 - All AI-generated content cached in DB
 - Instant retrieval on revisit
 - Reduces API costs by 90%+
@@ -1099,11 +1196,13 @@ Bounties are real-world coding challenges with platform token rewards. They're g
 #### Payment Processing (Future)
 
 **Integration Options:**
+
 - Stripe for traditional payments
 - Crypto payments via Hedera
 - Platform token payments (built-in)
 
 **Subscription Management:**
+
 - Automatic tier upgrades/downgrades
 - Token allocation updates
 - Usage tracking
@@ -1199,27 +1298,32 @@ User sees feedback and progress update
 ### Security Considerations
 
 **API Key Protection:**
+
 - Gemini API key stored in Supabase secrets
 - Never exposed to frontend
 - Edge Functions act as secure proxy
 
 **Rate Limiting:**
+
 - Token-based usage limits
 - IP-based rate limiting for abuse prevention
 - Gradual backoff on errors
 
 **Data Privacy:**
+
 - User data encrypted at rest
 - RLS policies prevent unauthorized access
 - GDPR compliant data handling
 - Users can delete their data
 
 **Blockchain Security:**
+
 - Private keys never touch servers
 - User-controlled wallets
 - Transaction signing client-side
 
 **Payment Security:**
+
 - PCI compliance via Stripe
 - No credit card data stored
 - Secure webhook verification
@@ -1231,25 +1335,30 @@ User sees feedback and progress update
 ### Revenue Streams
 
 **1. Subscription Fees:**
+
 - Starter: $10/month/user
 - Pro: $25/month/user
 - Target conversion: 5-10% of free users
 
 **2. Token Purchases:**
+
 - Users buy platform tokens with fiat
 - Premium pricing for token packs
 - Revenue: Token sales - token rewards value
 
 **3. Bounty Platform Fees:**
+
 - 10% fee on bounty entry fees
 - Example: 25 token entry → 2.5 tokens to platform
 
 **4. Premium Features:**
+
 - Custom course creation: $50 one-time
 - Priority review: Pay per use
 - Bulk licenses for organizations
 
 **5. Partnerships:**
+
 - Course sponsorships
 - Employer job board listings
 - Technology partner integrations
@@ -1257,6 +1366,7 @@ User sees feedback and progress update
 ### Cost Structure
 
 **Fixed Costs (Monthly):**
+
 - Supabase Pro: $25/month (up to 8GB DB)
 - Gemini API: $50-200/month (usage-based)
 - Hedera fees: $10-50/month (transactions)
@@ -1265,15 +1375,16 @@ User sees feedback and progress update
 
 **Variable Costs (Per User):**
 
-| Tier | AI API Cost | Storage | Total/User |
-|------|-------------|---------|------------|
-| Free | $0.50 | $0.10 | $0.60 |
-| Starter | $2.00 | $0.20 | $2.20 |
-| Pro | $6.00 | $0.50 | $6.50 |
+| Tier    | AI API Cost | Storage | Total/User |
+| ------- | ----------- | ------- | ---------- |
+| Free    | $0.50       | $0.10   | $0.60      |
+| Starter | $2.00       | $0.20   | $2.20      |
+| Pro     | $6.00       | $0.50   | $6.50      |
 
 ### Profitability Scenarios
 
 #### Scenario A: Small Scale (100 Users)
+
 ```
 Users:
 - 80 free users
@@ -1294,6 +1405,7 @@ Profit: $61.50/month ($738/year)
 ```
 
 #### Scenario B: Medium Scale (1,000 Users)
+
 ```
 Users:
 - 850 free users
@@ -1315,6 +1427,7 @@ Profit: $1,281/month ($15,372/year)
 ```
 
 #### Scenario C: Large Scale (10,000 Users)
+
 ```
 Users:
 - 8,500 free users
@@ -1339,24 +1452,28 @@ Profit: $14,806/month ($177,672/year)
 ### Growth Strategy
 
 **Phase 1: Launch (Months 1-3)**
+
 - Focus on free tier adoption
 - Gather user feedback
 - Refine AI prompts
 - Build community
 
 **Phase 2: Conversion (Months 4-6)**
+
 - Implement subscription tiers
 - Add premium features
 - Launch bounty system
 - Optimize conversion funnels
 
 **Phase 3: Scale (Months 7-12)**
+
 - Marketing campaigns
 - Partnership deals
 - Enterprise features
 - International expansion
 
 **Phase 4: Platform Economy (Year 2+)**
+
 - Token mainnet launch
 - DEX listings
 - Third-party integrations
@@ -1369,6 +1486,7 @@ Profit: $14,806/month ($177,672/year)
 ### Phase 1: Foundation (Weeks 1-4)
 
 **Week 1-2: Database & Infrastructure**
+
 - Design new database schema
 - Create migration scripts
 - Set up Supabase Edge Functions
@@ -1376,6 +1494,7 @@ Profit: $14,806/month ($177,672/year)
 - Set up development environment
 
 **Week 3-4: Core AI Integration**
+
 - Implement AI service layer
 - Build prompt templates
 - Create course generation endpoint
@@ -1383,6 +1502,7 @@ Profit: $14,806/month ($177,672/year)
 - Implement caching system
 
 **Deliverables:**
+
 - Database schema deployed
 - AI generation working in dev
 - Basic prompt library
@@ -1393,6 +1513,7 @@ Profit: $14,806/month ($177,672/year)
 ### Phase 2: Onboarding & Course Discovery (Weeks 5-8)
 
 **Week 5-6: Onboarding Flow**
+
 - Design onboarding UI/UX
 - Build questionnaire component
 - Implement profile creation
@@ -1400,6 +1521,7 @@ Profit: $14,806/month ($177,672/year)
 - Add loading states and animations
 
 **Week 7-8: Course Catalog**
+
 - Build course discovery page
 - Implement course structure generation
 - Create course enrollment flow
@@ -1407,6 +1529,7 @@ Profit: $14,806/month ($177,672/year)
 - Build progress tracking UI
 
 **Deliverables:**
+
 - Complete onboarding experience
 - Personalized course recommendations
 - Course enrollment working
@@ -1417,6 +1540,7 @@ Profit: $14,806/month ($177,672/year)
 ### Phase 3: Learning Experience (Weeks 9-14)
 
 **Week 9-10: Lesson Generation**
+
 - Build lesson viewer component
 - Implement on-demand content generation
 - Add streaming response display
@@ -1424,6 +1548,7 @@ Profit: $14,806/month ($177,672/year)
 - Implement content caching
 
 **Week 11-12: Assessments**
+
 - Build assessment UI components
 - Implement quiz/coding/written formats
 - Create AI review system
@@ -1431,6 +1556,7 @@ Profit: $14,806/month ($177,672/year)
 - Implement retry logic
 
 **Week 13-14: Progression System**
+
 - Implement unlock logic
 - Build progress tracking
 - Add points/level system
@@ -1438,6 +1564,7 @@ Profit: $14,806/month ($177,672/year)
 - Implement module completion
 
 **Deliverables:**
+
 - Users can complete full lessons
 - Assessments work end-to-end
 - Progression system functional
@@ -1448,6 +1575,7 @@ Profit: $14,806/month ($177,672/year)
 ### Phase 4: Token System (Weeks 15-18)
 
 **Week 15-16: AI Tokens**
+
 - Implement token allocation system
 - Build usage tracking
 - Create token balance display
@@ -1455,6 +1583,7 @@ Profit: $14,806/month ($177,672/year)
 - Implement daily/monthly resets
 
 **Week 17-18: Platform Tokens**
+
 - Integrate existing token system
 - Add earning mechanisms
 - Build token transaction history
@@ -1462,6 +1591,7 @@ Profit: $14,806/month ($177,672/year)
 - Create wallet integration
 
 **Deliverables:**
+
 - Dual token system functional
 - Users can earn platform tokens
 - AI token limits enforced
@@ -1472,6 +1602,7 @@ Profit: $14,806/month ($177,672/year)
 ### Phase 5: Bounties & Gamification (Weeks 19-22)
 
 **Week 19-20: Bounty System**
+
 - Design bounty database schema
 - Build bounty marketplace UI
 - Implement entry/submission flow
@@ -1479,6 +1610,7 @@ Profit: $14,806/month ($177,672/year)
 - Add winner selection logic
 
 **Week 21-22: Gamification**
+
 - Build achievements system
 - Add leaderboards
 - Implement daily streaks
@@ -1486,6 +1618,7 @@ Profit: $14,806/month ($177,672/year)
 - Add social features
 
 **Deliverables:**
+
 - Bounty system live
 - Users can enter and win bounties
 - Achievements working
@@ -1496,6 +1629,7 @@ Profit: $14,806/month ($177,672/year)
 ### Phase 6: Payment & Monetization (Weeks 23-26)
 
 **Week 23-24: Subscription System**
+
 - Integrate Stripe
 - Build subscription pages
 - Implement tier management
@@ -1503,6 +1637,7 @@ Profit: $14,806/month ($177,672/year)
 - Create billing portal
 
 **Week 25-26: Platform Economy**
+
 - Implement token-to-subscription exchange
 - Add token purchase flow
 - Build analytics dashboard
@@ -1510,6 +1645,7 @@ Profit: $14,806/month ($177,672/year)
 - Add revenue tracking
 
 **Deliverables:**
+
 - Users can subscribe
 - Payment processing works
 - Token economy functional
@@ -1520,6 +1656,7 @@ Profit: $14,806/month ($177,672/year)
 ### Phase 7: Polish & Launch (Weeks 27-30)
 
 **Week 27-28: Testing & QA**
+
 - Comprehensive testing
 - Bug fixes
 - Performance optimization
@@ -1527,6 +1664,7 @@ Profit: $14,806/month ($177,672/year)
 - Load testing
 
 **Week 29-30: Launch Preparation**
+
 - Marketing materials
 - Documentation
 - User guides
@@ -1534,6 +1672,7 @@ Profit: $14,806/month ($177,672/year)
 - Soft launch
 
 **Deliverables:**
+
 - Production-ready platform
 - Documentation complete
 - Beta testers onboarded
@@ -1544,6 +1683,7 @@ Profit: $14,806/month ($177,672/year)
 ### Post-Launch: Continuous Improvement
 
 **Month 4-6:**
+
 - Gather user feedback
 - Iterate on AI prompts
 - Add requested features
@@ -1551,6 +1691,7 @@ Profit: $14,806/month ($177,672/year)
 - Scale infrastructure
 
 **Month 7-12:**
+
 - Advanced features
 - Mobile app
 - API for third parties
@@ -1564,12 +1705,14 @@ Profit: $14,806/month ($177,672/year)
 ### Key Performance Indicators (KPIs)
 
 #### User Acquisition
+
 - **Monthly Active Users (MAU):** Target 1,000+ by month 6
 - **Sign-up Conversion Rate:** Target 30%+ from landing to sign-up
 - **Onboarding Completion Rate:** Target 80%+ complete questionnaire
 - **Organic Growth Rate:** Target 10% month-over-month
 
 #### Engagement
+
 - **Daily Active Users (DAU):** Target 30% of MAU
 - **Lesson Completion Rate:** Target 70%+ lessons finished
 - **Average Session Duration:** Target 25+ minutes
@@ -1578,6 +1721,7 @@ Profit: $14,806/month ($177,672/year)
 - **Daily Streak Rate:** Target 20%+ users maintain streaks
 
 #### Monetization
+
 - **Free to Paid Conversion:** Target 5-10%
 - **Monthly Recurring Revenue (MRR):** Track growth month-over-month
 - **Customer Lifetime Value (LTV):** Target 6+ months subscription
@@ -1585,6 +1729,7 @@ Profit: $14,806/month ($177,672/year)
 - **Average Revenue Per User (ARPU):** Track across tiers
 
 #### Learning Outcomes
+
 - **Assessment Pass Rate:** Monitor (should be 60-80%)
 - **Average Assessment Score:** Track improvement over time
 - **Certificate Claim Rate:** Target 50%+ of course completions
@@ -1592,6 +1737,7 @@ Profit: $14,806/month ($177,672/year)
 - **Content Quality Rating:** Target 4.5+ stars
 
 #### Platform Health
+
 - **AI Token Usage:** Monitor costs per user
 - **API Response Time:** Target <3 seconds for generation
 - **Error Rate:** Target <1% of requests
@@ -1599,6 +1745,7 @@ Profit: $14,806/month ($177,672/year)
 - **Content Generation Success:** Target 99%+ valid outputs
 
 #### Community
+
 - **Discussion Posts:** Track activity
 - **Peer Reviews Completed:** Track helping behavior
 - **Bounty Participation:** Target 15%+ of eligible users
@@ -1608,6 +1755,7 @@ Profit: $14,806/month ($177,672/year)
 ### Analytics Dashboard
 
 **Real-Time Metrics:**
+
 - Current active users
 - AI requests per minute
 - Revenue today
@@ -1615,6 +1763,7 @@ Profit: $14,806/month ($177,672/year)
 - Lessons completed today
 
 **Daily Reports:**
+
 - DAU/MAU ratio
 - Conversion funnel
 - AI costs vs. revenue
@@ -1622,6 +1771,7 @@ Profit: $14,806/month ($177,672/year)
 - User feedback summary
 
 **Weekly Reviews:**
+
 - Growth trends
 - Cohort analysis
 - Feature usage
@@ -1629,6 +1779,7 @@ Profit: $14,806/month ($177,672/year)
 - Content performance
 
 **Monthly Business Reviews:**
+
 - Revenue analysis
 - User lifetime value
 - Churn analysis
@@ -1642,6 +1793,7 @@ Profit: $14,806/month ($177,672/year)
 Level Up 2.0 represents a paradigm shift in online learning platforms. By combining AI-powered personalization with blockchain-based rewards and maintaining strict educational integrity through our no-skip progression system, we create a unique value proposition:
 
 **For Learners:**
+
 - Truly personalized learning experiences
 - Real rewards with tangible value
 - Verified credentials via NFTs
@@ -1649,6 +1801,7 @@ Level Up 2.0 represents a paradigm shift in online learning platforms. By combin
 - Community-driven growth
 
 **For the Platform:**
+
 - Scalable content generation
 - Sustainable revenue model
 - Engaged user base
@@ -1656,6 +1809,7 @@ Level Up 2.0 represents a paradigm shift in online learning platforms. By combin
 - Token economy creates network effects
 
 **For the Industry:**
+
 - Demonstrates AI + blockchain synergy
 - Proves learn-to-earn viability
 - Shows structured learning can be personalized
@@ -1690,4 +1844,4 @@ Level Up 2.0 represents a paradigm shift in online learning platforms. By combin
 
 ---
 
-*This is a living document. As we build and learn, we'll update our vision, strategy, and implementation plans accordingly.*
+_This is a living document. As we build and learn, we'll update our vision, strategy, and implementation plans accordingly._
