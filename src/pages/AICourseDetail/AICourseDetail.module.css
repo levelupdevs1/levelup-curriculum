@@ -1,0 +1,279 @@
+.container {
+  padding: 32px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.tokenDisplay {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+}
+
+.tokenLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.tokenValue {
+  font-size: 18px;
+  font-weight: 700;
+  color: #4a154b;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 16px;
+}
+
+.loadingContainer p {
+  font-size: 16px;
+  color: #6b7280;
+}
+
+.courseHeader {
+  padding: 32px;
+  margin-bottom: 32px;
+}
+
+.courseTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.courseTitle h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  flex: 1;
+}
+
+.difficulty {
+  padding: 6px 16px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.difficulty.beginner {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.difficulty.intermediate {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.difficulty.advanced {
+  background-color: #fecaca;
+  color: #991b1b;
+}
+
+.description {
+  font-size: 16px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0 0 24px 0;
+}
+
+.progressSection {
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.error {
+  padding: 16px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.error p {
+  margin: 0;
+  color: #991b1b;
+  font-weight: 500;
+}
+
+.modules {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.moduleCard {
+  padding: 24px;
+}
+
+.moduleHeader {
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.moduleHeader h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.moduleHeader p {
+  font-size: 14px;
+  color: #6b7280;
+  margin: 0;
+}
+
+.lessons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lessonItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.lessonItem:hover:not(.locked) {
+  background-color: #ffffff;
+  border-color: #4a154b;
+}
+
+.lessonItem.completed {
+  background-color: #f0fdf4;
+  border-color: #86efac;
+}
+
+.lessonItem.locked {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.lessonInfo {
+  flex: 1;
+}
+
+.lessonInfo h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 8px 0;
+}
+
+.lessonMeta {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.lessonMeta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.lockedBadge {
+  padding: 8px 16px;
+  background-color: #e5e7eb;
+  color: #6b7280;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.emptyState {
+  padding: 48px;
+  text-align: center;
+}
+
+.emptyState p {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .tokenDisplay {
+    justify-content: center;
+  }
+
+  .courseHeader {
+    padding: 24px;
+  }
+
+  .courseTitle {
+    flex-direction: column;
+  }
+
+  .courseTitle h1 {
+    font-size: 24px;
+  }
+
+  .moduleHeader h2 {
+    font-size: 20px;
+  }
+
+  .lessonItem {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .lessonItem button {
+    width: 100%;
+  }
+}

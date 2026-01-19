@@ -6,7 +6,11 @@ import HomeRoute from "./components/HomeRoute/HomeRoute";
 import Landing from "./pages/Landing/Landing";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
+import Onboarding from "./pages/Onboarding/Onboarding";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import AICatalog from "./pages/AICatalog/AICatalog";
+import AICourseDetail from "./pages/AICourseDetail/AICourseDetail";
+import AILessonViewer from "./pages/AILessonViewer/AILessonViewer";
 import CourseCatalog from "./pages/CourseCatalog/CourseCatalog";
 import CourseDetail from "./pages/CourseDetail/CourseDetail";
 import LessonViewer from "./pages/LessonViewer/LessonViewer";
@@ -52,10 +56,26 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "onboarding",
+        Component: () => (
+          <ProtectedRoute>
+            <Onboarding />
+          </ProtectedRoute>
+        ),
+      },
+      {
         path: "dashboard",
         Component: () => (
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "course-catalog",
+        Component: () => (
+          <ProtectedRoute>
+            <AICatalog />
           </ProtectedRoute>
         ),
       },
@@ -65,13 +85,17 @@ export const router = createBrowserRouter([
       },
       {
         path: "courses/:courseId",
-        Component: CourseDetail,
+        Component: () => (
+          <ProtectedRoute>
+            <AICourseDetail />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "courses/:courseId/lessons/:lessonId",
         Component: () => (
           <ProtectedRoute>
-            <LessonViewer />
+            <AILessonViewer />
           </ProtectedRoute>
         ),
       },
