@@ -1,54 +1,81 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import { useAIToken } from "../../hooks/useAIToken";
 import {
-  mockGenerateCourseCatalog,
+  generateCourseCatalog,
   AI_TOKEN_COSTS,
-} from "../../services/aiService";
+  isAIConfigured,
+  getActiveProvider,
+} from "../../services/aiServiceReal";
 import Button from "../../components/Button/Button";
 import Card from "../../components/Card/Card";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import courseDefaultImage from "../../assets/course-default.svg";
 import styles from "./AICatalog.module.css";
 
 const AICatalog = () => {
   const navigate = useNavigate();
-  const { userProfile, generatedCourses, addGeneratedCourses, enrollInCourse } =
-    useCourseGeneration();
-  const { canUseTokens, useTokens, tokensRemaining } = useAIToken();
+  const {
+    userProfile,
+    generatedCourses,
+    enrolledCourses,
+    addGeneratedCourses,
+    enrollInCourse,
+  } = useCourseGeneration();
+  const {
+    canUseTokens,
+    useTokens: consumeTokens,
+    tokensRemaining,
+  } = useAIToken();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
-  useEffect(() => {
-    if (!userProfile) {
-      navigate("/onboarding");
-      return;
-    }
-
-    if (generatedCourses.length === 0) {
-      generateCourses();
-    }
-  }, [userProfile]);
+  const hasGeneratedRef = useRef(false);
 
   const generateCourses = async () => {
-    const tokenCost = AI_TOKEN_COSTS.GENERATE_COURSE_CATALOG;
-
-    if (!canUseTokens(tokenCost)) {
-      setError("Insufficient AI tokens to generate courses");
+    if (!isAIConfigured()) {
+      setError(
+        "Gemini API not configured. Please add VITE_GEMINI_API_KEY to .env.local (free tier available at ai.google.dev)",
+      );
       return;
     }
+
+    const tokenCost = AI_TOKEN_COSTS.GENERATE_COURSE_CATALOG;
+
+    // DISABLED: No token restrictions
+    // if (!canUseTokens(tokenCost)) {
+    //   setError("Insufficient AI tokens to generate courses");
+    //   return;
+    // }
 
     setLoading(true);
     setError(null);
 
     try {
-      const result = await mockGenerateCourseCatalog(userProfile);
+      console.log(`🤖 Generating courses with ${getActiveProvider()}...`);
+      const result = await generateCourseCatalog(userProfile);
 
       if (result.success) {
-        useTokens(result.tokensUsed);
-        addGeneratedCourses(result.courses);
+        console.log(
+          `✅ Generated ${result.courses.length} courses using ${result.tokensUsed} tokens`,
+        );
+
+        const tokenResult = await consumeTokens(
+          result.tokensUsed,
+          "generate_course_catalog",
+          { courses: result.courses.length, model: result.model },
+        );
+
+        if (tokenResult.success) {
+          const addResult = await addGeneratedCourses(result.courses);
+          if (!addResult.success) {
+            setError(addResult.error || "Failed to save courses");
+          }
+        } else {
+          setError(tokenResult.error);
+        }
       } else {
-        setError("Failed to generate courses");
+        setError(result.error || "Failed to generate courses");
       }
     } catch (err) {
       setError(err.message || "An error occurred");
@@ -57,8 +84,28 @@ const AICatalog = () => {
     }
   };
 
-  const handleEnroll = (courseId) => {
-    const result = enrollInCourse(courseId);
+  useEffect(() => {
+    if (!userProfile) {
+      navigate("/onboarding");
+      return;
+    }
+
+    // Prevent duplicate calls in React StrictMode (development)
+    if (generatedCourses.length === 0 && !hasGeneratedRef.current) {
+      hasGeneratedRef.current = true;
+      generateCourses();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleEnroll = async (courseId) => {
+    const isEnrolled = enrolledCourses.some((c) => c.id === courseId);
+    if (isEnrolled) {
+      navigate(`/courses/${courseId}`);
+      return;
+    }
+
+    const result = await enrollInCourse(courseId);
     if (result.success) {
       navigate(`/courses/${courseId}`);
     } else {
@@ -113,55 +160,73 @@ const AICatalog = () => {
       )}
 
       <div className={styles.coursesGrid}>
-        {generatedCourses.map((course) => (
-          <Card key={course.id} className={styles.courseCard}>
-            <div className={styles.courseHeader}>
-              <h3>{course.title}</h3>
-              <span
-                className={`${styles.difficulty} ${styles[course.difficulty.toLowerCase()]}`}
+        {generatedCourses.map((course) => {
+          const isEnrolled = enrolledCourses.some((c) => c.id === course.id);
+
+          return (
+            <Card key={course.id} className={styles.courseCard}>
+              <div className={styles.courseImage}>
+                <img src={courseDefaultImage} alt="Course" />
+                <span
+                  className={`${styles.difficulty} ${styles[course.difficulty.toLowerCase()]}`}
+                >
+                  {course.difficulty}
+                </span>
+              </div>
+
+              <div className={styles.courseContent}>
+                <h3 className={styles.courseTitle}>{course.title}</h3>
+                <p className={styles.description}>{course.description}</p>
+              </div>
+
+              <div className={styles.courseStats}>
+                <div className={styles.stat}>
+                  <span className={styles.statLabel}>Modules</span>
+                  <span className={styles.statValue}>
+                    {course.modules_count}
+                  </span>
+                </div>
+                <div className={styles.stat}>
+                  <span className={styles.statLabel}>Est. Hours</span>
+                  <span className={styles.statValue}>
+                    {course.estimated_hours}h
+                  </span>
+                </div>
+                <div className={styles.stat}>
+                  <span className={styles.statLabel}>Tokens</span>
+                  <span className={styles.statValue}>
+                    {course.potential_tokens}
+                  </span>
+                </div>
+              </div>
+
+              <div className={styles.tags}>
+                {Array.isArray(course.tags) &&
+                  course.tags.slice(0, 2).map((tag) => (
+                    <span key={tag} className={styles.tag}>
+                      {tag}
+                    </span>
+                  ))}
+                {Array.isArray(course.tags) && course.tags.length > 2 && (
+                  <span
+                    className={styles.tagOverflow}
+                    title={course.tags.slice(2).join(", ")}
+                  >
+                    +{course.tags.length - 2}
+                  </span>
+                )}
+              </div>
+
+              <Button
+                variant={isEnrolled ? "secondary" : "primary"}
+                onClick={() => handleEnroll(course.id)}
+                className={styles.enrollButton}
               >
-                {course.difficulty}
-              </span>
-            </div>
-
-            <p className={styles.description}>{course.description}</p>
-
-            <div className={styles.courseStats}>
-              <div className={styles.stat}>
-                <span className={styles.statLabel}>Modules</span>
-                <span className={styles.statValue}>{course.modulesCount}</span>
-              </div>
-              <div className={styles.stat}>
-                <span className={styles.statLabel}>Est. Hours</span>
-                <span className={styles.statValue}>
-                  {course.estimatedHours}h
-                </span>
-              </div>
-              <div className={styles.stat}>
-                <span className={styles.statLabel}>Tokens</span>
-                <span className={styles.statValue}>
-                  {course.potentialTokens}
-                </span>
-              </div>
-            </div>
-
-            <div className={styles.tags}>
-              {course.tags.map((tag) => (
-                <span key={tag} className={styles.tag}>
-                  {tag}
-                </span>
-              ))}
-            </div>
-
-            <Button
-              variant="primary"
-              onClick={() => handleEnroll(course.id)}
-              className={styles.enrollButton}
-            >
-              Enroll Now
-            </Button>
-          </Card>
-        ))}
+                {isEnrolled ? "Continue Learning" : "Enroll Now"}
+              </Button>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

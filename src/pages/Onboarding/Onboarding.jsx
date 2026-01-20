@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import { useAIToken } from "../../hooks/useAIToken";
+import { useUser } from "../../hooks/useUser";
 import Button from "../../components/Button/Button";
 import Card from "../../components/Card/Card";
 import styles from "./Onboarding.module.css";
@@ -55,6 +56,7 @@ const Onboarding = () => {
   const navigate = useNavigate();
   const { updateUserProfile } = useCourseGeneration();
   const { canUseTokens } = useAIToken();
+  const { refreshProfile } = useUser();
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState({});
   const [customInput, setCustomInput] = useState("");
@@ -99,21 +101,32 @@ const Onboarding = () => {
     }
   };
 
-  const handleComplete = () => {
+  const handleComplete = async () => {
     const profile = {
-      learningGoal: answers.learning_goal,
-      skillLevel: answers.skill_level,
+      learning_goal: answers.learning_goal,
+      skill_level: answers.skill_level,
       goal: answers.goal,
-      timeCommitment: answers.time_commitment,
-      completedAt: new Date().toISOString(),
+      time_commitment: answers.time_commitment,
+      learning_style: "Project-based (The Odin Project style)", // Default to Odin Project approach
     };
 
-    updateUserProfile(profile);
+    const result = await updateUserProfile(profile);
 
-    if (canUseTokens(50)) {
-      navigate("/course-catalog");
+    if (result?.success) {
+      // Refresh user context to update hasCompletedOnboarding
+      await refreshProfile();
+
+      // Small delay to ensure state updates propagate
+      setTimeout(() => {
+        // Navigate based on token availability
+        if (canUseTokens(50)) {
+          navigate("/course-catalog", { replace: true });
+        } else {
+          navigate("/dashboard", { replace: true });
+        }
+      }, 100);
     } else {
-      navigate("/dashboard");
+      console.error("Failed to save profile:", result?.error);
     }
   };
 

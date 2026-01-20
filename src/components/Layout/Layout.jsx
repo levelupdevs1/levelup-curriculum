@@ -2,14 +2,11 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Header from "../Header/Header";
 import Footer from "../Footer/Footer";
-import NotificationSystem from "../NotificationSystem/NotificationSystem";
 import ReadOnlyModeBanner from "../ReadOnlyModeBanner/ReadOnlyModeBanner";
-import { useCourse } from "../../hooks/useCourse";
 import { useUser } from "../../hooks/useUser";
 import styles from "./Layout.module.css";
 
 const Layout = () => {
-  const { notifications } = useCourse();
   const { isInitializing } = useUser();
 
   // Wait for auth to initialize
@@ -33,7 +30,6 @@ const Layout = () => {
         <Outlet />
       </main>
       <Footer />
-      <NotificationSystem notifications={notifications} />
     </div>
   );
 };

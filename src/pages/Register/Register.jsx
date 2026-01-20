@@ -20,7 +20,7 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register, isLoading } = useUser();
+  const { register, isLoading, hasCompletedOnboarding } = useUser();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -78,11 +78,16 @@ const Register = () => {
       const result = await register(
         formData.name,
         formData.email,
-        formData.password
+        formData.password,
       );
 
       if (result.success) {
-        navigate("/dashboard", { replace: true });
+        // Redirect based on onboarding status
+        // New users go to onboarding, returning users (edge case) go to dashboard
+        const destination = hasCompletedOnboarding
+          ? "/dashboard"
+          : "/onboarding";
+        navigate(destination, { replace: true });
       } else {
         setErrors({
           general: result.error || "Registration failed. Please try again.",

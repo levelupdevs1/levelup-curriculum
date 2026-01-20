@@ -1,16 +1,18 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import { useAIToken } from "../../hooks/useAIToken";
 import {
-  mockGenerateLessonContent,
-  mockGenerateAssessment,
-  mockReviewSubmission,
+  generateLessonContent,
+  generateAssessment,
+  reviewSubmissionBatch,
   AI_TOKEN_COSTS,
-} from "../../services/aiService";
+} from "../../services/aiServiceReal";
+import { updateCourse } from "../../services/courseDataService";
 import Button from "../../components/Button/Button";
 import Card from "../../components/Card/Card";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import ReactMarkdown from "react-markdown";
 import styles from "./AILessonViewer.module.css";
 
 const AILessonViewer = () => {
@@ -29,6 +31,7 @@ const AILessonViewer = () => {
   const [submission, setSubmission] = useState({});
   const [review, setReview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const hasGeneratedRef = useRef(false);
 
   const { moduleIndex, lessonIndex } = location.state || {
     moduleIndex: 0,
@@ -36,6 +39,15 @@ const AILessonViewer = () => {
   };
 
   useEffect(() => {
+    // Reset the flag when lessonId changes
+    hasGeneratedRef.current = false;
+    
+    // Prevent double execution in React StrictMode
+    if (hasGeneratedRef.current) {
+      console.log("⏭️ useEffect skipped - already processed");
+      return;
+    }
+
     const enrolledCourse = getCourseById(courseId);
     if (!enrolledCourse) {
       navigate("/course-catalog");
@@ -47,33 +59,42 @@ const AILessonViewer = () => {
   }, [courseId, lessonId]);
 
   const loadLesson = async (enrolledCourse) => {
-    console.log("loadLesson called", {
-      enrolledCourse,
+    // Mark as processing immediately to prevent race conditions
+    if (hasGeneratedRef.current) {
+      console.log("⏭️ loadLesson skipped - already processing");
+      return;
+    }
+    hasGeneratedRef.current = true;
+
+    console.log("📖 loadLesson called", {
+      courseId: enrolledCourse.id,
       lessonId,
       moduleIndex,
       lessonIndex,
     });
 
     // Check if structure exists
-    if (!enrolledCourse.structure) {
+    if (!enrolledCourse.structure && !enrolledCourse.modules) {
       console.error("No structure found in enrolledCourse");
-      setError("Course structure not generated. Please go back to the course page.");
+      setError(
+        "Course structure not generated. Please go back to the course page.",
+      );
       return;
     }
 
-    console.log("Course structure:", enrolledCourse.structure);
+    // Use structure from modules field or structure field
+    const modules = enrolledCourse.modules || enrolledCourse.structure?.modules;
 
-    const stored = localStorage.getItem("lessonContent");
-    const cachedLessons = stored ? JSON.parse(stored) : {};
-
-    if (cachedLessons[lessonId]) {
-      console.log("Loading cached lesson");
-      setLesson(cachedLessons[lessonId].content);
-      setAssessment(cachedLessons[lessonId].assessment);
+    if (!modules || !Array.isArray(modules) || modules.length === 0) {
+      console.error("❌ No modules found in course");
+      setError(
+        "Course modules not found. Please regenerate the course structure.",
+      );
       return;
     }
 
-    const module = enrolledCourse.structure.modules?.[moduleIndex];
+    const module = modules[moduleIndex];
+
     if (!module) {
       console.error("Module not found at index:", moduleIndex);
       setError("Module not found");
@@ -87,131 +108,247 @@ const AILessonViewer = () => {
       return;
     }
 
-    const lessonTitle = lessonData.title;
-    console.log("Lesson title:", lessonTitle);
-
-    if (!lessonTitle) {
-      setError("Lesson not found");
+    // Check if lesson content already exists in database
+    if (lessonData.content && lessonData.assessment) {
+      console.log("✅ Loading existing lesson content from database");
+      setLesson(lessonData.content);
+      setAssessment(lessonData.assessment);
+      
+      // Load existing review if available
+      if (lessonData.review) {
+        console.log("✅ Found existing review:", lessonData.review);
+        setReview(lessonData.review);
+      }
+      
       return;
     }
+
+    console.log("🔨 No existing content found, generating new content...");
+
+    const lessonTitle = lessonData.title;
+    const lessonDescription = lessonData.description || "";
+    console.log("🔨 Generating content for:", lessonTitle);
 
     const contentCost = AI_TOKEN_COSTS.GENERATE_LESSON_CONTENT;
     const assessmentCost = AI_TOKEN_COSTS.GENERATE_ASSESSMENT;
 
-    if (!canUseTokens(contentCost + assessmentCost)) {
-      setError("Insufficient AI tokens");
-      return;
-    }
+    // Token check disabled for development
+    // if (!canUseTokens(contentCost + assessmentCost)) {
+    //   setError("Insufficient AI tokens");
+    //   return;
+    // }
 
     setLoading(true);
     setError(null);
 
     try {
-      console.log("Generating lesson content...");
-      const storedProfile = localStorage.getItem("courseGenerationData");
-      const profileData = storedProfile ? JSON.parse(storedProfile) : {};
-      const userProfileData = profileData.userProfile || {
-        learningGoal: "Web Development",
-        skillLevel: "Intermediate",
-      };
-
-      const contentResult = await mockGenerateLessonContent(
+      // Generate lesson content with real AI
+      console.log("🤖 Generating lesson content with Gemini...");
+      const contentResult = await generateLessonContent(
         lessonTitle,
-        { courseTitle: enrolledCourse.title },
-        userProfileData,
+        lessonDescription,
+        enrolledCourse.title,
+        lessonData.estimatedMinutes || 30,
       );
 
-      console.log("Content result:", contentResult);
-
       if (!contentResult.success) {
-        setError("Failed to generate lesson content");
+        setError(contentResult.error || "Failed to generate lesson content");
         return;
       }
 
-      const assessmentResult = await mockGenerateAssessment(
+      // Generate assessment with real AI
+      console.log("🤖 Generating assessment with Gemini...");
+      const assessmentResult = await generateAssessment(
         lessonTitle,
         contentResult.content,
       );
-      console.log("Assessment result:", assessmentResult);
 
       if (!assessmentResult.success) {
-        setError("Failed to generate assessment");
+        setError(assessmentResult.error || "Failed to generate assessment");
         return;
       }
 
-      useTokens(contentResult.tokensUsed + assessmentResult.tokensUsed);
+      // Update tokens used
+      useTokens(
+        contentResult.tokensUsed + assessmentResult.tokensUsed,
+        "generate_lesson",
+        { courseId: enrolledCourse.id, lessonId },
+      );
 
-      cachedLessons[lessonId] = {
+      // Save to database - update the specific lesson in the modules array
+      const updatedModules = [...modules];
+      updatedModules[moduleIndex].lessons[lessonIndex] = {
+        ...lessonData,
         content: contentResult.content,
         assessment: assessmentResult.assessment,
       };
-      localStorage.setItem("lessonContent", JSON.stringify(cachedLessons));
 
+      await updateCourse(enrolledCourse.id, {
+        modules: updatedModules,
+      });
+
+      console.log("✅ Lesson content generated and saved to database");
       setLesson(contentResult.content);
       setAssessment(assessmentResult.assessment);
-      console.log("Lesson loaded successfully");
     } catch (err) {
-      console.error("Error loading lesson:", err);
-      setError(err.message || "An error occurred");
+      console.error("❌ Error generating lesson:", err);
+      setError(err.message || "An error occurred while generating the lesson");
     } finally {
       setLoading(false);
     }
   };
 
   const handleSubmitAssessment = async () => {
-    if (!canUseTokens(AI_TOKEN_COSTS.REVIEW_SUBMISSION)) {
-      setError("Insufficient AI tokens");
-      return;
-    }
-
     setSubmitting(true);
     setError(null);
 
     try {
-      const result = await mockReviewSubmission(
-        { id: `sub_${Date.now()}`, answers: submission },
-        assessment,
+      // Normalize questions to have IDs if missing
+      const normalizedQuestions = assessment.questions.map((q, idx) => ({
+        ...q,
+        id: q.id || `q${idx + 1}`,
+      }));
+
+      console.log("🤖 Batch reviewing all questions with Gemini...");
+      const result = await reviewSubmissionBatch(
+        normalizedQuestions,
+        submission,
       );
 
-      if (result.success) {
-        useTokens(result.tokensUsed);
-        setReview(result.review);
+      console.log("📥 Review result received:", result);
 
-        if (result.review.passed) {
+      if (result.success) {
+        useTokens(result.tokensUsed, "review_submission", { lessonId });
+
+        // Transform Gemini response into UI-compatible format
+        const review = result.review;
+        const aggregatedReview = {
+          passed: review.passed || false,
+          score: review.overallScore || 0,
+          passingScore: assessment.passingScore || 70,
+          totalQuestions: assessment.questions?.length || 0,
+          questionsReviewed: review.reviewedQuestions?.length || 0,
+          details: review.reviewedQuestions || [],
+          feedback: {
+            overall: review.overallFeedback || "",
+            strengths:
+              review.reviewedQuestions
+                ?.filter((q) => q.isCorrect)
+                .map(
+                  (q) =>
+                    `${q.questionType === "short_answer" ? "Essay" : "Code"}: ${q.feedback}`,
+                ) || [],
+            improvements:
+              review.reviewedQuestions
+                ?.filter((q) => !q.isCorrect)
+                .map((q) => `${q.questionText}: ${q.feedback}`) || [],
+          },
+        };
+
+        console.log("📊 Aggregated review:", {
+          passed: aggregatedReview.passed,
+          score: aggregatedReview.score,
+          passingScore: aggregatedReview.passingScore,
+        });
+
+        setReview(aggregatedReview);
+
+        // Save review to database
+        try {
+          console.log("💾 Saving review to database...");
+          
+          // Get fresh course data from context
+          const freshCourse = getCourseById(courseId);
+          const courseModules = freshCourse?.structure?.modules || freshCourse?.modules;
+          
+          if (!freshCourse || !courseModules) {
+            console.error("❌ Course structure not found!", { 
+              freshCourse, 
+              hasStructure: !!freshCourse?.structure,
+              hasModules: !!freshCourse?.modules 
+            });
+            throw new Error("Course structure is missing");
+          }
+          
+          console.log("📦 Using course modules:", courseModules.length, "modules");
+          const updatedModules = courseModules.map((mod, mIdx) => {
+            if (mIdx === moduleIndex) {
+              return {
+                ...mod,
+                lessons: mod.lessons.map((les, lIdx) => {
+                  if (lIdx === lessonIndex) {
+                    return {
+                      ...les,
+                      review: {
+                        ...aggregatedReview,
+                        submittedAt: new Date().toISOString(),
+                      },
+                    };
+                  }
+                  return les;
+                }),
+              };
+            }
+            return mod;
+          });
+
+          const dbResult = await updateCourse(courseId, { modules: updatedModules });
+          console.log("✅ Review saved to database:", dbResult);
+        } catch (dbErr) {
+          console.error("⚠️ Failed to save review to database:", dbErr);
+        }
+
+        if (aggregatedReview.passed) {
+          console.log("🎉 Assessment PASSED! Updating progress...");
+          
+          // Get fresh course data again for progress calculation
+          const freshCourse = getCourseById(courseId);
+          const progressModules = freshCourse?.structure?.modules || freshCourse?.modules;
+          
+          if (!freshCourse || !progressModules) {
+            console.error("❌ Cannot find course for progress update");
+            return;
+          }
+          
           const completedLessons = [
-            ...(course.progress.completedLessons || []),
+            ...(freshCourse.progress?.completedLessons || []),
             lessonId,
           ];
-          const totalLessons = course.structure.modules.reduce(
-            (sum, m) => sum + m.lessons.length,
-            0,
-          );
+          
+          console.log("📝 Completed lessons:", completedLessons);
+          
           const nextLessonIndex = lessonIndex + 1;
           const nextModuleIndex =
-            nextLessonIndex >=
-            course.structure.modules[moduleIndex].lessons.length
+            nextLessonIndex >= progressModules[moduleIndex].lessons.length
               ? moduleIndex + 1
               : moduleIndex;
           const nextLessonIndexInModule =
-            nextLessonIndex >=
-            course.structure.modules[moduleIndex].lessons.length
+            nextLessonIndex >= progressModules[moduleIndex].lessons.length
               ? 0
               : nextLessonIndex;
 
-          updateCourseProgress(courseId, {
-            ...course.progress,
+          const progressUpdate = {
+            ...freshCourse.progress,
             completedLessons,
             currentModuleIndex:
-              nextModuleIndex < course.structure.modules.length
+              nextModuleIndex < progressModules.length
                 ? nextModuleIndex
                 : moduleIndex,
             currentLessonIndex: nextLessonIndexInModule,
-          });
+          };
+
+          console.log("📈 Updating progress:", progressUpdate);
+          updateCourseProgress(courseId, progressUpdate);
+          console.log("✅ Progress updated!");
+        } else {
+          console.log("❌ Assessment NOT PASSED. Score:", aggregatedReview.score, "Required:", aggregatedReview.passingScore);
         }
       } else {
-        setError("Failed to review submission");
+        console.error("❌ Review failed:", result.error);
+        setError(result.error || "Failed to review submission");
       }
     } catch (err) {
+      console.error("❌ Error submitting assessment:", err);
       setError(err.message || "An error occurred");
     } finally {
       setSubmitting(false);
@@ -220,7 +357,8 @@ const AILessonViewer = () => {
 
   const handleNextLesson = () => {
     const nextLessonIndex = lessonIndex + 1;
-    const currentModule = course.structure.modules[moduleIndex];
+    const modules = course.structure?.modules || course.modules;
+    const currentModule = modules[moduleIndex];
 
     if (nextLessonIndex < currentModule.lessons.length) {
       const nextLesson = currentModule.lessons[nextLessonIndex];
@@ -229,8 +367,8 @@ const AILessonViewer = () => {
       });
     } else {
       const nextModuleIndex = moduleIndex + 1;
-      if (nextModuleIndex < course.structure.modules.length) {
-        const nextModule = course.structure.modules[nextModuleIndex];
+      if (nextModuleIndex < modules.length) {
+        const nextModule = modules[nextModuleIndex];
         const nextLesson = nextModule.lessons[0];
         navigate(`/courses/${courseId}/lessons/${nextLesson.id}`, {
           state: { moduleIndex: nextModuleIndex, lessonIndex: 0 },
@@ -307,22 +445,28 @@ const AILessonViewer = () => {
         <div className={styles.lessonContent}>
           <Card className={styles.lessonCard}>
             <h1>{lesson.title}</h1>
-            <p className={styles.introduction}>{lesson.introduction}</p>
 
-            {lesson.sections.map((section) => (
-              <div key={section.id} className={styles.section}>
-                <h2>{section.heading}</h2>
-                {section.type === "code" ? (
-                  <pre className={styles.codeBlock}>
-                    <code>{section.content}</code>
-                  </pre>
-                ) : (
-                  <p>{section.content}</p>
-                )}
+            {/* Render objectives if available */}
+            {lesson.objectives?.length > 0 && (
+              <div className={styles.objectives}>
+                <h3>Learning Objectives</h3>
+                <ul>
+                  {lesson.objectives.map((objective, index) => (
+                    <li key={index}>{objective}</li>
+                  ))}
+                </ul>
               </div>
-            ))}
+            )}
 
-            {lesson.keyTakeaways && lesson.keyTakeaways.length > 0 && (
+            {/* Render markdown content */}
+            {lesson.content && (
+              <div className={styles.markdownContent}>
+                <ReactMarkdown>{lesson.content}</ReactMarkdown>
+              </div>
+            )}
+
+            {/* Render key takeaways */}
+            {lesson.keyTakeaways?.length > 0 && (
               <div className={styles.takeaways}>
                 <h3>Key Takeaways</h3>
                 <ul>
@@ -333,11 +477,12 @@ const AILessonViewer = () => {
               </div>
             )}
 
-            {lesson.resources && lesson.resources.length > 0 && (
+            {/* Render external resources */}
+            {lesson.externalResources?.length > 0 && (
               <div className={styles.resources}>
                 <h3>Additional Resources</h3>
                 <ul>
-                  {lesson.resources.map((resource, index) => (
+                  {lesson.externalResources.map((resource, index) => (
                     <li key={index}>
                       <a
                         href={resource.url}
@@ -346,9 +491,11 @@ const AILessonViewer = () => {
                       >
                         {resource.title}
                       </a>
-                      <span className={styles.resourceType}>
-                        {resource.type}
-                      </span>
+                      {resource.description && (
+                        <p className={styles.resourceDescription}>
+                          {resource.description}
+                        </p>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -357,12 +504,31 @@ const AILessonViewer = () => {
           </Card>
 
           <div className={styles.lessonActions}>
-            <Button variant="primary" onClick={() => setShowAssessment(true)}>
-              Continue to Assessment
-            </Button>
+            {review?.passed ? (
+              // Assessment already passed - show navigation and review buttons
+              <div className={styles.completedActions}>
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowAssessment(true)}
+                >
+                  View Feedback
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={handleNextLesson}
+                >
+                  Next Lesson →
+                </Button>
+              </div>
+            ) : (
+              // Assessment not taken or not passed - show assessment CTA
+              <Button variant="primary" onClick={() => setShowAssessment(true)}>
+                Continue to Assessment
+              </Button>
+            )}
           </div>
         </div>
-      ) : (
+      ) : showAssessment && assessment ? (
         <div className={styles.assessmentContent}>
           <Card className={styles.assessmentCard}>
             <h1>{assessment.title}</h1>
@@ -375,24 +541,27 @@ const AILessonViewer = () => {
             {!review ? (
               <>
                 <div className={styles.questions}>
-                  {assessment.questions.map((question) => (
-                    <div key={question.id} className={styles.question}>
-                      <h3>{question.question}</h3>
+                  {assessment.questions?.map((question, questionIndex) => {
+                    // Generate ID if missing
+                    const questionId = question.id || `q${questionIndex + 1}`;
+                    return (
+                      <div key={questionId} className={styles.question}>
+                        <h3>{question.question}</h3>
 
-                      {question.type === "multiple_choice" && (
-                        <div className={styles.options}>
-                          {question.options.map((option, index) => (
-                            <label key={index} className={styles.option}>
-                              <input
-                                type="radio"
-                                name={question.id}
-                                value={index}
-                                onChange={(e) =>
-                                  setSubmission((prev) => ({
-                                    ...prev,
-                                    [question.id]: parseInt(e.target.value),
-                                  }))
-                                }
+                        {question.type === "multiple_choice" && (
+                          <div className={styles.options}>
+                            {question.options.map((option, index) => (
+                              <label key={index} className={styles.option}>
+                                <input
+                                  type="radio"
+                                  name={questionId}
+                                  value={index}
+                                  onChange={(e) =>
+                                    setSubmission((prev) => ({
+                                      ...prev,
+                                      [questionId]: parseInt(e.target.value),
+                                    }))
+                                  }
                               />
                               <span>{option}</span>
                             </label>
@@ -408,7 +577,21 @@ const AILessonViewer = () => {
                           onChange={(e) =>
                             setSubmission((prev) => ({
                               ...prev,
-                              [question.id]: e.target.value,
+                              [questionId]: e.target.value,
+                            }))
+                          }
+                        />
+                      )}
+
+                      {question.type === "code_challenge" && (
+                        <textarea
+                          className={styles.codeInput}
+                          placeholder="Write your code here..."
+                          rows={6}
+                          onChange={(e) =>
+                            setSubmission((prev) => ({
+                              ...prev,
+                              [questionId]: e.target.value,
                             }))
                           }
                         />
@@ -418,11 +601,11 @@ const AILessonViewer = () => {
                         <textarea
                           className={styles.textInput}
                           placeholder="Type your answer here..."
-                          rows={6}
+                          rows={question.type === "code_challenge" ? 4 : 6}
                           onChange={(e) =>
                             setSubmission((prev) => ({
                               ...prev,
-                              [question.id]: e.target.value,
+                              [questionId]: e.target.value,
                             }))
                           }
                         />
@@ -432,7 +615,8 @@ const AILessonViewer = () => {
                         Points: {question.points}
                       </div>
                     </div>
-                  ))}
+                  );
+                  })}
                 </div>
 
                 <div className={styles.assessmentActions}>
@@ -456,35 +640,58 @@ const AILessonViewer = () => {
                 <div
                   className={`${styles.reviewHeader} ${review.passed ? styles.passed : styles.failed}`}
                 >
-                  <h2>
-                    {review.passed ? "Congratulations!" : "Keep Learning"}
-                  </h2>
-                  <div className={styles.score}>Score: {review.score}%</div>
+                  <div className={styles.resultIndicator}>
+                    <h2>{review.passed ? "Passed" : "Did Not Pass"}</h2>
+                    <div className={styles.score}>{review.score}%</div>
+                  </div>
+                  <div className={styles.scoreInfo}>
+                    Passing score: {review.passingScore}%
+                  </div>
                 </div>
 
                 <div className={styles.feedback}>
-                  <h3>Overall Feedback</h3>
-                  <p>{review.feedback.overall}</p>
+                  {review.feedback?.overall && (
+                    <div className={styles.overallSection}>
+                      <h3>Assessment Results</h3>
+                      <p>{review.feedback.overall}</p>
+                    </div>
+                  )}
 
-                  <div className={styles.feedbackSection}>
-                    <h4>Strengths</h4>
-                    <ul>
-                      {review.feedback.strengths.map((strength, index) => (
-                        <li key={index}>{strength}</li>
+                  {review.details?.length > 0 && (
+                    <div className={styles.detailsSection}>
+                      <h3>Question Breakdown</h3>
+                      {review.details.map((detail, index) => (
+                        <div
+                          key={index}
+                          className={`${styles.questionResult} ${
+                            detail.isCorrect ? styles.correct : styles.incorrect
+                          }`}
+                        >
+                          <div className={styles.questionHeader}>
+                            <span className={styles.questionNum}>
+                              Q{index + 1}
+                            </span>
+                            <span className={styles.questionText}>
+                              {detail.questionText}
+                            </span>
+                            <span className={styles.score}>
+                              {detail.score}%
+                            </span>
+                          </div>
+                          <p className={styles.feedback}>{detail.feedback}</p>
+                          {detail.suggestions?.length > 0 && (
+                            <div className={styles.suggestionsList}>
+                              {detail.suggestions.map((suggestion, sIdx) => (
+                                <div key={sIdx} className={styles.suggestion}>
+                                  {suggestion}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       ))}
-                    </ul>
-                  </div>
-
-                  <div className={styles.feedbackSection}>
-                    <h4>Areas for Improvement</h4>
-                    <ul>
-                      {review.feedback.improvements.map(
-                        (improvement, index) => (
-                          <li key={index}>{improvement}</li>
-                        ),
-                      )}
-                    </ul>
-                  </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className={styles.reviewActions}>
@@ -520,7 +727,14 @@ const AILessonViewer = () => {
             )}
           </Card>
         </div>
-      )}
+      ) : showAssessment && !assessment ? (
+        <div className={styles.container}>
+          <div className={styles.loadingContainer}>
+            <LoadingSpinner />
+            <p>Loading assessment...</p>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUser } from "../../hooks/useUser";
-import { useCourse } from "../../hooks/useCourse";
+import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import { isSupabaseConfigured } from "../../services/authService";
 import {
   Play,
@@ -38,20 +38,15 @@ import styles from "./LessonViewer.module.css";
 const LessonViewer = () => {
   const { courseId, lessonId } = useParams();
   const { user, profile, refreshProfile } = useUser();
-  const {
-    getCourseById,
-    getLessonById,
-    completeLesson,
-    unlockNextLesson,
-    getReviewRequestsForLesson,
-    submitReviewRequest,
-    submitReviewFeedback,
-    addNotification,
-  } = useCourse();
+  const { generatedCourses } = useCourseGeneration();
   const navigate = useNavigate();
 
-  const course = getCourseById(courseId);
-  const lesson = getLessonById(courseId, lessonId);
+  // Find course and lesson from AI-generated courses
+  const course = generatedCourses?.find((c) => c.id === courseId);
+  const lesson = course?.modules
+    ?.flatMap((m) => m.lessons)
+    .find((l) => l.id === lessonId);
+
   const [showSubmissionForm, setShowSubmissionForm] = useState(false);
   const [showReviewRequestForm, setShowReviewRequestForm] = useState(false);
   const [showReviewRequests, setShowReviewRequests] = useState(false);
@@ -95,7 +90,7 @@ const LessonViewer = () => {
                 files: parsedContent?.files || [],
                 peerReviews: reviews,
               };
-            })
+            }),
           );
           setSubmissions(transformedSubmissions);
         }
@@ -135,13 +130,13 @@ const LessonViewer = () => {
             courseId,
             moduleId,
             lessonId,
-            points
+            points,
           );
 
           if (!completionResult.success) {
             addNotification(
               "Failed to complete lesson. Please try again.",
-              "error"
+              "error",
             );
             return;
           }
@@ -182,7 +177,7 @@ const LessonViewer = () => {
         user.id,
         courseId,
         lessonId,
-        submission
+        submission,
       );
 
       if (success) {
@@ -193,7 +188,7 @@ const LessonViewer = () => {
       } else {
         addNotification(
           "Failed to submit assignment. Please try again.",
-          "error"
+          "error",
         );
       }
     } catch {
@@ -399,12 +394,12 @@ const LessonViewer = () => {
                 const requestId = await submitReviewRequest(
                   courseId,
                   lessonId,
-                  reviewRequest
+                  reviewRequest,
                 );
                 if (requestId) {
                   addNotification(
                     "Review request submitted! Peers will see your request.",
-                    "success"
+                    "success",
                   );
                   setShowReviewRequestForm(false);
                 }

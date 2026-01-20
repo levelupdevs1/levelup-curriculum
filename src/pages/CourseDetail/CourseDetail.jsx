@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useCourse } from "../../hooks/useCourse";
+import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import {
   Clock,
   Users,
@@ -24,11 +24,11 @@ import styles from "./CourseDetail.module.css";
 
 const CourseDetail = () => {
   const { courseId } = useParams();
-  const { getCourseById, enrollInCourse, getAllLessons } = useCourse();
+  const { generatedCourses } = useCourseGeneration();
   const navigate = useNavigate();
   const [expandedModules, setExpandedModules] = useState({});
 
-  const course = getCourseById(courseId);
+  const course = generatedCourses?.find((c) => c.id === courseId);
 
   if (!course) {
     return (
@@ -39,7 +39,12 @@ const CourseDetail = () => {
   }
 
   const handleEnroll = () => {
-    enrollInCourse(courseId);
+    // AI courses are auto-enrolled, just navigate to first lesson
+    if (course?.modules?.[0]?.lessons?.[0]) {
+      navigate(
+        `/courses/${courseId}/lessons/${course.modules[0].lessons[0].id}`,
+      );
+    }
   };
 
   const handleStartLesson = (lessonId) => {
@@ -57,7 +62,7 @@ const CourseDetail = () => {
     // Find the first incomplete, unlocked lesson
     const allLessons = getAllLessons(course);
     const nextLesson = allLessons.find(
-      (lesson) => !lesson.isCompleted && !lesson.isLocked
+      (lesson) => !lesson.isCompleted && !lesson.isLocked,
     );
 
     if (nextLesson) {

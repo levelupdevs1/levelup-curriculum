@@ -72,7 +72,7 @@ const Header = () => {
     { path: "/profile", label: "Profile", icon: User },
     { path: "/rewards", label: "Rewards", icon: Award },
     { path: "/certificates", label: "Certificates", icon: Award },
-    { path: "/courses", label: "My Courses", icon: BookOpen },
+    { path: "/course-catalog", label: "My Courses", icon: BookOpen },
     { path: "/settings", label: "Settings", icon: Settings },
     {
       path: "/logout",
@@ -125,7 +125,7 @@ const Header = () => {
                   Dashboard
                 </NavLink>
                 <NavLink
-                  to="/courses"
+                  to="/course-catalog"
                   className={({ isActive, isPending }) =>
                     `${styles.navLink} ${isActive ? styles.active : ""} ${
                       isPending ? styles.pending : ""
@@ -155,7 +155,7 @@ const Header = () => {
             ) : (
               <>
                 <NavLink
-                  to="/courses"
+                  to="/landing"
                   className={({ isActive, isPending }) =>
                     `${styles.navLink} ${isActive ? styles.active : ""} ${
                       isPending ? styles.pending : ""
@@ -163,7 +163,7 @@ const Header = () => {
                   }
                   end={false}
                 >
-                  Courses
+                  Home
                 </NavLink>
               </>
             )}

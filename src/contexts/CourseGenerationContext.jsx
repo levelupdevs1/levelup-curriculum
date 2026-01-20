@@ -1,52 +1,21 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { CourseGenerationContext } from "./createCourseGenerationContext";
-
-const STORAGE_KEY = "courseGenerationData";
+import { useUser } from "../hooks/useUser";
+import {
+  getUserProfile,
+  saveUserProfile,
+  getCourses,
+  saveGeneratedCourses,
+  enrollInCourse as enrollInCourseDB,
+} from "../services/courseDataService";
 
 export const CourseGenerationProvider = ({ children }) => {
-  const [userProfile, setUserProfile] = useState(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        return data.userProfile || null;
-      } catch (error) {
-        console.error("Failed to parse stored course data:", error);
-        return null;
-      }
-    }
-    return null;
-  });
-
-  const [generatedCourses, setGeneratedCourses] = useState(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        return data.generatedCourses || [];
-      } catch (error) {
-        console.error("Failed to parse stored course data:", error);
-        return [];
-      }
-    }
-    return [];
-  });
-
-  const [enrolledCourses, setEnrolledCourses] = useState(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        return data.enrolledCourses || [];
-      } catch (error) {
-        console.error("Failed to parse stored course data:", error);
-        return [];
-      }
-    }
-    return [];
-  });
-
+  const { user } = useUser();
+  const [userProfile, setUserProfile] = useState(null);
+  const [generatedCourses, setGeneratedCourses] = useState([]);
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [currentCourse, setCurrentCourse] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [generationStatus, setGenerationStatus] = useState({
     isGenerating: false,
     type: null,
@@ -54,85 +23,129 @@ export const CourseGenerationProvider = ({ children }) => {
     error: null,
   });
 
-  const saveToStorage = useCallback((data) => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    } catch (error) {
-      console.error("Failed to save to storage:", error);
-    }
-  }, []);
+  // Load user profile and courses from database
+  useEffect(() => {
+    const loadUserData = async () => {
+      if (!user?.id) {
+        setLoading(false);
+        return;
+      }
+
+      // Load user profile
+      const profileResult = await getUserProfile(user.id);
+      if (profileResult.success && profileResult.data) {
+        setUserProfile(profileResult.data);
+      }
+
+      // Load all generated courses (both recommended and enrolled)
+      const coursesResult = await getCourses(user.id);
+      if (coursesResult.success) {
+        const allCourses = coursesResult.data || [];
+        // Separate enrolled and non-enrolled courses
+        const enrolled = allCourses.filter((c) => c.status === "enrolled");
+        const recommended = allCourses.filter(
+          (c) => c.status === "recommended",
+        );
+
+        setGeneratedCourses(allCourses); // Show all courses in catalog
+        setEnrolledCourses(enrolled);
+      }
+
+      setLoading(false);
+    };
+
+    loadUserData();
+  }, [user]);
 
   const updateUserProfile = useCallback(
-    (profile) => {
-      setUserProfile(profile);
-      const stored = localStorage.getItem(STORAGE_KEY);
-      const data = stored ? JSON.parse(stored) : {};
-      saveToStorage({ ...data, userProfile: profile });
+    async (profile) => {
+      if (!user?.id) {
+        return { success: false, error: "User not authenticated" };
+      }
+
+      const { success, data, error } = await saveUserProfile(user.id, profile);
+
+      if (success) {
+        setUserProfile(data);
+        return { success: true, data };
+      }
+
+      return { success: false, error: error || "Failed to save profile" };
     },
-    [saveToStorage],
+    [user],
   );
 
   const addGeneratedCourses = useCallback(
-    (courses) => {
-      setGeneratedCourses((prev) => {
-        const updated = [...prev, ...courses];
-        const stored = localStorage.getItem(STORAGE_KEY);
-        const data = stored ? JSON.parse(stored) : {};
-        saveToStorage({ ...data, generatedCourses: updated });
-        return updated;
-      });
+    async (courses) => {
+      if (!user?.id) {
+        return { success: false, error: "User not authenticated" };
+      }
+
+      const { success, data, error } = await saveGeneratedCourses(
+        user.id,
+        courses,
+      );
+
+      if (success) {
+        setGeneratedCourses((prev) => [...prev, ...data]);
+        return { success: true, data };
+      }
+
+      return { success: false, error: error || "Failed to save courses" };
     },
-    [saveToStorage],
+    [user],
   );
 
   const enrollInCourse = useCallback(
-    (courseId) => {
+    async (courseId) => {
+      if (!user?.id) {
+        return { success: false, error: "User not authenticated" };
+      }
+
       const course = generatedCourses.find((c) => c.id === courseId);
       if (!course) {
         return { success: false, error: "Course not found" };
       }
 
-      setEnrolledCourses((prev) => {
-        if (prev.find((c) => c.id === courseId)) {
-          return prev;
-        }
+      const { success, data, error } = await enrollInCourseDB(
+        courseId,
+        user.id,
+      );
 
-        const enrolledCourse = {
-          ...course,
-          enrolledAt: new Date().toISOString(),
-          progress: {
-            currentModuleIndex: 0,
-            currentLessonIndex: 0,
-            completedLessons: [],
-          },
-        };
-
-        const updated = [...prev, enrolledCourse];
-        const stored = localStorage.getItem(STORAGE_KEY);
-        const data = stored ? JSON.parse(stored) : {};
-        saveToStorage({ ...data, enrolledCourses: updated });
-        return updated;
-      });
-
-      return { success: true };
-    },
-    [generatedCourses, saveToStorage],
-  );
-
-  const updateCourseProgress = useCallback(
-    (courseId, progress) => {
-      setEnrolledCourses((prev) => {
-        const updated = prev.map((course) =>
-          course.id === courseId ? { ...course, progress } : course,
+      if (success) {
+        // Update enrolledCourses
+        setEnrolledCourses((prev) => [...prev, data]);
+        // Update the course in generatedCourses to reflect enrollment status
+        setGeneratedCourses((prev) =>
+          prev.map((c) => (c.id === courseId ? data : c)),
         );
-        const stored = localStorage.getItem(STORAGE_KEY);
-        const data = stored ? JSON.parse(stored) : {};
-        saveToStorage({ ...data, enrolledCourses: updated });
-        return updated;
-      });
+        return { success: true, data };
+      }
+
+      return { success: false, error: error || "Failed to enroll" };
     },
-    [saveToStorage],
+    [generatedCourses, user],
   );
+
+  const updateCourseProgress = useCallback((courseId, progress) => {
+    // Update progress in local state
+    setEnrolledCourses((prev) => {
+      return prev.map((course) =>
+        course.id === courseId ? { ...course, progress } : course,
+      );
+    });
+    
+    // Save progress to database
+    import("../services/courseDataService").then(({ updateCourse }) => {
+      updateCourse(courseId, { progress }).then((result) => {
+        if (result.success) {
+          console.log("✅ Progress saved to database:", progress);
+        } else {
+          console.error("❌ Failed to save progress to database:", result.error);
+        }
+      });
+    });
+  }, []);
 
   const setGenerating = useCallback(
     (isGenerating, type = null, progress = 0) => {
@@ -181,6 +194,7 @@ export const CourseGenerationProvider = ({ children }) => {
     updateUserProfile,
     addGeneratedCourses,
     enrollInCourse,
+    loading,
     updateCourseProgress,
     setCurrentCourse,
     setGenerating,

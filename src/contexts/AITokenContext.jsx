@@ -1,5 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { AITokenContext } from "./createAITokenContext";
+import { useUser } from "../hooks/useUser";
+import {
+  getAITokens,
+  initializeAITokens,
+  useAITokens as useTokensFromDB,
+  updateAITokenTier,
+} from "../services/aiTokenService";
 
 const TIER_CONFIGS = {
   free: {
@@ -16,39 +23,42 @@ const TIER_CONFIGS = {
   },
 };
 
-const STORAGE_KEY = "aiTokenData";
-
 export const AITokenProvider = ({ children }) => {
+  const { user } = useUser();
   const [tier, setTier] = useState("free");
   const [tokensUsed, setTokensUsed] = useState(0);
   const [lastReset, setLastReset] = useState(new Date().toISOString());
   const [loading, setLoading] = useState(true);
 
+  // Load AI tokens from database
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const data = JSON.parse(stored);
-        setTier(data.tier || "free");
-        setTokensUsed(data.tokensUsed || 0);
-        setLastReset(data.lastReset || new Date().toISOString());
-      } catch (error) {
-        console.error("Failed to parse stored token data:", error);
+    const loadTokens = async () => {
+      if (!user?.id) {
+        setLoading(false);
+        return;
       }
-    }
-    setLoading(false);
-  }, []);
 
-  useEffect(() => {
-    if (!loading) {
-      const data = {
-        tier,
-        tokensUsed,
-        lastReset,
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    }
-  }, [tier, tokensUsed, lastReset, loading]);
+      const { success, data } = await getAITokens(user.id);
+
+      if (success && data) {
+        setTier(data.tier);
+        setTokensUsed(data.tokens_used);
+        setLastReset(data.last_reset);
+      } else if (success && !data) {
+        // Initialize tokens for new user
+        const initResult = await initializeAITokens(user.id, "free");
+        if (initResult.success) {
+          setTier(initResult.data.tier);
+          setTokensUsed(initResult.data.tokens_used);
+          setLastReset(initResult.data.last_reset);
+        }
+      }
+
+      setLoading(false);
+    };
+
+    loadTokens();
+  }, [user]);
 
   const checkAndResetTokens = useCallback(() => {
     const config = TIER_CONFIGS[tier];
@@ -106,39 +116,80 @@ export const AITokenProvider = ({ children }) => {
 
   const canUseTokens = useCallback(
     (amount) => {
-      return getTokensRemaining() >= amount;
+      // DISABLED: No token restrictions during development
+      return true;
+      // return getTokensRemaining() >= amount;
     },
     [getTokensRemaining],
   );
 
   const useTokens = useCallback(
-    (amount) => {
-      if (!canUseTokens(amount)) {
+    async (amount, operation = "unknown", operationDetails = null) => {
+      if (!user?.id) {
         return {
           success: false,
-          error: "Insufficient AI tokens",
+          error: "User not authenticated",
         };
       }
 
-      setTokensUsed((prev) => prev + amount);
+      // DISABLED: No token restrictions during development
+      // if (!canUseTokens(amount)) {
+      //   return {
+      //     success: false,
+      //     error: "Insufficient AI tokens",
+      //   };
+      // }
+
+      const { success, data, error } = await useTokensFromDB(
+        user.id,
+        amount,
+        operation,
+        operationDetails,
+      );
+
+      if (success) {
+        setTokensUsed(data.tokens_used);
+        return {
+          success: true,
+          tokensUsed: amount,
+          tokensRemaining: data.tokens_limit - data.tokens_used,
+        };
+      }
+
       return {
-        success: true,
-        tokensUsed: amount,
-        tokensRemaining: getTokensRemaining() - amount,
+        success: false,
+        error: error || "Failed to use tokens",
       };
     },
-    [canUseTokens, getTokensRemaining],
+    [canUseTokens, user],
   );
 
-  const upgradeTier = useCallback((newTier) => {
-    if (["free", "starter", "pro"].includes(newTier)) {
-      setTier(newTier);
-      setTokensUsed(0);
-      setLastReset(new Date().toISOString());
-      return { success: true };
-    }
-    return { success: false, error: "Invalid tier" };
-  }, []);
+  const upgradeTier = useCallback(
+    async (newTier) => {
+      if (!user?.id) {
+        return { success: false, error: "User not authenticated" };
+      }
+
+      if (!["free", "starter", "pro"].includes(newTier)) {
+        return { success: false, error: "Invalid tier" };
+      }
+
+      const { success, data, error } = await updateAITokenTier(
+        user.id,
+        newTier,
+      );
+
+      if (success) {
+        setTier(data.tier);
+        setTokensUsed(data.tokens_used);
+        setLastReset(data.last_reset);
+        return { success: true };
+      }
+
+      return { success: false, error: error || "Failed to upgrade tier" };
+    },
+    [user],
+  );
 
   const value = {
     tier,

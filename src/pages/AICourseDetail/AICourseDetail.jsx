@@ -1,11 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import { useAIToken } from "../../hooks/useAIToken";
 import {
-  mockGenerateCourseStructure,
+  generateCourseStructure,
   AI_TOKEN_COSTS,
-} from "../../services/aiService";
+} from "../../services/aiServiceReal";
+import { updateCourse } from "../../services/courseDataService";
 import Button from "../../components/Button/Button";
 import Card from "../../components/Card/Card";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
@@ -21,6 +22,7 @@ const AICourseDetail = () => {
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const hasGeneratedRef = useRef(false);
 
   useEffect(() => {
     const enrolledCourse = getCourseById(courseId);
@@ -29,54 +31,100 @@ const AICourseDetail = () => {
       return;
     }
 
-    setCourse(enrolledCourse);
-    setCurrentCourse(enrolledCourse);
+    console.log("📚 Course data from DB:", {
+      title: enrolledCourse.title,
+      hasModules: !!enrolledCourse.modules,
+      modulesType: typeof enrolledCourse.modules,
+      modulesIsArray: Array.isArray(enrolledCourse.modules),
+      modulesLength: enrolledCourse.modules?.length,
+      hasGeneratedBefore: hasGeneratedRef.current,
+    });
 
-    if (!enrolledCourse.structure) {
+    // Check if structure exists in database (modules field)
+    const hasStructure =
+      enrolledCourse.modules &&
+      Array.isArray(enrolledCourse.modules) &&
+      enrolledCourse.modules.length > 0;
+
+    if (hasStructure) {
+      // Load structure from database - PRIORITY
+      console.log("✅ Loading existing structure from database");
+      setCourse({
+        ...enrolledCourse,
+        structure: { modules: enrolledCourse.modules },
+      });
+      setCurrentCourse(enrolledCourse);
+    } else if (!hasGeneratedRef.current) {
+      // Only generate if not in database AND haven't generated this session
+      console.log("🔨 No structure found, generating...");
+      hasGeneratedRef.current = true;
+      setCourse(enrolledCourse);
+      setCurrentCourse(enrolledCourse);
       generateStructure(enrolledCourse);
+    } else {
+      console.log("⏭️ Already generated in this session, skipping");
+      setCourse(enrolledCourse);
+      setCurrentCourse(enrolledCourse);
     }
   }, [courseId]);
 
   const generateStructure = async (enrolledCourse) => {
     const tokenCost = AI_TOKEN_COSTS.GENERATE_COURSE_STRUCTURE;
 
-    if (!canUseTokens(tokenCost)) {
-      setError("Insufficient AI tokens to generate course structure");
-      return;
-    }
+    // DISABLED: No token restrictions
+    // if (!canUseTokens(tokenCost)) {
+    //   setError("Insufficient AI tokens to generate course structure");
+    //   return;
+    // }
 
     setLoading(true);
     setError(null);
 
     try {
-      const result = await mockGenerateCourseStructure(
+      console.log(`🔨 Generating structure for: ${enrolledCourse.title}`);
+      const result = await generateCourseStructure(
         enrolledCourse.title,
-        userProfile,
+        enrolledCourse.description,
+        enrolledCourse.modules_count || enrolledCourse.modulesCount || 6,
       );
 
       if (result.success) {
-        useTokens(result.tokensUsed);
+        // Update tokens
+        useTokens(result.tokensUsed, "generate_structure", {
+          courseId: enrolledCourse.id,
+        });
+
+        // Check if actual module count matches expected
+        const expectedCount =
+          enrolledCourse.modules_count || enrolledCourse.modulesCount;
+        const actualCount = result.actualModuleCount || result.modules.length;
+
+        if (actualCount !== expectedCount) {
+          console.warn(
+            `⚠️ Course specified ${expectedCount} modules, AI generated ${actualCount}. ` +
+              `Updating course metadata to match reality.`,
+          );
+        }
+
+        // Save structure to database (both modules and metadata)
+        await updateCourse(enrolledCourse.id, {
+          modules: result.modules,
+          modules_count: actualCount,
+        });
+
         const updatedCourse = {
           ...enrolledCourse,
-          structure: result.structure,
+          modules: result.modules,
+          modules_count: actualCount,
+          structure: { modules: result.modules },
         };
         setCourse(updatedCourse);
 
-        const stored = localStorage.getItem("courseGenerationData");
-        const data = stored ? JSON.parse(stored) : {};
-        const enrolledCourses = data.enrolledCourses || [];
-        const updated = enrolledCourses.map((c) =>
-          c.id === courseId ? updatedCourse : c,
-        );
-        localStorage.setItem(
-          "courseGenerationData",
-          JSON.stringify({
-            ...data,
-            enrolledCourses: updated,
-          }),
+        console.log(
+          `✅ Generated ${actualCount} modules successfully and saved to database`,
         );
       } else {
-        setError("Failed to generate course structure");
+        setError(result.error || "Failed to generate course structure");
       }
     } catch (err) {
       setError(err.message || "An error occurred");
@@ -177,7 +225,7 @@ const AICourseDetail = () => {
       {course.structure ? (
         <div className={styles.modules}>
           {course.structure.modules.map((module, moduleIndex) => (
-            <Card key={module.id} className={styles.moduleCard}>
+            <Card key={moduleIndex} className={styles.moduleCard}>
               <div className={styles.moduleHeader}>
                 <h2>{module.title}</h2>
                 <p>{module.description}</p>
@@ -192,7 +240,7 @@ const AICourseDetail = () => {
 
                   return (
                     <div
-                      key={lesson.id}
+                      key={lessonIndex}
                       className={`${styles.lessonItem} ${
                         !unlocked ? styles.locked : ""
                       } ${completed ? styles.completed : ""}`}

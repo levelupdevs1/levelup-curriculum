@@ -18,11 +18,10 @@ import SearchAndFilter from "../../components/SearchAndFilter/SearchAndFilter";
 import TagList from "../../components/TagList/TagList";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import styles from "./CourseCatalog.module.css";
-import { useCourse } from "../../hooks/useCourse";
+import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 
 const CourseCatalog = () => {
-  const { courses, enrollInCourse, addNotification, getAllLessons } =
-    useCourse();
+  const { generatedCourses } = useCourseGeneration();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("all");
@@ -30,6 +29,8 @@ const CourseCatalog = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [isDesktop, setIsDesktop] = useState(window.innerWidth > 768);
   const [enrollingCourseId, setEnrollingCourseId] = useState(null);
+
+  const courses = generatedCourses || [];
 
   useEffect(() => {
     const handleResize = () => setIsDesktop(window.innerWidth > 768);
@@ -52,7 +53,7 @@ const CourseCatalog = () => {
         course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (course.tags &&
           course.tags.some((tag) =>
-            tag.toLowerCase().includes(searchTerm.toLowerCase())
+            tag.toLowerCase().includes(searchTerm.toLowerCase()),
           ));
 
       const matchesLevel =
@@ -78,11 +79,10 @@ const CourseCatalog = () => {
   const handleEnroll = async (courseId) => {
     setEnrollingCourseId(courseId);
     try {
-      await enrollInCourse(courseId);
-      addNotification("Enrolled successfully!", "success");
+      // AI courses are auto-enrolled, just navigate
       navigate(`/courses/${courseId}`);
     } catch {
-      addNotification("Failed to enroll. Please try again.", "error");
+      console.error("Failed to navigate to course");
     } finally {
       setEnrollingCourseId(null);
     }
@@ -250,8 +250,8 @@ const CourseCatalog = () => {
                         {enrollingCourseId === course.id
                           ? "Enrolling..."
                           : course.isEnrolled
-                          ? "Continue"
-                          : "Enroll"}
+                            ? "Continue"
+                            : "Enroll"}
                       </Button>
                     </div>
                   </div>

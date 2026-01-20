@@ -11,9 +11,6 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import AICatalog from "./pages/AICatalog/AICatalog";
 import AICourseDetail from "./pages/AICourseDetail/AICourseDetail";
 import AILessonViewer from "./pages/AILessonViewer/AILessonViewer";
-import CourseCatalog from "./pages/CourseCatalog/CourseCatalog";
-import CourseDetail from "./pages/CourseDetail/CourseDetail";
-import LessonViewer from "./pages/LessonViewer/LessonViewer";
 import PeerReview from "./pages/PeerReview/PeerReview";
 import Rewards from "./pages/Rewards/Rewards";
 import Certificates from "./pages/Certificates/Certificates";
@@ -78,10 +75,6 @@ export const router = createBrowserRouter([
             <AICatalog />
           </ProtectedRoute>
         ),
-      },
-      {
-        path: "courses",
-        Component: CourseCatalog,
       },
       {
         path: "courses/:courseId",

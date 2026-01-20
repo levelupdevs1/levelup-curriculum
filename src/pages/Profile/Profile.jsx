@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../hooks/useUser";
-import { useCourse } from "../../hooks/useCourse";
+import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import { getUserSubmissions } from "../../services/courseService";
 import {
   User,
@@ -25,7 +25,7 @@ import styles from "./Profile.module.css";
 
 const Profile = () => {
   const { user, profile } = useUser();
-  const { courses } = useCourse();
+  const { generatedCourses } = useCourseGeneration();
   const navigate = useNavigate();
   const [copiedWallet, setCopiedWallet] = useState(false);
   const [submissions, setSubmissions] = useState([]);
@@ -45,8 +45,8 @@ const Profile = () => {
     fetchSubmissions();
   }, [user]);
 
-  // Get enrolled courses
-  const enrolledCourses = courses.filter((course) => course.isEnrolled);
+  // Get enrolled courses (all AI-generated courses)
+  const enrolledCourses = generatedCourses || [];
 
   // Mock wallet address (will be replaced with real Hedera wallet)
   const walletAddress =
@@ -147,7 +147,7 @@ const Profile = () => {
               <span>
                 Joined{" "}
                 {new Date(
-                  profile?.created_at || Date.now()
+                  profile?.created_at || Date.now(),
                 ).toLocaleDateString()}
               </span>
             </div>
@@ -282,7 +282,7 @@ const Profile = () => {
                     {submissions.map((submission) => {
                       const lessonInfo = getLessonTitle(
                         submission.course_id,
-                        submission.assignment_id
+                        submission.assignment_id,
                       );
                       return (
                         <div
@@ -314,7 +314,7 @@ const Profile = () => {
                                   className={styles.submissionLesson}
                                   onClick={() =>
                                     navigate(
-                                      `/courses/${submission.course_id}/lessons/${submission.assignment_id}`
+                                      `/courses/${submission.course_id}/lessons/${submission.assignment_id}`,
                                     )
                                   }
                                 >
@@ -325,7 +325,7 @@ const Profile = () => {
                               <p className={styles.submissionDate}>
                                 Submitted on{" "}
                                 {new Date(
-                                  submission.created_at
+                                  submission.created_at,
                                 ).toLocaleDateString()}
                               </p>
                             </div>
@@ -339,10 +339,10 @@ const Profile = () => {
                               {submission.status === "pending"
                                 ? "Pending Review"
                                 : submission.status === "approved"
-                                ? "Approved"
-                                : submission.status === "rejected"
-                                ? "Needs Work"
-                                : submission.status}
+                                  ? "Approved"
+                                  : submission.status === "rejected"
+                                    ? "Needs Work"
+                                    : submission.status}
                             </span>
                             {submission.points_earned > 0 && (
                               <span className={styles.submissionPoints}>

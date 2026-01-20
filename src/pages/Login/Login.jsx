@@ -17,11 +17,9 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { login, isLoading } = useUser();
+  const { login, isLoading, hasCompletedOnboarding } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const from = location.state?.from?.pathname || "/dashboard";
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -66,7 +64,16 @@ const Login = () => {
       const result = await login(formData.email, formData.password);
 
       if (result.success) {
-        navigate(from, { replace: true });
+        // Check if user came from a protected route
+        const from = location.state?.from?.pathname;
+
+        // If user has completed onboarding, go to requested page or dashboard
+        // If not, redirect to onboarding
+        const destination = hasCompletedOnboarding
+          ? from || "/dashboard"
+          : "/onboarding";
+
+        navigate(destination, { replace: true });
       } else {
         setErrors({
           general: result.error || "Login failed. Please try again.",

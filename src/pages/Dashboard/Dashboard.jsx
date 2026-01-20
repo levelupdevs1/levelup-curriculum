@@ -1,19 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../hooks/useUser";
-import { useCourse } from "../../hooks/useCourse";
+import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import { Trophy, Coins, Flame, Star } from "lucide-react";
-import ContinueLearningSection from "../../components/Dashboard/ContinueLearningSection";
-import RecommendedCoursesSection from "../../components/Dashboard/RecommendedCoursesSection";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import styles from "./Dashboard.module.css";
 import StatCard from "../../components/StatCard/StatCard";
 
 const Dashboard = () => {
   const { user, profile } = useUser();
-  const { courses, _enrollInCourse } = useCourse();
+  const { generatedCourses } = useCourseGeneration();
   const navigate = useNavigate();
 
-  const enrolledCourses = courses.filter((course) => course.isEnrolled);
+  const enrolledCourses = generatedCourses || [];
   // const recentCourses = courses.slice(0, 3);
 
   // const handleEnrollCourse = (courseId) => {
@@ -22,7 +20,7 @@ const Dashboard = () => {
   // };
 
   const handleContinueLearning = (courseId) => {
-    // For enrolled courses, go to course details page
+    // Navigate to AI course details page
     navigate(`/courses/${courseId}`);
   };
 
@@ -70,7 +68,7 @@ const Dashboard = () => {
     },
     {
       title: "Completed Courses",
-      value: courses.filter((c) => c.isCompleted).length,
+      value: enrolledCourses.filter((c) => c.progress === 100).length,
       icon: Flame,
       color: "#ef4444",
     },
@@ -78,7 +76,7 @@ const Dashboard = () => {
 
   return (
     <div className={styles.dashboard}>
-      {!profile || !courses || courses.length === 0 ? (
+      {!profile ? (
         <LoadingSpinner size="lg" message="Loading your dashboard..." />
       ) : (
         <>
@@ -107,18 +105,40 @@ const Dashboard = () => {
 
           {/* Main Content Grid */}
           <div className={styles.contentGrid}>
-            <ContinueLearningSection
-              enrolledCourses={enrolledCourses}
-              onContinueCourse={handleContinueLearning}
-            />
-
-            {/* <div className="recommend">
-              <RecommendedCoursesSection
-                recommendedCourses={recentCourses}
-                onContinueCourse={handleContinueCourse}
-                onEnrollCourse={handleEnrollCourse}
-              />
-            </div> */}
+            {enrolledCourses.length > 0 ? (
+              <div className={styles.coursesSection}>
+                <h2>Your Courses</h2>
+                <div className={styles.coursesList}>
+                  {enrolledCourses.map((course) => (
+                    <div
+                      key={course.id}
+                      className={styles.courseCard}
+                      onClick={() => handleContinueLearning(course.id)}
+                    >
+                      <h3>{course.title}</h3>
+                      <p>{course.description}</p>
+                      <div className={styles.courseMetadata}>
+                        <span>{course.difficulty || "Beginner"}</span>
+                        <span>{course.estimated_hours || 0}h</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className={styles.emptyState}>
+                <p>
+                  No enrolled courses yet. Generate your personalized
+                  curriculum!
+                </p>
+                <button
+                  className={styles.generateBtn}
+                  onClick={() => navigate("/course-catalog")}
+                >
+                  Generate Courses
+                </button>
+              </div>
+            )}
           </div>
         </>
       )}

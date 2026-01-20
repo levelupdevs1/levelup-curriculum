@@ -183,7 +183,7 @@ export const mockGenerateLessonContent = async (
   };
 };
 
-export const mockGenerateAssessment = async (lessonTitle, lessonContent) => {
+export const mockGenerateAssessment = async (lessonTitle) => {
   await simulateDelay(1000);
 
   const assessment = {
@@ -260,7 +260,7 @@ export const mockReviewSubmission = async (submission, assessment) => {
         "Add more detailed explanations",
       ],
     },
-    questionReviews: assessment.questions.map((q, index) => ({
+    questionReviews: assessment.questions.map((q) => ({
       questionId: q.id,
       score: Math.floor(Math.random() * q.points * 0.3) + q.points * 0.7,
       maxScore: q.points,

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useCourse } from "../../hooks/useCourse";
+import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import {
   Trophy,
   Award,
@@ -16,8 +16,9 @@ import CertificateModal from "../../components/CertificateModal/CertificateModal
 import styles from "./Certificates.module.css";
 
 const Certificates = () => {
-  const { getUserCertificates } = useCourse();
-  const certificates = getUserCertificates();
+  const { generatedCourses } = useCourseGeneration();
+  // TODO: Implement certificate generation from completed AI courses
+  const certificates = [];
   const [copiedToken, setCopiedToken] = useState(null);
   const [expandedMetadata, setExpandedMetadata] = useState({});
   const [selectedCertificate, setSelectedCertificate] = useState(null);
@@ -81,18 +82,18 @@ const Certificates = () => {
             courseName={certificate.courseName}
             userName="John Doe"
             completionDate={new Date(
-              certificate.claimedAt
+              certificate.claimedAt,
             ).toLocaleDateString()}
             certificateId={certificate.tokenId}
             platformName="Level Up"
             level={
               certificate.nftMetadata.attributes.find(
-                (attr) => attr.trait_type === "Skill Level"
+                (attr) => attr.trait_type === "Skill Level",
               )?.value || "Intermediate"
             }
             skillLevel={
               certificate.nftMetadata.attributes.find(
-                (attr) => attr.trait_type === "Skill Level"
+                (attr) => attr.trait_type === "Skill Level",
               )?.value || "Intermediate"
             }
             onClick={() => handleCertificateClick(certificate)}

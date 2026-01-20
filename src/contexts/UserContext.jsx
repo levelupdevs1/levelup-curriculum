@@ -6,6 +6,7 @@ import {
   getUserProfile,
   onAuthStateChange,
 } from "../services/authService";
+import { getUserProfile as getAIUserProfile } from "../services/courseDataService";
 import { UserContext } from "./createUserContext";
 
 export const UserProvider = ({ children }) => {
@@ -15,6 +16,7 @@ export const UserProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
 
   // Listen to auth state changes on mount
   useEffect(() => {
@@ -47,10 +49,16 @@ export const UserProvider = ({ children }) => {
           };
           setProfile(defaultProfile);
         }
+
+        // Check if user has completed onboarding (ai_user_profiles exists)
+        const { success: profileSuccess, data: aiProfile } =
+          await getAIUserProfile(authUser.id);
+        setHasCompletedOnboarding(profileSuccess && aiProfile !== null);
       } else {
         setUser(null);
         setProfile(null);
         setIsAuthenticated(false);
+        setHasCompletedOnboarding(false);
       }
       setIsInitializing(false);
     });
@@ -82,6 +90,11 @@ export const UserProvider = ({ children }) => {
       } else {
         console.error("Error refreshing user profile:", profileError);
       }
+
+      // Re-check onboarding status
+      const { success: profileSuccess, data: aiProfile } =
+        await getAIUserProfile(user.id);
+      setHasCompletedOnboarding(profileSuccess && aiProfile !== null);
     } catch (error) {
       console.error("Error in refreshProfile:", error);
     }
@@ -120,7 +133,7 @@ export const UserProvider = ({ children }) => {
         email,
         password,
         fullName,
-        username
+        username,
       );
 
       if (!success) {
@@ -176,6 +189,7 @@ export const UserProvider = ({ children }) => {
     isLoading,
     isInitializing,
     error,
+    hasCompletedOnboarding,
     login,
     register,
     logout,

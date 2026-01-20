@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useCourse } from "../../hooks/useCourse";
+import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import {
   ArrowLeft,
   Star,
@@ -17,21 +17,19 @@ import styles from "./PeerReview.module.css";
 const PeerReview = () => {
   const { courseId, lessonId } = useParams();
   const navigate = useNavigate();
-  const {
-    getCourseById,
-    getLessonById,
-    getPeerReviewSubmissions,
-    submitPeerReview,
-  } = useCourse();
+  const { generatedCourses } = useCourseGeneration();
 
   const [currentSubmissionIndex, setCurrentSubmissionIndex] = useState(0);
   const [rating, setRating] = useState(5);
   const [feedback, setFeedback] = useState("");
   const [submittedReviews, setSubmittedReviews] = useState(new Set());
 
-  const course = getCourseById(courseId);
-  const lesson = getLessonById(courseId, lessonId);
-  const submissions = getPeerReviewSubmissions(courseId, lessonId);
+  // Find course and lesson from AI-generated courses
+  const course = generatedCourses?.find((c) => c.id === courseId);
+  const lesson = course?.modules
+    ?.flatMap((m) => m.lessons)
+    .find((l) => l.id === lessonId);
+  const submissions = []; // TODO: Implement peer review submissions for AI courses
 
   if (!course || !lesson) {
     return (
@@ -65,7 +63,8 @@ const PeerReview = () => {
 
   const handleSubmitReview = () => {
     if (feedback.trim()) {
-      submitPeerReview(currentSubmission.id, { rating, feedback });
+      // TODO: Implement submitPeerReview for AI courses
+      // submitPeerReview(currentSubmission.id, { rating, feedback });
       setSubmittedReviews((prev) => new Set([...prev, currentSubmission.id]));
       setFeedback("");
       setRating(5);
@@ -214,12 +213,12 @@ const PeerReview = () => {
                 {rating === 1
                   ? "Poor"
                   : rating === 2
-                  ? "Fair"
-                  : rating === 3
-                  ? "Good"
-                  : rating === 4
-                  ? "Very Good"
-                  : "Excellent"}
+                    ? "Fair"
+                    : rating === 3
+                      ? "Good"
+                      : rating === 4
+                        ? "Very Good"
+                        : "Excellent"}
               </span>
             </div>
           </div>
