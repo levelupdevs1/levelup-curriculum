@@ -41,7 +41,7 @@ const AILessonViewer = () => {
   useEffect(() => {
     // Reset the flag when lessonId changes
     hasGeneratedRef.current = false;
-    
+
     // Prevent double execution in React StrictMode
     if (hasGeneratedRef.current) {
       console.log("⏭️ useEffect skipped - already processed");
@@ -113,13 +113,13 @@ const AILessonViewer = () => {
       console.log("✅ Loading existing lesson content from database");
       setLesson(lessonData.content);
       setAssessment(lessonData.assessment);
-      
+
       // Load existing review if available
       if (lessonData.review) {
         console.log("✅ Found existing review:", lessonData.review);
         setReview(lessonData.review);
       }
-      
+
       return;
     }
 
@@ -256,21 +256,26 @@ const AILessonViewer = () => {
         // Save review to database
         try {
           console.log("💾 Saving review to database...");
-          
+
           // Get fresh course data from context
           const freshCourse = getCourseById(courseId);
-          const courseModules = freshCourse?.structure?.modules || freshCourse?.modules;
-          
+          const courseModules =
+            freshCourse?.structure?.modules || freshCourse?.modules;
+
           if (!freshCourse || !courseModules) {
-            console.error("❌ Course structure not found!", { 
-              freshCourse, 
+            console.error("❌ Course structure not found!", {
+              freshCourse,
               hasStructure: !!freshCourse?.structure,
-              hasModules: !!freshCourse?.modules 
+              hasModules: !!freshCourse?.modules,
             });
             throw new Error("Course structure is missing");
           }
-          
-          console.log("📦 Using course modules:", courseModules.length, "modules");
+
+          console.log(
+            "📦 Using course modules:",
+            courseModules.length,
+            "modules",
+          );
           const updatedModules = courseModules.map((mod, mIdx) => {
             if (mIdx === moduleIndex) {
               return {
@@ -292,7 +297,9 @@ const AILessonViewer = () => {
             return mod;
           });
 
-          const dbResult = await updateCourse(courseId, { modules: updatedModules });
+          const dbResult = await updateCourse(courseId, {
+            modules: updatedModules,
+          });
           console.log("✅ Review saved to database:", dbResult);
         } catch (dbErr) {
           console.error("⚠️ Failed to save review to database:", dbErr);
@@ -300,23 +307,24 @@ const AILessonViewer = () => {
 
         if (aggregatedReview.passed) {
           console.log("🎉 Assessment PASSED! Updating progress...");
-          
+
           // Get fresh course data again for progress calculation
           const freshCourse = getCourseById(courseId);
-          const progressModules = freshCourse?.structure?.modules || freshCourse?.modules;
-          
+          const progressModules =
+            freshCourse?.structure?.modules || freshCourse?.modules;
+
           if (!freshCourse || !progressModules) {
             console.error("❌ Cannot find course for progress update");
             return;
           }
-          
+
           const completedLessons = [
             ...(freshCourse.progress?.completedLessons || []),
             lessonId,
           ];
-          
+
           console.log("📝 Completed lessons:", completedLessons);
-          
+
           const nextLessonIndex = lessonIndex + 1;
           const nextModuleIndex =
             nextLessonIndex >= progressModules[moduleIndex].lessons.length
@@ -341,7 +349,12 @@ const AILessonViewer = () => {
           updateCourseProgress(courseId, progressUpdate);
           console.log("✅ Progress updated!");
         } else {
-          console.log("❌ Assessment NOT PASSED. Score:", aggregatedReview.score, "Required:", aggregatedReview.passingScore);
+          console.log(
+            "❌ Assessment NOT PASSED. Score:",
+            aggregatedReview.score,
+            "Required:",
+            aggregatedReview.passingScore,
+          );
         }
       } else {
         console.error("❌ Review failed:", result.error);
@@ -513,10 +526,7 @@ const AILessonViewer = () => {
                 >
                   View Feedback
                 </Button>
-                <Button
-                  variant="primary"
-                  onClick={handleNextLesson}
-                >
+                <Button variant="primary" onClick={handleNextLesson}>
                   Next Lesson →
                 </Button>
               </div>
@@ -562,60 +572,60 @@ const AILessonViewer = () => {
                                       [questionId]: parseInt(e.target.value),
                                     }))
                                   }
-                              />
-                              <span>{option}</span>
-                            </label>
-                          ))}
+                                />
+                                <span>{option}</span>
+                              </label>
+                            ))}
+                          </div>
+                        )}
+
+                        {question.type === "coding" && (
+                          <textarea
+                            className={styles.codeInput}
+                            placeholder={question.starterCode}
+                            rows={10}
+                            onChange={(e) =>
+                              setSubmission((prev) => ({
+                                ...prev,
+                                [questionId]: e.target.value,
+                              }))
+                            }
+                          />
+                        )}
+
+                        {question.type === "code_challenge" && (
+                          <textarea
+                            className={styles.codeInput}
+                            placeholder="Write your code here..."
+                            rows={6}
+                            onChange={(e) =>
+                              setSubmission((prev) => ({
+                                ...prev,
+                                [questionId]: e.target.value,
+                              }))
+                            }
+                          />
+                        )}
+
+                        {question.type === "short_answer" && (
+                          <textarea
+                            className={styles.textInput}
+                            placeholder="Type your answer here..."
+                            rows={question.type === "code_challenge" ? 4 : 6}
+                            onChange={(e) =>
+                              setSubmission((prev) => ({
+                                ...prev,
+                                [questionId]: e.target.value,
+                              }))
+                            }
+                          />
+                        )}
+
+                        <div className={styles.points}>
+                          Points: {question.points}
                         </div>
-                      )}
-
-                      {question.type === "coding" && (
-                        <textarea
-                          className={styles.codeInput}
-                          placeholder={question.starterCode}
-                          rows={10}
-                          onChange={(e) =>
-                            setSubmission((prev) => ({
-                              ...prev,
-                              [questionId]: e.target.value,
-                            }))
-                          }
-                        />
-                      )}
-
-                      {question.type === "code_challenge" && (
-                        <textarea
-                          className={styles.codeInput}
-                          placeholder="Write your code here..."
-                          rows={6}
-                          onChange={(e) =>
-                            setSubmission((prev) => ({
-                              ...prev,
-                              [questionId]: e.target.value,
-                            }))
-                          }
-                        />
-                      )}
-
-                      {question.type === "short_answer" && (
-                        <textarea
-                          className={styles.textInput}
-                          placeholder="Type your answer here..."
-                          rows={question.type === "code_challenge" ? 4 : 6}
-                          onChange={(e) =>
-                            setSubmission((prev) => ({
-                              ...prev,
-                              [questionId]: e.target.value,
-                            }))
-                          }
-                        />
-                      )}
-
-                      <div className={styles.points}>
-                        Points: {question.points}
                       </div>
-                    </div>
-                  );
+                    );
                   })}
                 </div>
 

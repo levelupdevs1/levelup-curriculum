@@ -125,17 +125,17 @@ Return valid JSON with title, description, difficulty, estimatedHours, modulesCo
 
   try {
     let cleanContent = result.content.trim();
-    
+
     if (cleanContent.includes("```")) {
       cleanContent = cleanContent
         .replace(/^```(?:json)?\s*\n?/, "")
         .replace(/\n?```\s*$/, "")
         .trim();
     }
-    
+
     cleanContent = cleanContent.replace(/^["'`]+|["'`]+$/g, "");
     cleanContent = cleanContent.replace(/([^\\])\n/g, "$1\\n");
-    
+
     if (cleanContent.startsWith("\n")) {
       cleanContent = cleanContent.replace(/^\n/, "\\n");
     }
@@ -149,7 +149,10 @@ Return valid JSON with title, description, difficulty, estimatedHours, modulesCo
     };
   } catch (error) {
     console.error("❌ Failed to parse Groq catalog:", error);
-    console.error("📄 Raw content (first 500 chars):", result.content.substring(0, 500));
+    console.error(
+      "📄 Raw content (first 500 chars):",
+      result.content.substring(0, 500),
+    );
     return {
       success: false,
       error: `Failed to parse response: ${error.message}`,
@@ -193,17 +196,17 @@ Return valid JSON: { modules: [{ title, description, lessons: [{id, title, descr
 
   try {
     let cleanContent = result.content.trim();
-    
+
     if (cleanContent.includes("```")) {
       cleanContent = cleanContent
         .replace(/^```(?:json)?\s*\n?/, "")
         .replace(/\n?```\s*$/, "")
         .trim();
     }
-    
+
     cleanContent = cleanContent.replace(/^["'`]+|["'`]+$/g, "");
     cleanContent = cleanContent.replace(/([^\\])\n/g, "$1\\n");
-    
+
     if (cleanContent.startsWith("\n")) {
       cleanContent = cleanContent.replace(/^\n/, "\\n");
     }
@@ -267,7 +270,7 @@ Return JSON: { content, objectives: [], keyTakeaways: [], externalResources: [] 
 
   try {
     let cleanContent = result.content.trim();
-    
+
     // Remove markdown code blocks
     if (cleanContent.includes("```")) {
       cleanContent = cleanContent
@@ -275,19 +278,22 @@ Return JSON: { content, objectives: [], keyTakeaways: [], externalResources: [] 
         .replace(/\n?```\s*$/, "")
         .trim();
     }
-    
+
     // Remove any leading/trailing quotes or brackets that aren't JSON
     cleanContent = cleanContent.replace(/^["'`]+|["'`]+$/g, "");
-    
+
     // Escape unescaped newlines in strings
     cleanContent = cleanContent.replace(/([^\\])\n/g, "$1\\n");
-    
+
     // Handle leading newline
     if (cleanContent.startsWith("\n")) {
       cleanContent = cleanContent.replace(/^\n/, "\\n");
     }
 
-    console.log("🧹 Cleaned Groq lesson content (first 200 chars):", cleanContent.substring(0, 200));
+    console.log(
+      "🧹 Cleaned Groq lesson content (first 200 chars):",
+      cleanContent.substring(0, 200),
+    );
 
     const content = JSON.parse(cleanContent);
     return {
@@ -298,7 +304,10 @@ Return JSON: { content, objectives: [], keyTakeaways: [], externalResources: [] 
     };
   } catch (error) {
     console.error("❌ Failed to parse Groq lesson content:", error);
-    console.error("📄 Raw content (first 500 chars):", result.content.substring(0, 500));
+    console.error(
+      "📄 Raw content (first 500 chars):",
+      result.content.substring(0, 500),
+    );
     return {
       success: false,
       error: `Failed to parse response: ${error.message}`,
@@ -339,17 +348,17 @@ Return JSON: { title, description, questions: [{id, question, type, options/star
 
   try {
     let cleanContent = result.content.trim();
-    
+
     if (cleanContent.includes("```")) {
       cleanContent = cleanContent
         .replace(/^```(?:json)?\s*\n?/, "")
         .replace(/\n?```\s*$/, "")
         .trim();
     }
-    
+
     cleanContent = cleanContent.replace(/^["'`]+|["'`]+$/g, "");
     cleanContent = cleanContent.replace(/([^\\])\n/g, "$1\\n");
-    
+
     if (cleanContent.startsWith("\n")) {
       cleanContent = cleanContent.replace(/^\n/, "\\n");
     }
@@ -378,15 +387,23 @@ export const reviewSubmissionBatchGroq = async (
   submissionAnswers,
 ) => {
   // Debug: Log what we're receiving
-  console.log("📋 Questions:", questions.map(q => ({ id: q.id, type: q.type })));
+  console.log(
+    "📋 Questions:",
+    questions.map((q) => ({ id: q.id, type: q.type })),
+  );
   console.log("📝 Submission answers:", submissionAnswers);
 
   // Build structured format with all Q&A pairs, mapping indices to actual answers
   const questionsData = questions
     .map((q, idx) => {
       let answerText = submissionAnswers[q.id];
-      
-      console.log(`Q${idx + 1} (${q.id}): Got answer:`, answerText, "Type:", q.type);
+
+      console.log(
+        `Q${idx + 1} (${q.id}): Got answer:`,
+        answerText,
+        "Type:",
+        q.type,
+      );
 
       // For multiple choice, map index to the actual option text
       if (q.type === "multiple_choice" && answerText !== undefined) {
@@ -410,9 +427,8 @@ Student Answer: ${answerText}
 ---`;
     })
     .join("\n");
-  
-  console.log("📤 Sending to Groq:", questionsData.substring(0, 300));
 
+  console.log("📤 Sending to Groq:", questionsData.substring(0, 300));
 
   const systemPrompt = `You are a rigorous assessment evaluator. Evaluate ONLY based on provided content.
 DO NOT:
@@ -464,17 +480,17 @@ Return JSON (keep all text on single lines):
 
   try {
     let cleanContent = result.content.trim();
-    
+
     if (cleanContent.includes("```")) {
       cleanContent = cleanContent
         .replace(/^```(?:json)?\s*\n?/, "")
         .replace(/\n?```\s*$/, "")
         .trim();
     }
-    
+
     cleanContent = cleanContent.replace(/^["'`]+|["'`]+$/g, "");
     cleanContent = cleanContent.replace(/([^\\])\n/g, "$1\\n");
-    
+
     if (cleanContent.startsWith("\n")) {
       cleanContent = cleanContent.replace(/^\n/, "\\n");
     }

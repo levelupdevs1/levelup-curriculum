@@ -608,15 +608,23 @@ export const reviewSubmissionBatchGemini = async (
   submissionAnswers,
 ) => {
   // Debug: Log what we're receiving
-  console.log("📋 Questions:", questions.map(q => ({ id: q.id, type: q.type })));
+  console.log(
+    "📋 Questions:",
+    questions.map((q) => ({ id: q.id, type: q.type })),
+  );
   console.log("📝 Submission answers:", submissionAnswers);
 
   // Build structured format with all Q&A pairs, mapping indices to actual answers
   const questionsData = questions
     .map((q, idx) => {
       let answerText = submissionAnswers[q.id];
-      
-      console.log(`Q${idx + 1} (${q.id}): Got answer:`, answerText, "Type:", q.type);
+
+      console.log(
+        `Q${idx + 1} (${q.id}): Got answer:`,
+        answerText,
+        "Type:",
+        q.type,
+      );
 
       // For multiple choice, map index to the actual option text
       if (q.type === "multiple_choice" && answerText !== undefined) {
@@ -640,7 +648,7 @@ Student Answer: ${answerText}
 ---`;
     })
     .join("\n");
-  
+
   console.log("📤 Sending to Gemini:", questionsData.substring(0, 300));
 
   const prompt = `Review this student's assessment submission. For EACH question, provide feedback.

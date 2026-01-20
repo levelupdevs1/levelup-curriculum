@@ -134,14 +134,17 @@ export const CourseGenerationProvider = ({ children }) => {
         course.id === courseId ? { ...course, progress } : course,
       );
     });
-    
+
     // Save progress to database
     import("../services/courseDataService").then(({ updateCourse }) => {
       updateCourse(courseId, { progress }).then((result) => {
         if (result.success) {
           console.log("✅ Progress saved to database:", progress);
         } else {
-          console.error("❌ Failed to save progress to database:", result.error);
+          console.error(
+            "❌ Failed to save progress to database:",
+            result.error,
+          );
         }
       });
     });
