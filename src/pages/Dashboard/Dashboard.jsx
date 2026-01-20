@@ -2,7 +2,15 @@ import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../hooks/useUser";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
-import { Trophy, BookOpen, Flame, Star, Zap, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Trophy,
+  BookOpen,
+  Flame,
+  Star,
+  Zap,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import ProgressBar from "../../components/ProgressBar/ProgressBar";
 import Card from "../../components/Card/Card";
@@ -30,11 +38,12 @@ const Dashboard = () => {
 
   // Show all personalized courses on dashboard (not just enrolled)
   const allCourses = useMemo(() => generatedCourses || [], [generatedCourses]);
-  const enrolledCourses = useMemo(() => 
-    contextEnrolledCourses?.length > 0
-      ? contextEnrolledCourses
-      : allCourses.filter((c) => c.status === "enrolled"),
-    [contextEnrolledCourses, allCourses]
+  const enrolledCourses = useMemo(
+    () =>
+      contextEnrolledCourses?.length > 0
+        ? contextEnrolledCourses
+        : allCourses.filter((c) => c.status === "enrolled"),
+    [contextEnrolledCourses, allCourses],
   );
 
   // Pagination
@@ -224,28 +233,34 @@ const Dashboard = () => {
                   <div className={styles.pagination}>
                     <button
                       className={styles.pageButton}
-                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.max(prev - 1, 1))
+                      }
                       disabled={currentPage === 1}
                     >
                       <ChevronLeft size={20} />
                       Previous
                     </button>
-                    
+
                     <div className={styles.pageNumbers}>
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                        <button
-                          key={page}
-                          className={`${styles.pageNumber} ${currentPage === page ? styles.activePage : ""}`}
-                          onClick={() => setCurrentPage(page)}
-                        >
-                          {page}
-                        </button>
-                      ))}
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                        (page) => (
+                          <button
+                            key={page}
+                            className={`${styles.pageNumber} ${currentPage === page ? styles.activePage : ""}`}
+                            onClick={() => setCurrentPage(page)}
+                          >
+                            {page}
+                          </button>
+                        ),
+                      )}
                     </div>
-                    
+
                     <button
                       className={styles.pageButton}
-                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      onClick={() =>
+                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                      }
                       disabled={currentPage === totalPages}
                     >
                       Next
