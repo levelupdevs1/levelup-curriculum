@@ -33,8 +33,21 @@ export const UserProvider = ({ children }) => {
           error: profileError,
         } = await getUserProfile(authUser.id);
 
+        // Check if user has completed onboarding and get AI profile data
+        const { success: profileSuccess, data: aiProfile } =
+          await getAIUserProfile(authUser.id);
+        setHasCompletedOnboarding(profileSuccess && aiProfile !== null);
+
         if (success) {
-          setProfile(userProfile);
+          // Merge AI profile data (XP, level) with user profile
+          const mergedProfile = {
+            ...userProfile,
+            total_experience: aiProfile?.total_experience || 0,
+            current_level:
+              aiProfile?.current_level || userProfile?.current_level || 1,
+            platform_tokens_balance: aiProfile?.platform_tokens_balance || 0,
+          };
+          setProfile(mergedProfile);
         } else {
           console.error("Error fetching user profile:", profileError);
           const defaultProfile = {
@@ -43,17 +56,14 @@ export const UserProvider = ({ children }) => {
             full_name: authUser.user_metadata?.full_name || authUser.email,
             username:
               authUser.user_metadata?.username || authUser.email.split("@")[0],
-            current_level: 1,
+            current_level: aiProfile?.current_level || 1,
+            total_experience: aiProfile?.total_experience || 0,
             total_points: 0,
             created_at: new Date().toISOString(),
           };
+
           setProfile(defaultProfile);
         }
-
-        // Check if user has completed onboarding (ai_user_profiles exists)
-        const { success: profileSuccess, data: aiProfile } =
-          await getAIUserProfile(authUser.id);
-        setHasCompletedOnboarding(profileSuccess && aiProfile !== null);
       } else {
         setUser(null);
         setProfile(null);
@@ -85,16 +95,24 @@ export const UserProvider = ({ children }) => {
         error: profileError,
       } = await getUserProfile(user.id);
 
-      if (success) {
-        setProfile(userProfile);
-      } else {
-        console.error("Error refreshing user profile:", profileError);
-      }
-
-      // Re-check onboarding status
+      // Re-check onboarding status and get AI profile data
       const { success: profileSuccess, data: aiProfile } =
         await getAIUserProfile(user.id);
       setHasCompletedOnboarding(profileSuccess && aiProfile !== null);
+
+      if (success) {
+        // Merge AI profile data (XP, level) with user profile
+        const mergedProfile = {
+          ...userProfile,
+          total_experience: aiProfile?.total_experience || 0,
+          current_level:
+            aiProfile?.current_level || userProfile?.current_level || 1,
+          platform_tokens_balance: aiProfile?.platform_tokens_balance || 0,
+        };
+        setProfile(mergedProfile);
+      } else {
+        console.error("Error refreshing user profile:", profileError);
+      }
     } catch (error) {
       console.error("Error in refreshProfile:", error);
     }

@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
-import { useAIToken } from "../../hooks/useAIToken";
 import { useUser } from "../../hooks/useUser";
 import Button from "../../components/Button/Button";
 import Card from "../../components/Card/Card";
+import Modal from "../../components/Modal/Modal";
 import styles from "./Onboarding.module.css";
 
 const ONBOARDING_STEPS = [
@@ -54,13 +54,44 @@ const ONBOARDING_STEPS = [
 
 const Onboarding = () => {
   const navigate = useNavigate();
-  const { updateUserProfile } = useCourseGeneration();
-  const { canUseTokens } = useAIToken();
-  const { refreshProfile } = useUser();
+  const location = useLocation();
+  const { updateUserProfile, userProfile, generatedCourses } =
+    useCourseGeneration();
+  const { refreshProfile, profile } = useUser();
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState({});
   const [customInput, setCustomInput] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
+  const [showGenerateModal, setShowGenerateModal] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Determine if this is an update (user already has a profile)
+  const existingProfile = userProfile || profile;
+  const isUpdateMode =
+    existingProfile?.learning_goal || existingProfile?.onboarding_completed;
+  const hasExistingCourses = generatedCourses?.length > 0;
+
+  // Pre-fill answers from existing profile
+  useEffect(() => {
+    if (existingProfile && isUpdateMode) {
+      const prefilled = {};
+
+      if (existingProfile.learning_goal) {
+        prefilled.learning_goal = existingProfile.learning_goal;
+      }
+      if (existingProfile.skill_level) {
+        prefilled.skill_level = existingProfile.skill_level;
+      }
+      if (existingProfile.goal) {
+        prefilled.goal = existingProfile.goal;
+      }
+      if (existingProfile.time_commitment) {
+        prefilled.time_commitment = existingProfile.time_commitment;
+      }
+
+      setAnswers(prefilled);
+    }
+  }, [existingProfile, isUpdateMode]);
 
   const step = ONBOARDING_STEPS[currentStep];
   const isLastStep = currentStep === ONBOARDING_STEPS.length - 1;
@@ -102,32 +133,53 @@ const Onboarding = () => {
   };
 
   const handleComplete = async () => {
-    const profile = {
+    setSaving(true);
+
+    const newProfile = {
       learning_goal: answers.learning_goal,
       skill_level: answers.skill_level,
       goal: answers.goal,
       time_commitment: answers.time_commitment,
-      learning_style: "Project-based (The Odin Project style)", // Default to Odin Project approach
+      learning_style: "Project-based (The Odin Project style)",
     };
 
-    const result = await updateUserProfile(profile);
+    const result = await updateUserProfile(newProfile);
 
     if (result?.success) {
-      // Refresh user context to update hasCompletedOnboarding
       await refreshProfile();
+      setSaving(false);
 
-      // Small delay to ensure state updates propagate
-      setTimeout(() => {
-        // Navigate based on token availability
-        if (canUseTokens(50)) {
+      // If updating and has existing courses, ask if they want new courses
+      if (isUpdateMode && hasExistingCourses) {
+        setShowGenerateModal(true);
+      } else {
+        // First time user - go to catalog to generate courses
+        setTimeout(() => {
           navigate("/course-catalog", { replace: true });
-        } else {
-          navigate("/dashboard", { replace: true });
-        }
-      }, 100);
+        }, 100);
+      }
     } else {
       console.error("Failed to save profile:", result?.error);
+      setSaving(false);
     }
+  };
+
+  const handleGenerateNewCourses = () => {
+    setShowGenerateModal(false);
+    // Navigate to catalog which will show option to generate new courses
+    navigate("/course-catalog?generate=true", { replace: true });
+  };
+
+  const handleKeepExisting = () => {
+    setShowGenerateModal(false);
+    // Go back to where they came from (profile or dashboard)
+    const from = location.state?.from || "/profile";
+    navigate(from, { replace: true });
+  };
+
+  const handleCancel = () => {
+    const from = location.state?.from || "/dashboard";
+    navigate(from);
   };
 
   const progressPercentage =
@@ -137,8 +189,14 @@ const Onboarding = () => {
     <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.header}>
-          <h1>Welcome to Level Up</h1>
-          <p>Let&apos;s personalize your learning experience</p>
+          <h1>
+            {isUpdateMode ? "Update Your Preferences" : "Welcome to Level Up"}
+          </h1>
+          <p>
+            {isUpdateMode
+              ? "Update your learning preferences. Your existing courses will be kept."
+              : "Let's personalize your learning experience"}
+          </p>
         </div>
 
         <div className={styles.progressBar}>
@@ -214,18 +272,57 @@ const Onboarding = () => {
         </Card>
 
         <div className={styles.navigation}>
+          {isUpdateMode && currentStep === 0 ? (
+            <Button variant="secondary" onClick={handleCancel}>
+              Cancel
+            </Button>
+          ) : (
+            <Button
+              variant="secondary"
+              onClick={handleBack}
+              disabled={currentStep === 0}
+            >
+              Back
+            </Button>
+          )}
           <Button
-            variant="secondary"
-            onClick={handleBack}
-            disabled={currentStep === 0}
+            variant="primary"
+            onClick={handleNext}
+            disabled={!canProceed || saving}
           >
-            Back
-          </Button>
-          <Button variant="primary" onClick={handleNext} disabled={!canProceed}>
-            {isLastStep ? "Complete" : "Next"}
+            {saving
+              ? "Saving..."
+              : isLastStep
+                ? isUpdateMode
+                  ? "Save Changes"
+                  : "Complete"
+                : "Next"}
           </Button>
         </div>
       </div>
+
+      {/* Modal for asking about new courses after update */}
+      <Modal
+        isOpen={showGenerateModal}
+        onClose={handleKeepExisting}
+        title="Preferences Updated!"
+      >
+        <div className={styles.modalContent}>
+          <p>Your learning preferences have been updated successfully.</p>
+          <p>
+            Would you like to generate new courses based on your updated
+            preferences? Your existing courses will be kept.
+          </p>
+          <div className={styles.modalActions}>
+            <Button variant="secondary" onClick={handleKeepExisting}>
+              Keep Existing Courses
+            </Button>
+            <Button variant="primary" onClick={handleGenerateNewCourses}>
+              Generate New Courses
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

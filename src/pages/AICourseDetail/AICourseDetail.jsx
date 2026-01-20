@@ -33,40 +33,38 @@ const AICourseDetail = () => {
 
     console.log("📚 Course data from DB:", {
       title: enrolledCourse.title,
+      status: enrolledCourse.status,
       hasModules: !!enrolledCourse.modules,
-      modulesType: typeof enrolledCourse.modules,
       modulesIsArray: Array.isArray(enrolledCourse.modules),
       modulesLength: enrolledCourse.modules?.length,
-      hasGeneratedBefore: hasGeneratedRef.current,
+      progress: enrolledCourse.progress,
+      completedLessons: enrolledCourse.progress?.completedLessons,
     });
 
-    // Check if structure exists in database (modules field)
-    const hasStructure =
+    // Structure should already exist from enrollment - just load it
+    const hasValidStructure =
       enrolledCourse.modules &&
       Array.isArray(enrolledCourse.modules) &&
       enrolledCourse.modules.length > 0;
 
-    if (hasStructure) {
-      // Load structure from database - PRIORITY
-      console.log("✅ Loading existing structure from database");
+    if (hasValidStructure) {
+      console.log(
+        "✅ Loading structure with",
+        enrolledCourse.modules.length,
+        "modules",
+      );
       setCourse({
         ...enrolledCourse,
         structure: { modules: enrolledCourse.modules },
       });
       setCurrentCourse(enrolledCourse);
-    } else if (!hasGeneratedRef.current) {
-      // Only generate if not in database AND haven't generated this session
-      console.log("🔨 No structure found, generating...");
-      hasGeneratedRef.current = true;
-      setCourse(enrolledCourse);
-      setCurrentCourse(enrolledCourse);
-      generateStructure(enrolledCourse);
     } else {
-      console.log("⏭️ Already generated in this session, skipping");
+      // This shouldn't happen if enrollment worked correctly
+      console.error("❌ No modules found after enrollment. This is a bug.");
+      setError("Course structure missing. Please try enrolling again.");
       setCourse(enrolledCourse);
-      setCurrentCourse(enrolledCourse);
     }
-  }, [courseId]);
+  }, [courseId, getCourseById]);
 
   const generateStructure = async (enrolledCourse) => {
     const tokenCost = AI_TOKEN_COSTS.GENERATE_COURSE_STRUCTURE;
@@ -152,10 +150,15 @@ const AICourseDetail = () => {
   };
 
   const getCompletionPercentage = () => {
-    if (!course?.structure || !course?.progress) return 0;
+    const modules = course?.structure?.modules || course?.modules || [];
+    if (modules.length === 0) return 0;
 
-    const totalLessons = course.structure.totalLessons || 0;
-    const completedLessons = course.progress.completedLessons?.length || 0;
+    // Calculate total lessons from all modules
+    const totalLessons = modules.reduce(
+      (sum, module) => sum + (module.lessons?.length || 0),
+      0,
+    );
+    const completedLessons = course?.progress?.completedLessons?.length || 0;
 
     return totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
   };

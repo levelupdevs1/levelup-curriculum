@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import {
@@ -22,13 +22,67 @@ import ModuleList from "../../components/ModuleList/ModuleList";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import styles from "./CourseDetail.module.css";
 
+// Helper to get all lessons from modules
+const getAllLessons = (course) => {
+  if (!course?.modules) return [];
+  return course.modules.flatMap((module) => module.lessons || []);
+};
+
 const CourseDetail = () => {
   const { courseId } = useParams();
-  const { generatedCourses } = useCourseGeneration();
+  const { generatedCourses, enrolledCourses, enrollInCourse } =
+    useCourseGeneration();
   const navigate = useNavigate();
   const [expandedModules, setExpandedModules] = useState({});
+  const [enrolling, setEnrolling] = useState(false);
 
-  const course = generatedCourses?.find((c) => c.id === courseId);
+  // Try to find from enrolled courses first (has latest progress), then generated
+  const rawCourse =
+    enrolledCourses?.find((c) => c.id === courseId) ||
+    generatedCourses?.find((c) => c.id === courseId);
+
+  // Process the course to add isCompleted and isLocked based on progress
+  const course = useMemo(() => {
+    if (!rawCourse) return null;
+
+    const completedLessons = rawCourse.progress?.completedLessons || [];
+    const modules = rawCourse.modules || rawCourse.structure?.modules || [];
+
+    if (!modules.length) return rawCourse;
+
+    // Flatten all lessons to determine locking logic
+    const allLessons = modules.flatMap((m) => m.lessons || []);
+
+    // Process modules to add isCompleted and isLocked to each lesson
+    const processedModules = modules.map((module) => ({
+      ...module,
+      lessons: (module.lessons || []).map((lesson) => {
+        const lessonIndex = allLessons.findIndex((l) => l.id === lesson.id);
+        const isCompleted = completedLessons.includes(lesson.id);
+
+        // First lesson is always unlocked, others require previous lesson completed
+        let isLocked = false;
+        if (lessonIndex > 0) {
+          const previousLesson = allLessons[lessonIndex - 1];
+          isLocked = !completedLessons.includes(previousLesson.id);
+        }
+
+        return { ...lesson, isCompleted, isLocked };
+      }),
+    }));
+
+    // Calculate overall progress percentage
+    const totalLessons = allLessons.length;
+    const completedCount = completedLessons.length;
+    const progressPercentage =
+      totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+
+    return {
+      ...rawCourse,
+      modules: processedModules,
+      progress: progressPercentage,
+    };
+  }, [rawCourse]);
 
   if (!course) {
     return (
@@ -38,12 +92,24 @@ const CourseDetail = () => {
     );
   }
 
-  const handleEnroll = () => {
-    // AI courses are auto-enrolled, just navigate to first lesson
-    if (course?.modules?.[0]?.lessons?.[0]) {
-      navigate(
-        `/courses/${courseId}/lessons/${course.modules[0].lessons[0].id}`,
-      );
+  const handleEnroll = async () => {
+    setEnrolling(true);
+    try {
+      console.log("📝 Enrolling in course from detail page...");
+      const result = await enrollInCourse(courseId);
+
+      if (result.success && result.data?.modules?.[0]?.lessons?.[0]) {
+        console.log("✅ Enrolled, navigating to first lesson...");
+        navigate(
+          `/courses/${courseId}/lessons/${result.data.modules[0].lessons[0].id}`,
+        );
+      } else if (!result.success) {
+        console.error("❌ Enrollment failed:", result.error);
+      }
+    } catch (error) {
+      console.error("Failed to enroll:", error);
+    } finally {
+      setEnrolling(false);
     }
   };
 

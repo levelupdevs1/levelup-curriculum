@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect, useRef, useMemo } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import { useAIToken } from "../../hooks/useAIToken";
 import {
@@ -9,13 +9,17 @@ import {
   getActiveProvider,
 } from "../../services/aiServiceReal";
 import Button from "../../components/Button/Button";
-import Card from "../../components/Card/Card";
+import AICourseCard from "../../components/AICourseCard/AICourseCard";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
-import courseDefaultImage from "../../assets/course-default.svg";
+import { Search, ChevronLeft, ChevronRight, Filter } from "lucide-react";
 import styles from "./AICatalog.module.css";
+
+const COURSES_PER_PAGE = 6;
+const DIFFICULTY_OPTIONS = ["All", "Beginner", "Intermediate", "Advanced"];
 
 const AICatalog = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const {
     userProfile,
     generatedCourses,
@@ -23,14 +27,65 @@ const AICatalog = () => {
     addGeneratedCourses,
     enrollInCourse,
   } = useCourseGeneration();
-  const {
-    canUseTokens,
-    useTokens: consumeTokens,
-    tokensRemaining,
-  } = useAIToken();
+  const { useTokens: consumeTokens, tokensRemaining } = useAIToken();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [difficultyFilter, setDifficultyFilter] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
   const hasGeneratedRef = useRef(false);
+
+  // Check if we should generate new courses (from preference update)
+  const shouldGenerate = searchParams.get("generate") === "true";
+
+  // Filter courses based on active tab, search, and difficulty
+  const filteredCourses = useMemo(() => {
+    let courses =
+      activeTab === "enrolled"
+        ? generatedCourses.filter((c) =>
+            enrolledCourses.some((e) => e.id === c.id),
+          )
+        : generatedCourses;
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      courses = courses.filter(
+        (course) =>
+          course.title?.toLowerCase().includes(query) ||
+          course.description?.toLowerCase().includes(query),
+      );
+    }
+
+    // Apply difficulty filter
+    if (difficultyFilter !== "All") {
+      courses = courses.filter(
+        (course) =>
+          course.difficulty?.toLowerCase() === difficultyFilter.toLowerCase(),
+      );
+    }
+
+    return courses;
+  }, [
+    generatedCourses,
+    enrolledCourses,
+    activeTab,
+    searchQuery,
+    difficultyFilter,
+  ]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredCourses.length / COURSES_PER_PAGE);
+  const paginatedCourses = useMemo(() => {
+    const startIndex = (currentPage - 1) * COURSES_PER_PAGE;
+    return filteredCourses.slice(startIndex, startIndex + COURSES_PER_PAGE);
+  }, [filteredCourses, currentPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, difficultyFilter, activeTab]);
 
   const generateCourses = async () => {
     if (!isAIConfigured()) {
@@ -40,9 +95,8 @@ const AICatalog = () => {
       return;
     }
 
-    const tokenCost = AI_TOKEN_COSTS.GENERATE_COURSE_CATALOG;
-
     // DISABLED: No token restrictions
+    // const tokenCost = AI_TOKEN_COSTS.GENERATE_COURSE_CATALOG;
     // if (!canUseTokens(tokenCost)) {
     //   setError("Insufficient AI tokens to generate courses");
     //   return;
@@ -90,13 +144,23 @@ const AICatalog = () => {
       return;
     }
 
-    // Prevent duplicate calls in React StrictMode (development)
-    if (generatedCourses.length === 0 && !hasGeneratedRef.current) {
+    // Generate courses if:
+    // 1. No courses exist yet, OR
+    // 2. Coming from preference update with ?generate=true
+    const shouldAutoGenerate = generatedCourses.length === 0 || shouldGenerate;
+
+    if (shouldAutoGenerate && !hasGeneratedRef.current) {
       hasGeneratedRef.current = true;
+
+      // Clear the generate param from URL
+      if (shouldGenerate) {
+        setSearchParams({});
+      }
+
       generateCourses();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [shouldGenerate]);
 
   const handleEnroll = async (courseId) => {
     const isEnrolled = enrolledCourses.some((c) => c.id === courseId);
@@ -141,6 +205,57 @@ const AICatalog = () => {
         </div>
       </div>
 
+      {/* Tabs */}
+      <div className={styles.tabs}>
+        <button
+          className={`${styles.tab} ${activeTab === "all" ? styles.activeTab : ""}`}
+          onClick={() => setActiveTab("all")}
+        >
+          All Courses ({generatedCourses.length})
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === "enrolled" ? styles.activeTab : ""}`}
+          onClick={() => setActiveTab("enrolled")}
+        >
+          Enrolled ({enrolledCourses.length})
+        </button>
+      </div>
+
+      {/* Search and Filters */}
+      <div className={styles.searchFilters}>
+        <div className={styles.searchContainer}>
+          <Search className={styles.searchIcon} size={20} />
+          <input
+            type="text"
+            placeholder="Search courses..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className={styles.searchInput}
+          />
+        </div>
+        <div className={styles.filterContainer}>
+          <Filter className={styles.filterIcon} size={18} />
+          <select
+            value={difficultyFilter}
+            onChange={(e) => setDifficultyFilter(e.target.value)}
+            className={styles.filterSelect}
+          >
+            {DIFFICULTY_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option === "All" ? "All Levels" : option}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Results count */}
+      {filteredCourses.length > 0 && (
+        <p className={styles.resultsCount}>
+          Showing {paginatedCourses.length} of {filteredCourses.length} courses
+        </p>
+      )}
+
       {error && (
         <div className={styles.error}>
           <p>{error}</p>
@@ -159,75 +274,84 @@ const AICatalog = () => {
         </div>
       )}
 
+      {paginatedCourses.length === 0 && activeTab === "enrolled" && (
+        <div className={styles.empty}>
+          <p>You haven't enrolled in any courses yet</p>
+          <Button variant="secondary" onClick={() => setActiveTab("all")}>
+            Browse All Courses
+          </Button>
+        </div>
+      )}
+
+      {paginatedCourses.length === 0 &&
+        activeTab === "all" &&
+        filteredCourses.length === 0 &&
+        generatedCourses.length > 0 && (
+          <div className={styles.empty}>
+            <p>No courses match your search criteria</p>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setSearchQuery("");
+                setDifficultyFilter("All");
+              }}
+            >
+              Clear Filters
+            </Button>
+          </div>
+        )}
+
       <div className={styles.coursesGrid}>
-        {generatedCourses.map((course) => {
+        {paginatedCourses.map((course) => {
           const isEnrolled = enrolledCourses.some((c) => c.id === course.id);
 
           return (
-            <Card key={course.id} className={styles.courseCard}>
-              <div className={styles.courseImage}>
-                <img src={courseDefaultImage} alt="Course" />
-                <span
-                  className={`${styles.difficulty} ${styles[course.difficulty.toLowerCase()]}`}
-                >
-                  {course.difficulty}
-                </span>
-              </div>
-
-              <div className={styles.courseContent}>
-                <h3 className={styles.courseTitle}>{course.title}</h3>
-                <p className={styles.description}>{course.description}</p>
-              </div>
-
-              <div className={styles.courseStats}>
-                <div className={styles.stat}>
-                  <span className={styles.statLabel}>Modules</span>
-                  <span className={styles.statValue}>
-                    {course.modules_count}
-                  </span>
-                </div>
-                <div className={styles.stat}>
-                  <span className={styles.statLabel}>Est. Hours</span>
-                  <span className={styles.statValue}>
-                    {course.estimated_hours}h
-                  </span>
-                </div>
-                <div className={styles.stat}>
-                  <span className={styles.statLabel}>Tokens</span>
-                  <span className={styles.statValue}>
-                    {course.potential_tokens}
-                  </span>
-                </div>
-              </div>
-
-              <div className={styles.tags}>
-                {Array.isArray(course.tags) &&
-                  course.tags.slice(0, 2).map((tag) => (
-                    <span key={tag} className={styles.tag}>
-                      {tag}
-                    </span>
-                  ))}
-                {Array.isArray(course.tags) && course.tags.length > 2 && (
-                  <span
-                    className={styles.tagOverflow}
-                    title={course.tags.slice(2).join(", ")}
-                  >
-                    +{course.tags.length - 2}
-                  </span>
-                )}
-              </div>
-
-              <Button
-                variant={isEnrolled ? "secondary" : "primary"}
-                onClick={() => handleEnroll(course.id)}
-                className={styles.enrollButton}
-              >
-                {isEnrolled ? "Continue Learning" : "Enroll Now"}
-              </Button>
-            </Card>
+            <AICourseCard
+              key={course.id}
+              course={course}
+              isEnrolled={isEnrolled}
+              onAction={handleEnroll}
+            />
           );
         })}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          <button
+            className={styles.pageButton}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+          >
+            <ChevronLeft size={20} />
+            Previous
+          </button>
+
+          <div className={styles.pageNumbers}>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                className={`${styles.pageNumber} ${currentPage === page ? styles.activePage : ""}`}
+                onClick={() => setCurrentPage(page)}
+              >
+                {page}
+              </button>
+            ))}
+          </div>
+
+          <button
+            className={styles.pageButton}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+          >
+            Next
+            <ChevronRight size={20} />
+          </button>
+        </div>
+      )}
     </div>
   );
 };

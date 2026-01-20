@@ -107,21 +107,40 @@ export const CourseGenerationProvider = ({ children }) => {
         return { success: false, error: "Course not found" };
       }
 
+      // Check if already enrolled
+      if (course.status === "enrolled") {
+        console.log("ℹ️ Already enrolled in this course");
+        return { success: true, data: course };
+      }
+
+      console.log("🔄 Calling enrollInCourseDB...");
       const { success, data, error } = await enrollInCourseDB(
         courseId,
         user.id,
       );
 
       if (success) {
+        console.log("✅ Enrollment successful, updating context...");
+        console.log("📦 Enrolled course data:", data);
+
         // Update enrolledCourses
-        setEnrolledCourses((prev) => [...prev, data]);
+        setEnrolledCourses((prev) => {
+          // Check if already in list
+          if (prev.some((c) => c.id === courseId)) {
+            return prev.map((c) => (c.id === courseId ? data : c));
+          }
+          return [...prev, data];
+        });
+
         // Update the course in generatedCourses to reflect enrollment status
         setGeneratedCourses((prev) =>
           prev.map((c) => (c.id === courseId ? data : c)),
         );
+
         return { success: true, data };
       }
 
+      console.error("❌ Enrollment failed:", error);
       return { success: false, error: error || "Failed to enroll" };
     },
     [generatedCourses, user],

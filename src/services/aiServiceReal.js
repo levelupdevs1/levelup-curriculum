@@ -2,7 +2,7 @@
  * AI Service - Dual Provider (Gemini + Groq Fallback)
  * Primary: Gemini 2.5 Flash (15 RPM, 1500 RPD)
  * Fallback: Groq (Unlimited beta, fact-based)
- * Strategy: Try Gemini first, fallback to Groq if rate limited
+ * Strategy: Alternating requests between providers
  */
 
 import {
@@ -22,6 +22,17 @@ import {
 } from "./groqService";
 
 /**
+ * Alternating provider strategy
+ * Gemini → Groq → Gemini → Groq...
+ */
+let useGeminiNext = true;
+
+const getNextProvider = () => {
+  useGeminiNext = !useGeminiNext;
+  return useGeminiNext ? "groq" : "gemini"; // Flip logic since we toggle before returning
+};
+
+/**
  * Token cost calculation (in actual tokens, not platform tokens)
  * Gemini is free tier - no costs
  */
@@ -36,113 +47,168 @@ export const AI_TOKEN_COSTS = {
 const isGeminiConfigured = () => !!import.meta.env.VITE_GEMINI_API_KEY;
 
 /**
- * Generate personalized course catalog (Gemini → Groq fallback)
+ * Generate personalized course catalog (Alternating: Gemini ↔ Groq)
  */
 export const generateCourseCatalog = async (userProfile) => {
-  if (!isGeminiConfigured()) {
-    return {
-      success: false,
-      error:
-        "Gemini API key not configured. Please add VITE_GEMINI_API_KEY to .env.local",
-    };
+  const provider = getNextProvider();
+
+  console.log(
+    `🤖 Generating course catalog with ${provider.toUpperCase()} (alternating strategy)...`,
+  );
+
+  if (provider === "gemini") {
+    const result = await generateCourseCatalogGemini(userProfile);
+    if (!result.success) {
+      console.warn("⚠️ Gemini failed, trying Groq as backup...");
+      return await generateCourseCatalogGroq(userProfile);
+    }
+    return result;
+  } else {
+    const result = await generateCourseCatalogGroq(userProfile);
+    if (!result.success) {
+      console.warn("⚠️ Groq failed, trying Gemini as backup...");
+      return await generateCourseCatalogGemini(userProfile);
+    }
+    return result;
   }
-
-  console.log("🤖 Generating course catalog with Gemini...");
-  const result = await generateCourseCatalogGemini(userProfile);
-
-  if (!result.success) {
-    console.warn("⚠️ Gemini failed, trying Groq fallback...");
-    return await generateCourseCatalogGroq(userProfile);
-  }
-
-  return result;
 };
 
 /**
- * Generate course structure (Gemini → Groq fallback)
+ * Generate course structure (Alternating: Gemini ↔ Groq)
  */
 export const generateCourseStructure = async (
   courseTitle,
   courseDescription,
   modulesCount,
 ) => {
-  if (!isGeminiConfigured()) {
-    return {
-      success: false,
-      error: "Gemini API key not configured",
-    };
-  }
+  const provider = getNextProvider();
 
-  console.log("🤖 Generating course structure with Gemini...");
-  const result = await generateCourseStructureGemini(
-    courseTitle,
-    courseDescription,
-    modulesCount,
+  console.log(
+    `🤖 Generating course structure with ${provider.toUpperCase()} (alternating strategy)...`,
   );
 
-  if (!result.success) {
-    console.warn("⚠️ Gemini failed, trying Groq fallback...");
-    return await generateCourseStructureGroq(courseTitle, courseDescription);
+  if (provider === "gemini") {
+    const result = await generateCourseStructureGemini(
+      courseTitle,
+      courseDescription,
+      modulesCount,
+    );
+    if (!result.success) {
+      console.warn("⚠️ Gemini failed, trying Groq as backup...");
+      return await generateCourseStructureGroq(courseTitle, courseDescription);
+    }
+    return result;
+  } else {
+    const result = await generateCourseStructureGroq(
+      courseTitle,
+      courseDescription,
+    );
+    if (!result.success) {
+      console.warn("⚠️ Groq failed, trying Gemini as backup...");
+      return await generateCourseStructureGemini(
+        courseTitle,
+        courseDescription,
+        modulesCount,
+      );
+    }
+    return result;
   }
-
-  return result;
 };
 
 /**
- * Generate lesson content (Gemini → Groq fallback)
+ * Generate lesson content (Alternating: Gemini ↔ Groq)
  */
 export const generateLessonContent = async (
   courseTitle,
   moduleTitle,
   lessonTitle,
 ) => {
-  if (!isGeminiConfigured()) {
-    return {
-      success: false,
-      error: "Gemini API key not configured",
-    };
-  }
+  const provider = getNextProvider();
 
-  console.log("🤖 Generating lesson content with Gemini...");
-  const result = await generateLessonContentGemini(
-    courseTitle,
-    moduleTitle,
-    lessonTitle,
+  console.log(
+    `🤖 Generating lesson content with ${provider.toUpperCase()} (alternating strategy)...`,
   );
 
-  if (!result.success) {
-    console.warn("⚠️ Gemini failed, trying Groq fallback...");
-    return await generateLessonContentGroq(
+  if (provider === "gemini") {
+    const result = await generateLessonContentGemini(
+      courseTitle,
+      moduleTitle,
+      lessonTitle,
+    );
+    if (!result.success) {
+      console.warn("⚠️ Gemini failed, trying Groq as backup...");
+      return await generateLessonContentGroq(
+        lessonTitle,
+        moduleTitle,
+        courseTitle,
+        30,
+      );
+    }
+    return result;
+  } else {
+    const result = await generateLessonContentGroq(
       lessonTitle,
       moduleTitle,
       courseTitle,
       30,
     );
+    if (!result.success) {
+      console.warn("⚠️ Groq failed, trying Gemini as backup...");
+      return await generateLessonContentGemini(
+        courseTitle,
+        moduleTitle,
+        lessonTitle,
+      );
+    }
+    return result;
   }
-
-  return result;
 };
 
 /**
- * Generate assessment (Gemini → Groq fallback)
+ * Generate assessment (Alternating: Gemini ↔ Groq) with type-specific logic
  */
-export const generateAssessment = async (lessonTitle, lessonContent) => {
-  if (!isGeminiConfigured()) {
-    return {
-      success: false,
-      error: "Gemini API key not configured",
-    };
+export const generateAssessment = async (
+  lessonTitle,
+  lessonContent,
+  assessmentType = "coding_challenge",
+) => {
+  const provider = getNextProvider();
+
+  console.log(
+    `🤖 Generating ${assessmentType} assessment with ${provider.toUpperCase()} (alternating strategy)...`,
+  );
+
+  if (provider === "gemini") {
+    const result = await generateAssessmentGemini(
+      lessonTitle,
+      lessonContent,
+      assessmentType,
+    );
+    if (!result.success) {
+      console.warn("⚠️ Gemini failed, trying Groq as backup...");
+      return await generateAssessmentGroq(
+        lessonTitle,
+        lessonContent,
+        assessmentType,
+      );
+    }
+    return result;
+  } else {
+    const result = await generateAssessmentGroq(
+      lessonTitle,
+      lessonContent,
+      assessmentType,
+    );
+    if (!result.success) {
+      console.warn("⚠️ Groq failed, trying Gemini as backup...");
+      return await generateAssessmentGemini(
+        lessonTitle,
+        lessonContent,
+        assessmentType,
+      );
+    }
+    return result;
   }
-
-  console.log("🤖 Generating assessment with Gemini...");
-  const result = await generateAssessmentGemini(lessonTitle, lessonContent);
-
-  if (!result.success) {
-    console.warn("⚠️ Gemini failed, trying Groq fallback...");
-    return await generateAssessmentGroq(lessonTitle, lessonContent);
-  }
-
-  return result;
 };
 
 /**
@@ -165,32 +231,36 @@ export const reviewSubmission = async (
 };
 
 /**
- * Review entire assessment submission in a single batch call (Gemini → Groq fallback)
+ * Review entire assessment submission in a single batch call (Alternating: Gemini ↔ Groq)
  */
 export const reviewSubmissionBatch = async (questions, submissionAnswers) => {
-  if (!isGeminiConfigured()) {
-    return {
-      success: false,
-      error: "Gemini API key not configured",
-    };
-  }
+  const provider = getNextProvider();
 
-  console.log("🤖 Batch reviewing all questions with Gemini...");
-  const result = await reviewSubmissionBatchGemini(
-    questions,
-    submissionAnswers,
+  console.log(
+    `🤖 Batch reviewing with ${provider.toUpperCase()} (alternating strategy)...`,
   );
 
-  // Only return if BOTH success AND has valid review data
-  if (!result.success || !result.review) {
-    console.warn(
-      "⚠️ Gemini failed or returned invalid data, trying Groq fallback (fact-based evaluation)...",
+  if (provider === "gemini") {
+    const result = await reviewSubmissionBatchGemini(
+      questions,
+      submissionAnswers,
     );
-    return await reviewSubmissionBatchGroq(questions, submissionAnswers);
+    if (!result.success || !result.review) {
+      console.warn("⚠️ Gemini failed, trying Groq as backup...");
+      return await reviewSubmissionBatchGroq(questions, submissionAnswers);
+    }
+    return result;
+  } else {
+    const result = await reviewSubmissionBatchGroq(
+      questions,
+      submissionAnswers,
+    );
+    if (!result.success || !result.review) {
+      console.warn("⚠️ Groq failed, trying Gemini as backup...");
+      return await reviewSubmissionBatchGemini(questions, submissionAnswers);
+    }
+    return result;
   }
-
-  console.log("✅ Gemini review successful, returning...");
-  return result;
 };
 
 /**

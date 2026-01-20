@@ -1,74 +1,125 @@
+import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../hooks/useUser";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
-import { Trophy, Coins, Flame, Star } from "lucide-react";
+import { Trophy, BookOpen, Flame, Star, Zap, ChevronLeft, ChevronRight } from "lucide-react";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import ProgressBar from "../../components/ProgressBar/ProgressBar";
+import Card from "../../components/Card/Card";
+import Button from "../../components/Button/Button";
+import AICourseCard from "../../components/AICourseCard/AICourseCard";
 import styles from "./Dashboard.module.css";
 import StatCard from "../../components/StatCard/StatCard";
 
+const COURSES_PER_PAGE = 6;
+
 const Dashboard = () => {
-  const { user, profile } = useUser();
-  const { generatedCourses } = useCourseGeneration();
+  const { user, profile, refreshProfile } = useUser();
+  const { enrolledCourses: contextEnrolledCourses, generatedCourses } =
+    useCourseGeneration();
   const navigate = useNavigate();
+  const [currentPage, setCurrentPage] = useState(1);
 
-  const enrolledCourses = generatedCourses || [];
-  // const recentCourses = courses.slice(0, 3);
+  // Refresh profile on mount to get latest XP
+  React.useEffect(() => {
+    if (user && refreshProfile) {
+      refreshProfile();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
-  // const handleEnrollCourse = (courseId) => {
-  //   enrollInCourse(courseId);
-  //   navigate(`/courses/${courseId}`);
-  // };
+  // Show all personalized courses on dashboard (not just enrolled)
+  const allCourses = useMemo(() => generatedCourses || [], [generatedCourses]);
+  const enrolledCourses = useMemo(() => 
+    contextEnrolledCourses?.length > 0
+      ? contextEnrolledCourses
+      : allCourses.filter((c) => c.status === "enrolled"),
+    [contextEnrolledCourses, allCourses]
+  );
+
+  // Pagination
+  const totalPages = Math.ceil(allCourses.length / COURSES_PER_PAGE);
+  const paginatedCourses = useMemo(() => {
+    const startIndex = (currentPage - 1) * COURSES_PER_PAGE;
+    return allCourses.slice(startIndex, startIndex + COURSES_PER_PAGE);
+  }, [allCourses, currentPage]);
+
+  // Helper to calculate course progress percentage
+  const getCourseProgress = (course) => {
+    if (!course) return 0;
+
+    // If progress is a number, use it directly
+    if (typeof course.progress === "number") return course.progress;
+
+    // If progress is an object with completedLessons
+    if (course.progress?.completedLessons) {
+      const completedCount = course.progress.completedLessons.length;
+      const modules = course.modules || course.structure?.modules || [];
+      const totalLessons = modules.reduce(
+        (sum, m) => sum + (m.lessons?.length || 0),
+        0,
+      );
+      return totalLessons > 0
+        ? Math.round((completedCount / totalLessons) * 100)
+        : 0;
+    }
+
+    return 0;
+  };
+
+  // Helper to get completed lessons count
+  const getCompletedLessons = (course) => {
+    if (course.progress?.completedLessons) {
+      return course.progress.completedLessons.length;
+    }
+    return 0;
+  };
 
   const handleContinueLearning = (courseId) => {
-    // Navigate to AI course details page
     navigate(`/courses/${courseId}`);
   };
 
-  // const handleContinueCourse = (courseId) => {
-  //   const course = courses.find((c) => c.id === courseId);
-  //   if (course && course.modules) {
-  //     // Find the first incomplete, unlocked lesson across all modules
-  //     let nextLesson = null;
-  //     for (const module of course.modules) {
-  //       if (module.lessons) {
-  //         nextLesson = module.lessons.find(
-  //           (lesson) => !lesson.isCompleted && !lesson.isLocked
-  //         );
-  //         if (nextLesson) break;
-  //       }
-  //     }
+  // Calculate stats
+  const totalLessonsCompleted = enrolledCourses.reduce(
+    (sum, c) => sum + getCompletedLessons(c),
+    0,
+  );
+  const completedCoursesCount = enrolledCourses.filter(
+    (c) => getCourseProgress(c) === 100,
+  ).length;
 
-  //     if (nextLesson) {
-  //       navigate(`/courses/${courseId}/lessons/${nextLesson.id}`);
-  //     } else {
-  //       // If all lessons are completed, go to course detail
-  //       navigate(`/courses/${courseId}`);
-  //     }
-  //   }
-  // };
+  // Calculate level progress - use total_experience (XP) from profile
+  const currentLevel = profile?.current_level || 1;
+  const totalXP = profile?.total_experience || profile?.total_points || 0;
+
+  const xpForCurrentLevel = (currentLevel - 1) * 100;
+  const xpForNextLevel = currentLevel * 100;
+  const xpInCurrentLevel = totalXP - xpForCurrentLevel;
+  const xpNeededForNextLevel = xpForNextLevel - totalXP;
+  const levelProgress = Math.min((xpInCurrentLevel / 100) * 100, 100);
 
   const stats = [
     {
       title: "Current Level",
-      value: profile?.current_level || 0,
+      value: currentLevel,
       icon: Trophy,
       color: "#ffd700",
     },
     {
-      title: "Total Points",
-      value: profile?.total_points || 0,
+      title: "Total XP",
+      value: totalXP.toLocaleString(),
       icon: Star,
       color: "#4a154b",
     },
     {
-      title: "Enrolled Courses",
-      value: enrolledCourses.length,
-      icon: Coins,
-      color: "#ffd700",
+      title: "Lessons Completed",
+      value: totalLessonsCompleted,
+      icon: BookOpen,
+      color: "#10b981",
     },
     {
-      title: "Completed Courses",
-      value: enrolledCourses.filter((c) => c.progress === 100).length,
+      title: "Courses Completed",
+      value: completedCoursesCount,
       icon: Flame,
       color: "#ef4444",
     },
@@ -82,13 +133,40 @@ const Dashboard = () => {
         <>
           {/* Welcome Section */}
           <div className={styles.welcomeSection}>
-            <h1 className={styles.welcomeTitle}>
-              Welcome back, {profile?.full_name || user?.email}!{" "}
-            </h1>
-            <p className={styles.welcomeSubtitle}>
-              Ready to continue your learning journey?
-            </p>
+            <div className={styles.welcomeContent}>
+              <h1 className={styles.welcomeTitle}>
+                Welcome back, {profile?.full_name || user?.email?.split("@")[0]}
+                !
+              </h1>
+              <p className={styles.welcomeSubtitle}>
+                Ready to continue your learning journey?
+              </p>
+            </div>
           </div>
+
+          {/* Level Progress Card */}
+          <Card className={styles.levelCard}>
+            <div className={styles.levelHeader}>
+              <div className={styles.levelInfo}>
+                <Zap size={20} className={styles.levelIcon} />
+                <span>Level {currentLevel} Progress</span>
+              </div>
+              <span className={styles.levelPoints}>
+                {xpInCurrentLevel} / 100 XP
+              </span>
+            </div>
+            <ProgressBar
+              progress={levelProgress}
+              max={100}
+              height="10px"
+              showLabel={false}
+              color="#ffd700"
+            />
+            <p className={styles.levelHint}>
+              Earn {xpNeededForNextLevel > 0 ? xpNeededForNextLevel : 0} more XP
+              to reach Level {currentLevel + 1}
+            </p>
+          </Card>
 
           {/* Stats Grid */}
           <div className={styles.statsGrid}>
@@ -103,41 +181,93 @@ const Dashboard = () => {
             ))}
           </div>
 
-          {/* Main Content Grid */}
-          <div className={styles.contentGrid}>
-            {enrolledCourses.length > 0 ? (
-              <div className={styles.coursesSection}>
-                <h2>Your Courses</h2>
-                <div className={styles.coursesList}>
-                  {enrolledCourses.map((course) => (
-                    <div
-                      key={course.id}
-                      className={styles.courseCard}
-                      onClick={() => handleContinueLearning(course.id)}
-                    >
-                      <h3>{course.title}</h3>
-                      <p>{course.description}</p>
-                      <div className={styles.courseMetadata}>
-                        <span>{course.difficulty || "Beginner"}</span>
-                        <span>{course.estimated_hours || 0}h</span>
-                      </div>
-                    </div>
-                  ))}
+          {/* Main Content */}
+          <div className={styles.contentSection}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>Your Courses</h2>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => navigate("/course-catalog")}
+              >
+                Browse All
+              </Button>
+            </div>
+
+            {allCourses.length > 0 ? (
+              <>
+                <div className={styles.courseGrid}>
+                  {paginatedCourses.map((course) => {
+                    const isEnrolled = enrolledCourses.some(
+                      (c) => c.id === course.id,
+                    );
+                    const progress = isEnrolled ? getCourseProgress(course) : 0;
+
+                    return (
+                      <AICourseCard
+                        key={course.id}
+                        course={course}
+                        isEnrolled={isEnrolled}
+                        onAction={handleContinueLearning}
+                        actionLabel={
+                          isEnrolled ? "Continue Learning" : "Start Course"
+                        }
+                        showProgress={isEnrolled}
+                        progress={progress}
+                      />
+                    );
+                  })}
                 </div>
-              </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className={styles.pagination}>
+                    <button
+                      className={styles.pageButton}
+                      onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                    >
+                      <ChevronLeft size={20} />
+                      Previous
+                    </button>
+                    
+                    <div className={styles.pageNumbers}>
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                        <button
+                          key={page}
+                          className={`${styles.pageNumber} ${currentPage === page ? styles.activePage : ""}`}
+                          onClick={() => setCurrentPage(page)}
+                        >
+                          {page}
+                        </button>
+                      ))}
+                    </div>
+                    
+                    <button
+                      className={styles.pageButton}
+                      onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                    >
+                      Next
+                      <ChevronRight size={20} />
+                    </button>
+                  </div>
+                )}
+              </>
             ) : (
-              <div className={styles.emptyState}>
-                <p>
-                  No enrolled courses yet. Generate your personalized
-                  curriculum!
-                </p>
-                <button
-                  className={styles.generateBtn}
+              <Card className={styles.emptyState}>
+                <div className={styles.emptyIcon}>
+                  <BookOpen size={48} />
+                </div>
+                <h3>No courses yet</h3>
+                <p>Generate your personalized learning path to get started!</p>
+                <Button
+                  variant="primary"
                   onClick={() => navigate("/course-catalog")}
                 >
                   Generate Courses
-                </button>
-              </div>
+                </Button>
+              </Card>
             )}
           </div>
         </>

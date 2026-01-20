@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import { useAIToken } from "../../hooks/useAIToken";
+import { useUser } from "../../hooks/useUser";
 import {
   generateLessonContent,
   generateAssessment,
@@ -9,6 +10,8 @@ import {
   AI_TOKEN_COSTS,
 } from "../../services/aiServiceReal";
 import { updateCourse } from "../../services/courseDataService";
+import { awardXP, TOKEN_REWARDS } from "../../services/platformTokenService";
+import { logResourceValidation } from "../../utils/resourceValidation";
 import Button from "../../components/Button/Button";
 import Card from "../../components/Card/Card";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
@@ -20,13 +23,15 @@ const AILessonViewer = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { getCourseById, updateCourseProgress } = useCourseGeneration();
-  const { canUseTokens, useTokens, tokensRemaining } = useAIToken();
+  const { useTokens, tokensRemaining } = useAIToken();
+  const { user, refreshProfile } = useUser();
 
   const [course, setCourse] = useState(null);
   const [lesson, setLesson] = useState(null);
   const [assessment, setAssessment] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [levelUpNotification, setLevelUpNotification] = useState(null);
   const [showAssessment, setShowAssessment] = useState(false);
   const [submission, setSubmission] = useState({});
   const [review, setReview] = useState(null);
@@ -39,8 +44,12 @@ const AILessonViewer = () => {
   };
 
   useEffect(() => {
-    // Reset the flag when lessonId changes
+    // Reset state when lesson changes
     hasGeneratedRef.current = false;
+    setReview(null);
+    setSubmission({});
+    setShowAssessment(false);
+    setError(null);
 
     // Prevent double execution in React StrictMode
     if (hasGeneratedRef.current) {
@@ -109,10 +118,14 @@ const AILessonViewer = () => {
     }
 
     // Check if lesson content already exists in database
-    if (lessonData.content && lessonData.assessment) {
+    if (lessonData.content) {
       console.log("✅ Loading existing lesson content from database");
       setLesson(lessonData.content);
-      setAssessment(lessonData.assessment);
+
+      // Load assessment if it exists (some lessons don't have assessments)
+      if (lessonData.assessment) {
+        setAssessment(lessonData.assessment);
+      }
 
       // Load existing review if available
       if (lessonData.review) {
@@ -120,6 +133,7 @@ const AILessonViewer = () => {
         setReview(lessonData.review);
       }
 
+      setLoading(false);
       return;
     }
 
@@ -129,10 +143,9 @@ const AILessonViewer = () => {
     const lessonDescription = lessonData.description || "";
     console.log("🔨 Generating content for:", lessonTitle);
 
-    const contentCost = AI_TOKEN_COSTS.GENERATE_LESSON_CONTENT;
-    const assessmentCost = AI_TOKEN_COSTS.GENERATE_ASSESSMENT;
-
     // Token check disabled for development
+    // const contentCost = AI_TOKEN_COSTS.GENERATE_LESSON_CONTENT;
+    // const assessmentCost = AI_TOKEN_COSTS.GENERATE_ASSESSMENT;
     // if (!canUseTokens(contentCost + assessmentCost)) {
     //   setError("Insufficient AI tokens");
     //   return;
@@ -156,31 +169,47 @@ const AILessonViewer = () => {
         return;
       }
 
-      // Generate assessment with real AI
-      console.log("🤖 Generating assessment with Gemini...");
-      const assessmentResult = await generateAssessment(
-        lessonTitle,
-        contentResult.content,
-      );
+      let assessmentResult = null;
+      let tokensUsed = contentResult.tokensUsed;
 
-      if (!assessmentResult.success) {
-        setError(assessmentResult.error || "Failed to generate assessment");
-        return;
+      // Conditionally generate assessment based on lesson metadata
+      const requiresAssessment = lessonData.requiresAssessment ?? true; // Default to true for backward compatibility
+      const assessmentType = lessonData.assessmentType || "coding_challenge";
+
+      if (requiresAssessment) {
+        console.log(
+          `🤖 Generating ${assessmentType} assessment with Gemini...`,
+        );
+        assessmentResult = await generateAssessment(
+          lessonTitle,
+          contentResult.content,
+          assessmentType,
+        );
+
+        if (!assessmentResult.success) {
+          console.warn(
+            "⚠️ Assessment generation failed, continuing without assessment",
+          );
+          // Don't fail the entire lesson, just skip assessment
+        } else {
+          tokensUsed += assessmentResult.tokensUsed;
+        }
+      } else {
+        console.log("ℹ️ This lesson does not require an assessment");
       }
 
       // Update tokens used
-      useTokens(
-        contentResult.tokensUsed + assessmentResult.tokensUsed,
-        "generate_lesson",
-        { courseId: enrolledCourse.id, lessonId },
-      );
+      useTokens(tokensUsed, "generate_lesson", {
+        courseId: enrolledCourse.id,
+        lessonId,
+      });
 
       // Save to database - update the specific lesson in the modules array
       const updatedModules = [...modules];
       updatedModules[moduleIndex].lessons[lessonIndex] = {
         ...lessonData,
         content: contentResult.content,
-        assessment: assessmentResult.assessment,
+        assessment: assessmentResult?.assessment || null,
       };
 
       await updateCourse(enrolledCourse.id, {
@@ -189,7 +218,15 @@ const AILessonViewer = () => {
 
       console.log("✅ Lesson content generated and saved to database");
       setLesson(contentResult.content);
-      setAssessment(assessmentResult.assessment);
+      setAssessment(assessmentResult?.assessment || null);
+
+      // Validate external resources
+      if (contentResult.content?.externalResources) {
+        logResourceValidation(
+          lessonTitle,
+          contentResult.content.externalResources,
+        );
+      }
     } catch (err) {
       console.error("❌ Error generating lesson:", err);
       setError(err.message || "An error occurred while generating the lesson");
@@ -308,6 +345,34 @@ const AILessonViewer = () => {
         if (aggregatedReview.passed) {
           console.log("🎉 Assessment PASSED! Updating progress...");
 
+          // Award XP for passing assessment
+          const isPerfectScore = aggregatedReview.score === 100;
+          const xpAmount = isPerfectScore
+            ? TOKEN_REWARDS.PERFECT_SCORE * 10 // 250 XP for perfect
+            : TOKEN_REWARDS.PASS_ASSESSMENT * 10; // 100 XP for pass
+
+          // We'll call handleAwardXP after defining it - for now just log
+          if (user?.id) {
+            awardXP(
+              user.id,
+              xpAmount,
+              isPerfectScore
+                ? "Perfect score on assessment"
+                : "Passed assessment",
+            )
+              .then((result) => {
+                if (result?.success && result?.leveledUp) {
+                  setLevelUpNotification({
+                    newLevel: result.currentLevel,
+                    tokenReward: result.tokenReward,
+                  });
+                  setTimeout(() => setLevelUpNotification(null), 5000);
+                }
+                if (refreshProfile) refreshProfile();
+              })
+              .catch((err) => console.error("Failed to award XP:", err));
+          }
+
           // Get fresh course data again for progress calculation
           const freshCourse = getCourseById(courseId);
           const progressModules =
@@ -368,11 +433,91 @@ const AILessonViewer = () => {
     }
   };
 
-  const handleNextLesson = () => {
-    const nextLessonIndex = lessonIndex + 1;
+  // Helper to award XP and handle level up notifications
+  const handleAwardXP = async (xpAmount, reason) => {
+    if (!user?.id) return;
+
+    try {
+      const result = await awardXP(user.id, xpAmount, reason);
+      if (result.success) {
+        console.log(`🎯 Awarded ${xpAmount} XP for: ${reason}`);
+
+        // Show level up notification
+        if (result.leveledUp) {
+          setLevelUpNotification({
+            newLevel: result.currentLevel,
+            tokenReward: result.tokenReward,
+          });
+
+          // Auto-hide after 5 seconds
+          setTimeout(() => setLevelUpNotification(null), 5000);
+        }
+
+        // Refresh user profile to update UI
+        if (refreshProfile) {
+          refreshProfile();
+        }
+      }
+    } catch (err) {
+      console.error("Failed to award XP:", err);
+    }
+  };
+
+  const handleNextLesson = async () => {
     const modules = course.structure?.modules || course.modules;
     const currentModule = modules[moduleIndex];
 
+    // Mark current lesson as complete if not already
+    const completedLessons = course.progress?.completedLessons || [];
+    if (!completedLessons.includes(lessonId)) {
+      const updatedCompletedLessons = [...completedLessons, lessonId];
+
+      const nextLessonIdx = lessonIndex + 1;
+      const nextModIdx =
+        nextLessonIdx >= currentModule.lessons.length
+          ? moduleIndex + 1
+          : moduleIndex;
+      const nextLessonIdxInModule =
+        nextLessonIdx >= currentModule.lessons.length ? 0 : nextLessonIdx;
+
+      const progressUpdate = {
+        ...course.progress,
+        completedLessons: updatedCompletedLessons,
+        currentModuleIndex:
+          nextModIdx < modules.length ? nextModIdx : moduleIndex,
+        currentLessonIndex: nextLessonIdxInModule,
+      };
+
+      console.log(
+        "📈 Marking lesson complete and updating progress:",
+        progressUpdate,
+      );
+
+      // Save to database directly and wait for it
+      try {
+        const result = await updateCourse(courseId, {
+          progress: progressUpdate,
+        });
+        if (result.success) {
+          console.log("✅ Progress saved to database");
+          // Also update local context
+          updateCourseProgress(courseId, progressUpdate);
+
+          // Award XP for completing the lesson
+          await handleAwardXP(
+            TOKEN_REWARDS.COMPLETE_LESSON * 10,
+            `Completed lesson: ${lesson?.title || "Lesson"}`,
+          );
+        } else {
+          console.error("❌ Failed to save progress:", result.error);
+        }
+      } catch (err) {
+        console.error("❌ Error saving progress:", err);
+      }
+    }
+
+    // Navigate to next lesson
+    const nextLessonIndex = lessonIndex + 1;
     if (nextLessonIndex < currentModule.lessons.length) {
       const nextLesson = currentModule.lessons[nextLessonIndex];
       navigate(`/courses/${courseId}/lessons/${nextLesson.id}`, {
@@ -432,6 +577,30 @@ const AILessonViewer = () => {
 
   return (
     <div className={styles.container}>
+      {/* Level Up Notification */}
+      {levelUpNotification && (
+        <div className={styles.levelUpNotification}>
+          <div className={styles.levelUpContent}>
+            <span className={styles.levelUpIcon}>🎉</span>
+            <div className={styles.levelUpText}>
+              <h3>Level Up!</h3>
+              <p>You reached Level {levelUpNotification.newLevel}!</p>
+              {levelUpNotification.tokenReward > 0 && (
+                <p className={styles.tokenReward}>
+                  +{levelUpNotification.tokenReward} tokens earned!
+                </p>
+              )}
+            </div>
+            <button
+              className={styles.levelUpClose}
+              onClick={() => setLevelUpNotification(null)}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className={styles.header}>
         <Button
           variant="secondary"
@@ -517,7 +686,12 @@ const AILessonViewer = () => {
           </Card>
 
           <div className={styles.lessonActions}>
-            {review?.passed ? (
+            {!assessment ? (
+              // No assessment required - show next lesson button
+              <Button variant="primary" onClick={handleNextLesson}>
+                Next Lesson →
+              </Button>
+            ) : review?.passed ? (
               // Assessment already passed - show navigation and review buttons
               <div className={styles.completedActions}>
                 <Button
@@ -594,24 +768,105 @@ const AILessonViewer = () => {
                         )}
 
                         {question.type === "code_challenge" && (
-                          <textarea
-                            className={styles.codeInput}
-                            placeholder="Write your code here..."
-                            rows={6}
-                            onChange={(e) =>
-                              setSubmission((prev) => ({
-                                ...prev,
-                                [questionId]: e.target.value,
-                              }))
-                            }
-                          />
+                          <div className={styles.codeChallenge}>
+                            <textarea
+                              className={styles.codeInput}
+                              placeholder={
+                                question.starterCode ||
+                                "Write your code here..."
+                              }
+                              rows={8}
+                              onChange={(e) =>
+                                setSubmission((prev) => ({
+                                  ...prev,
+                                  [questionId]: e.target.value,
+                                }))
+                              }
+                            />
+                            {question.hints && question.hints.length > 0 && (
+                              <details className={styles.hints}>
+                                <summary>💡 Hints</summary>
+                                <ul>
+                                  {question.hints.map((hint, idx) => (
+                                    <li key={idx}>{hint}</li>
+                                  ))}
+                                </ul>
+                              </details>
+                            )}
+                          </div>
+                        )}
+
+                        {question.type === "project" && (
+                          <div className={styles.projectSubmission}>
+                            <div className={styles.projectRequirements}>
+                              <h4>Required Features:</h4>
+                              <ul>
+                                {question.requirements?.map((req, idx) => (
+                                  <li key={idx}>{req}</li>
+                                ))}
+                              </ul>
+                            </div>
+                            {question.stretchGoals &&
+                              question.stretchGoals.length > 0 && (
+                                <div className={styles.stretchGoals}>
+                                  <h4>Stretch Goals (Optional):</h4>
+                                  <ul>
+                                    {question.stretchGoals.map((goal, idx) => (
+                                      <li key={idx}>{goal}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            <input
+                              type="url"
+                              className={styles.urlInput}
+                              placeholder="GitHub Repository URL (required)"
+                              onChange={(e) =>
+                                setSubmission((prev) => ({
+                                  ...prev,
+                                  [questionId]: {
+                                    ...prev[questionId],
+                                    githubUrl: e.target.value,
+                                  },
+                                }))
+                              }
+                            />
+                            <input
+                              type="url"
+                              className={styles.urlInput}
+                              placeholder="Live Demo URL (optional)"
+                              onChange={(e) =>
+                                setSubmission((prev) => ({
+                                  ...prev,
+                                  [questionId]: {
+                                    ...prev[questionId],
+                                    liveUrl: e.target.value,
+                                  },
+                                }))
+                              }
+                            />
+                            <textarea
+                              className={styles.textInput}
+                              placeholder="Project description (what you built, challenges faced, what you learned)"
+                              rows={4}
+                              onChange={(e) =>
+                                setSubmission((prev) => ({
+                                  ...prev,
+                                  [questionId]: {
+                                    ...prev[questionId],
+                                    description: e.target.value,
+                                  },
+                                }))
+                              }
+                            />
+                          </div>
                         )}
 
                         {question.type === "short_answer" && (
                           <textarea
                             className={styles.textInput}
                             placeholder="Type your answer here..."
-                            rows={question.type === "code_challenge" ? 4 : 6}
+                            rows={6}
                             onChange={(e) =>
                               setSubmission((prev) => ({
                                 ...prev,

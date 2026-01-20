@@ -21,7 +21,7 @@ import styles from "./CourseCatalog.module.css";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 
 const CourseCatalog = () => {
-  const { generatedCourses } = useCourseGeneration();
+  const { generatedCourses, enrollInCourse } = useCourseGeneration();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("all");
@@ -31,6 +31,14 @@ const CourseCatalog = () => {
   const [enrollingCourseId, setEnrollingCourseId] = useState(null);
 
   const courses = generatedCourses || [];
+
+  // Helper function to get all lessons from a course
+  const getAllLessons = (course) => {
+    if (!course.modules || !Array.isArray(course.modules)) {
+      return [];
+    }
+    return course.modules.flatMap((module) => module.lessons || []);
+  };
 
   useEffect(() => {
     const handleResize = () => setIsDesktop(window.innerWidth > 768);
@@ -79,10 +87,18 @@ const CourseCatalog = () => {
   const handleEnroll = async (courseId) => {
     setEnrollingCourseId(courseId);
     try {
-      // AI courses are auto-enrolled, just navigate
-      navigate(`/courses/${courseId}`);
-    } catch {
-      console.error("Failed to navigate to course");
+      console.log("📝 Enrolling in course:", courseId);
+      const result = await enrollInCourse(courseId);
+
+      if (result.success) {
+        console.log("✅ Enrollment successful, navigating to course...");
+        // Navigate to course detail after successful enrollment
+        navigate(`/courses/${courseId}`);
+      } else {
+        console.error("❌ Enrollment failed:", result.error);
+      }
+    } catch (error) {
+      console.error("Failed to enroll in course:", error);
     } finally {
       setEnrollingCourseId(null);
     }
