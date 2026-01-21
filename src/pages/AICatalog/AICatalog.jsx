@@ -43,12 +43,24 @@ const AICatalog = () => {
 
   // Filter courses based on active tab, search, and difficulty
   const filteredCourses = useMemo(() => {
+    // Include foundation course with AI courses
+    let allCourses = [...(generatedCourses || [])];
+    if (
+      foundationCourse &&
+      !allCourses.find((c) => c.id === foundationCourse.id)
+    ) {
+      allCourses = [foundationCourse, ...allCourses];
+    }
+
     let courses =
       activeTab === "enrolled"
-        ? generatedCourses.filter((c) =>
-            enrolledCourses.some((e) => e.id === c.id),
+        ? allCourses.filter(
+            (c) =>
+              c.status === "enrolled" ||
+              c.is_foundation ||
+              enrolledCourses.some((e) => e.id === c.id),
           )
-        : generatedCourses;
+        : allCourses;
 
     // Apply search filter
     if (searchQuery.trim()) {
@@ -72,6 +84,7 @@ const AICatalog = () => {
   }, [
     generatedCourses,
     enrolledCourses,
+    foundationCourse,
     activeTab,
     searchQuery,
     difficultyFilter,
@@ -178,7 +191,9 @@ const AICatalog = () => {
   }, [shouldGenerate]);
 
   const handleEnroll = async (courseId) => {
-    const isEnrolled = enrolledCourses.some((c) => c.id === courseId);
+    const isEnrolled = foundationCourse
+      ? true
+      : enrolledCourses.some((c) => c.id === courseId);
     if (isEnrolled) {
       navigate(`/courses/${courseId}`);
       return;
@@ -208,7 +223,7 @@ const AICatalog = () => {
       <div className={styles.header}>
         <div>
           <h1>Your Personalized Courses</h1>
-          <p>AI-generated learning paths tailored to your goals</p>
+          <p>Generated learning paths tailored to your goals</p>
         </div>
         <div className={styles.tokenDisplay}>
           <span className={styles.tokenLabel}>AI Tokens:</span>
@@ -222,13 +237,15 @@ const AICatalog = () => {
           className={`${styles.tab} ${activeTab === "all" ? styles.activeTab : ""}`}
           onClick={() => setActiveTab("all")}
         >
-          All Courses ({generatedCourses.length})
+          All Courses (
+          {(generatedCourses?.length || 0) + (foundationCourse ? 1 : 0)})
         </button>
         <button
           className={`${styles.tab} ${activeTab === "enrolled" ? styles.activeTab : ""}`}
           onClick={() => setActiveTab("enrolled")}
         >
-          Enrolled ({enrolledCourses.length})
+          Enrolled (
+          {(enrolledCourses?.length || 0) + (foundationCourse ? 1 : 0)})
         </button>
       </div>
 
@@ -276,22 +293,14 @@ const AICatalog = () => {
         </div>
       )}
 
-      {generatedCourses.length === 0 && !loading && (
+      {filteredCourses.length === 0 && !loading && (
         <div className={styles.empty}>
           {!foundationCompleted ? (
             <>
               <p>
-                Complete the Foundation course first to unlock AI-generated
-                personalized courses
+                No courses generated yet. Complete the Foundation course to
+                unlock personalized courses.
               </p>
-              {foundationCourse && (
-                <Button
-                  variant="primary"
-                  onClick={() => navigate(`/courses/${foundationCourse.id}`)}
-                >
-                  Continue Foundation Course
-                </Button>
-              )}
             </>
           ) : (
             <>
@@ -333,7 +342,9 @@ const AICatalog = () => {
 
       <div className={styles.coursesGrid}>
         {paginatedCourses.map((course) => {
-          const isEnrolled = enrolledCourses.some((c) => c.id === course.id);
+          const isEnrolled = foundationCourse
+            ? true
+            : enrolledCourses.some((c) => c.id === course.id);
 
           return (
             <AICourseCard

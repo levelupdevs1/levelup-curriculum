@@ -398,7 +398,7 @@ const Profile = () => {
                         Regenerate Courses
                       </h4>
                       <p className={styles.settingDescription}>
-                        Get new AI-generated courses based on your preferences
+                        Get new Generated courses based on your preferences
                       </p>
                     </div>
                     <Button
