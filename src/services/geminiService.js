@@ -1161,9 +1161,15 @@ export const reviewSubmissionBatchGemini = async (
     const submission = submissionAnswers[pq.id];
     if (submission && typeof submission === "object") {
       console.log(`🔍 Validating project submission for ${pq.id}...`);
-      const validation = await validateProjectSubmission(submission, pq.question);
+      const validation = await validateProjectSubmission(
+        submission,
+        pq.question,
+      );
       projectValidations[pq.id] = validation;
-      console.log(`📊 Project validation result:`, validation.readyForReview ? "PASSED" : "FAILED");
+      console.log(
+        `📊 Project validation result:`,
+        validation.readyForReview ? "PASSED" : "FAILED",
+      );
     }
   }
 
@@ -1199,7 +1205,9 @@ export const reviewSubmissionBatchGemini = async (
         if (validation && validation.formattedContent) {
           // Use the validated content with actual code
           answerText = validation.formattedContent;
-          console.log(`  ✅ Using validated project content (${answerText.length} chars)`);
+          console.log(
+            `  ✅ Using validated project content (${answerText.length} chars)`,
+          );
         } else {
           // Fallback to basic URL display if validation not available
           const projectParts = [];
@@ -1209,7 +1217,8 @@ export const reviewSubmissionBatchGemini = async (
             projectParts.push(`Live Demo: ${answerText.liveUrl}`);
           answerText =
             projectParts.length > 0
-              ? projectParts.join("\n") + "\n\nWARNING: Project content could not be validated. Review URLs manually."
+              ? projectParts.join("\n") +
+                "\n\nWARNING: Project content could not be validated. Review URLs manually."
               : "[NO PROJECT LINKS PROVIDED]";
           console.log(`  ⚠️ Using fallback project format`);
         }

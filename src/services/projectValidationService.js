@@ -136,14 +136,22 @@ export const fetchRepoInfo = async (owner, repo) => {
       },
     };
   } catch (error) {
-    return { success: false, error: `Failed to fetch repo info: ${error.message}` };
+    return {
+      success: false,
+      error: `Failed to fetch repo info: ${error.message}`,
+    };
   }
 };
 
 /**
  * Fetch file content from GitHub repository
  */
-export const fetchFileContent = async (owner, repo, filePath, branch = "main") => {
+export const fetchFileContent = async (
+  owner,
+  repo,
+  filePath,
+  branch = "main",
+) => {
   try {
     // Try the specified branch first, then fall back to 'master'
     const branches = [branch, "master", "main"];
@@ -156,7 +164,7 @@ export const fetchFileContent = async (owner, repo, filePath, branch = "main") =
             headers: {
               Accept: "application/vnd.github.v3+json",
             },
-          }
+          },
         );
 
         if (response.ok) {
@@ -200,7 +208,7 @@ export const fetchRepoTree = async (owner, repo, branch = "main") => {
             headers: {
               Accept: "application/vnd.github.v3+json",
             },
-          }
+          },
         );
 
         if (response.ok) {
@@ -232,7 +240,8 @@ export const fetchProjectContent = async (repoUrl) => {
   if (!parsed) {
     return {
       success: false,
-      error: "Invalid GitHub URL format. Expected: https://github.com/owner/repo",
+      error:
+        "Invalid GitHub URL format. Expected: https://github.com/owner/repo",
     };
   }
 
@@ -264,14 +273,14 @@ export const fetchProjectContent = async (repoUrl) => {
   // Find which target files exist in the repo
   const filesToFetch = TARGET_FILES.filter((targetFile) =>
     availableFiles.some(
-      (file) => file.toLowerCase() === targetFile.toLowerCase()
-    )
+      (file) => file.toLowerCase() === targetFile.toLowerCase(),
+    ),
   );
 
   if (filesToFetch.length === 0) {
     // If no standard files found, try to get any HTML/CSS/JS files
     const webFiles = availableFiles.filter((f) =>
-      /\.(html?|css|jsx?|tsx?)$/i.test(f)
+      /\.(html?|css|jsx?|tsx?)$/i.test(f),
     );
     filesToFetch.push(...webFiles.slice(0, 5));
   }
@@ -296,18 +305,19 @@ export const fetchProjectContent = async (repoUrl) => {
       owner,
       repo,
       filePath,
-      repoInfo.data.defaultBranch
+      repoInfo.data.defaultBranch,
     );
 
     if (result.success) {
       const contentToAdd = result.content.slice(
         0,
-        MAX_TOTAL_CONTENT_LENGTH - totalContentLength
+        MAX_TOTAL_CONTENT_LENGTH - totalContentLength,
       );
       fileContents.push({
         path: result.path,
         content: contentToAdd,
-        truncated: result.truncated || contentToAdd.length < result.content.length,
+        truncated:
+          result.truncated || contentToAdd.length < result.content.length,
       });
       totalContentLength += contentToAdd.length;
     }
@@ -411,7 +421,10 @@ export const validateProjectSubmission = async (submission, requirements) => {
       };
     }
   } else {
-    results.repoValidation = { valid: false, error: "No repository URL provided" };
+    results.repoValidation = {
+      valid: false,
+      error: "No repository URL provided",
+    };
   }
 
   // Validate live URL (basic check)
@@ -426,7 +439,7 @@ export const validateProjectSubmission = async (submission, requirements) => {
   if (results.readyForReview && results.projectContent) {
     results.formattedContent = formatProjectForReview(
       results.projectContent,
-      requirements
+      requirements,
     );
   } else {
     // Format error message for AI
