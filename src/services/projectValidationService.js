@@ -449,10 +449,7 @@ export const validateProjectSubmission = async (submission, requirements) => {
 
   // Validate GitHub repo
   if (repoUrl) {
-    console.log(
-      "🔗 [ProjectValidation] Validating repo URL:",
-      repoUrl,
-    );
+    console.log("🔗 [ProjectValidation] Validating repo URL:", repoUrl);
     const parsed = parseGitHubUrl(repoUrl);
     if (!parsed) {
       console.error("❌ [ProjectValidation] Invalid GitHub URL format");
@@ -512,7 +509,8 @@ export const validateProjectSubmission = async (submission, requirements) => {
       "⚠️ [ProjectValidation] Formatting error message for failed validation",
     );
     // Get the repo URL for error message
-    const repoUrlForMessage = submission.repoUrl || submission.githubUrl || "Not provided";
+    const repoUrlForMessage =
+      submission.repoUrl || submission.githubUrl || "Not provided";
     // Format error message for AI
     results.formattedContent = `
 PROJECT VALIDATION FAILED:
