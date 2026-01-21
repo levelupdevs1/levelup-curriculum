@@ -38,7 +38,7 @@ export const loadAllCourses = async () => {
 export const loadLesson = async (courseId, moduleId, lessonId) => {
   try {
     const response = await fetch(
-      `/src/courses/${courseId}/${moduleId}/${lessonId}.md`
+      `/src/courses/${courseId}/${moduleId}/${lessonId}.md`,
     );
     if (!response.ok) {
       throw new Error(`Failed to fetch ${lessonId}`);
@@ -64,7 +64,7 @@ export const loadFoundationLesson = async (filePath) => {
 
     // Build the full import path
     const fullPath = `../courses/foundation/${filePath}`;
-    
+
     if (lessonModules[fullPath]) {
       const content = await lessonModules[fullPath]();
       return content;

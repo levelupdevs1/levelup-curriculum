@@ -64,7 +64,9 @@ export const CourseGenerationProvider = ({ children }) => {
         // Filter out foundation course from regular courses (it's handled separately)
         const nonFoundationCourses = allCourses.filter((c) => !c.is_foundation);
         // Separate enrolled and non-enrolled courses
-        const enrolled = nonFoundationCourses.filter((c) => c.status === "enrolled");
+        const enrolled = nonFoundationCourses.filter(
+          (c) => c.status === "enrolled",
+        );
         const recommended = nonFoundationCourses.filter(
           (c) => c.status === "recommended",
         );
@@ -168,47 +170,50 @@ export const CourseGenerationProvider = ({ children }) => {
     [generatedCourses, user],
   );
 
-  const updateCourseProgress = useCallback((courseId, progress) => {
-    // Check if this is the foundation course
-    const isFoundation = foundationCourse && foundationCourse.id === courseId;
-    
-    if (isFoundation) {
-      // Update foundation course progress
-      setFoundationCourse((prev) => prev ? { ...prev, progress } : prev);
-      
-      // Check if foundation is now complete
-      const completedLessons = progress?.completedLessons || [];
-      let totalLessons = 0;
-      for (const module of foundationCourse.modules || []) {
-        totalLessons += module.lessons?.length || 0;
-      }
-      if (totalLessons > 0 && completedLessons.length >= totalLessons) {
-        setFoundationCompleted(true);
-        console.log("🎉 Foundation course completed!");
-      }
-    } else {
-      // Update progress in local state for AI courses
-      setEnrolledCourses((prev) => {
-        return prev.map((course) =>
-          course.id === courseId ? { ...course, progress } : course,
-        );
-      });
-    }
+  const updateCourseProgress = useCallback(
+    (courseId, progress) => {
+      // Check if this is the foundation course
+      const isFoundation = foundationCourse && foundationCourse.id === courseId;
 
-    // Save progress to database
-    import("../services/courseDataService").then(({ updateCourse }) => {
-      updateCourse(courseId, { progress }).then((result) => {
-        if (result.success) {
-          console.log("✅ Progress saved to database:", progress);
-        } else {
-          console.error(
-            "❌ Failed to save progress to database:",
-            result.error,
-          );
+      if (isFoundation) {
+        // Update foundation course progress
+        setFoundationCourse((prev) => (prev ? { ...prev, progress } : prev));
+
+        // Check if foundation is now complete
+        const completedLessons = progress?.completedLessons || [];
+        let totalLessons = 0;
+        for (const module of foundationCourse.modules || []) {
+          totalLessons += module.lessons?.length || 0;
         }
+        if (totalLessons > 0 && completedLessons.length >= totalLessons) {
+          setFoundationCompleted(true);
+          console.log("🎉 Foundation course completed!");
+        }
+      } else {
+        // Update progress in local state for AI courses
+        setEnrolledCourses((prev) => {
+          return prev.map((course) =>
+            course.id === courseId ? { ...course, progress } : course,
+          );
+        });
+      }
+
+      // Save progress to database
+      import("../services/courseDataService").then(({ updateCourse }) => {
+        updateCourse(courseId, { progress }).then((result) => {
+          if (result.success) {
+            console.log("✅ Progress saved to database:", progress);
+          } else {
+            console.error(
+              "❌ Failed to save progress to database:",
+              result.error,
+            );
+          }
+        });
       });
-    });
-  }, [foundationCourse]);
+    },
+    [foundationCourse],
+  );
 
   const setGenerating = useCallback(
     (isGenerating, type = null, progress = 0) => {

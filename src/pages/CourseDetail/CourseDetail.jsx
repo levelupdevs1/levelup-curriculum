@@ -30,52 +30,53 @@ const getAllLessons = (course) => {
 
 const CourseDetail = () => {
   const { courseId } = useParams();
-  const { generatedCourses, enrolledCourses, enrollInCourse } = useCourseGeneration();
+  const { generatedCourses, enrolledCourses, enrollInCourse } =
+    useCourseGeneration();
   const navigate = useNavigate();
   const [expandedModules, setExpandedModules] = useState({});
   const [enrolling, setEnrolling] = useState(false);
 
   // Try to find from enrolled courses first (has latest progress), then generated
-  const rawCourse = enrolledCourses?.find((c) => c.id === courseId) 
-    || generatedCourses?.find((c) => c.id === courseId);
+  const rawCourse =
+    enrolledCourses?.find((c) => c.id === courseId) ||
+    generatedCourses?.find((c) => c.id === courseId);
 
   // Process the course to add isCompleted and isLocked based on progress
   const course = useMemo(() => {
     if (!rawCourse) return null;
-    
+
     const completedLessons = rawCourse.progress?.completedLessons || [];
     const modules = rawCourse.modules || rawCourse.structure?.modules || [];
-    
+
     if (!modules.length) return rawCourse;
-    
+
     // Flatten all lessons to determine locking logic
     const allLessons = modules.flatMap((m) => m.lessons || []);
-    
+
     // Process modules to add isCompleted and isLocked to each lesson
     const processedModules = modules.map((module) => ({
       ...module,
       lessons: (module.lessons || []).map((lesson) => {
         const lessonIndex = allLessons.findIndex((l) => l.id === lesson.id);
         const isCompleted = completedLessons.includes(lesson.id);
-        
+
         // First lesson is always unlocked, others require previous lesson completed
         let isLocked = false;
         if (lessonIndex > 0) {
           const previousLesson = allLessons[lessonIndex - 1];
           isLocked = !completedLessons.includes(previousLesson.id);
         }
-        
+
         return { ...lesson, isCompleted, isLocked };
       }),
     }));
-    
+
     // Calculate overall progress percentage
     const totalLessons = allLessons.length;
     const completedCount = completedLessons.length;
-    const progressPercentage = totalLessons > 0 
-      ? Math.round((completedCount / totalLessons) * 100) 
-      : 0;
-    
+    const progressPercentage =
+      totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0;
+
     return {
       ...rawCourse,
       modules: processedModules,
@@ -96,7 +97,7 @@ const CourseDetail = () => {
     try {
       console.log("📝 Enrolling in course from detail page...");
       const result = await enrollInCourse(courseId);
-      
+
       if (result.success && result.data?.modules?.[0]?.lessons?.[0]) {
         console.log("✅ Enrolled, navigating to first lesson...");
         navigate(

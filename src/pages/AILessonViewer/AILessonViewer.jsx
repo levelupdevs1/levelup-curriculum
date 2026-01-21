@@ -130,7 +130,7 @@ const AILessonViewer = () => {
     if (lessonData.content) {
       console.log("✅ Loading existing lesson content from database");
       setLesson(lessonData.content);
-      
+
       // Load assessment if it exists (some lessons don't have assessments)
       if (lessonData.assessment) {
         setAssessment(lessonData.assessment);
@@ -186,7 +186,9 @@ const AILessonViewer = () => {
       const assessmentType = lessonData.assessmentType || "coding_challenge";
 
       if (requiresAssessment) {
-        console.log(`🤖 Generating ${assessmentType} assessment with Gemini...`);
+        console.log(
+          `🤖 Generating ${assessmentType} assessment with Gemini...`,
+        );
         assessmentResult = await generateAssessment(
           lessonTitle,
           contentResult.content,
@@ -194,7 +196,9 @@ const AILessonViewer = () => {
         );
 
         if (!assessmentResult.success) {
-          console.warn("⚠️ Assessment generation failed, continuing without assessment");
+          console.warn(
+            "⚠️ Assessment generation failed, continuing without assessment",
+          );
           // Don't fail the entire lesson, just skip assessment
         } else {
           tokensUsed += assessmentResult.tokensUsed;
@@ -204,11 +208,10 @@ const AILessonViewer = () => {
       }
 
       // Update tokens used
-      useTokens(
-        tokensUsed,
-        "generate_lesson",
-        { courseId: enrolledCourse.id, lessonId },
-      );
+      useTokens(tokensUsed, "generate_lesson", {
+        courseId: enrolledCourse.id,
+        lessonId,
+      });
 
       // Save to database - update the specific lesson in the modules array
       const updatedModules = [...modules];
@@ -228,7 +231,10 @@ const AILessonViewer = () => {
 
       // Validate external resources
       if (contentResult.content?.externalResources) {
-        logResourceValidation(lessonTitle, contentResult.content.externalResources);
+        logResourceValidation(
+          lessonTitle,
+          contentResult.content.externalResources,
+        );
       }
     } catch (err) {
       console.error("❌ Error generating lesson:", err);
@@ -350,14 +356,20 @@ const AILessonViewer = () => {
 
           // Award XP for passing assessment
           const isPerfectScore = aggregatedReview.score === 100;
-          const xpAmount = isPerfectScore 
-            ? TOKEN_REWARDS.PERFECT_SCORE * 10  // 250 XP for perfect
+          const xpAmount = isPerfectScore
+            ? TOKEN_REWARDS.PERFECT_SCORE * 10 // 250 XP for perfect
             : TOKEN_REWARDS.PASS_ASSESSMENT * 10; // 100 XP for pass
-          
+
           // We'll call handleAwardXP after defining it - for now just log
           if (user?.id) {
-            awardXP(user.id, xpAmount, isPerfectScore ? 'Perfect score on assessment' : 'Passed assessment')
-              .then(result => {
+            awardXP(
+              user.id,
+              xpAmount,
+              isPerfectScore
+                ? "Perfect score on assessment"
+                : "Passed assessment",
+            )
+              .then((result) => {
                 if (result?.success && result?.leveledUp) {
                   setLevelUpNotification({
                     newLevel: result.currentLevel,
@@ -367,7 +379,7 @@ const AILessonViewer = () => {
                 }
                 if (refreshProfile) refreshProfile();
               })
-              .catch(err => console.error("Failed to award XP:", err));
+              .catch((err) => console.error("Failed to award XP:", err));
           }
 
           // Get fresh course data again for progress calculation
@@ -433,23 +445,23 @@ const AILessonViewer = () => {
   // Helper to award XP and handle level up notifications
   const handleAwardXP = async (xpAmount, reason) => {
     if (!user?.id) return;
-    
+
     try {
       const result = await awardXP(user.id, xpAmount, reason);
       if (result.success) {
         console.log(`🎯 Awarded ${xpAmount} XP for: ${reason}`);
-        
+
         // Show level up notification
         if (result.leveledUp) {
           setLevelUpNotification({
             newLevel: result.currentLevel,
             tokenReward: result.tokenReward,
           });
-          
+
           // Auto-hide after 5 seconds
           setTimeout(() => setLevelUpNotification(null), 5000);
         }
-        
+
         // Refresh user profile to update UI
         if (refreshProfile) {
           refreshProfile();
@@ -463,21 +475,19 @@ const AILessonViewer = () => {
   const handleNextLesson = async () => {
     const modules = course.structure?.modules || course.modules;
     const currentModule = modules[moduleIndex];
-    
+
     // Mark current lesson as complete if not already
     const completedLessons = course.progress?.completedLessons || [];
     if (!completedLessons.includes(lessonId)) {
       const updatedCompletedLessons = [...completedLessons, lessonId];
-      
+
       const nextLessonIdx = lessonIndex + 1;
       const nextModIdx =
         nextLessonIdx >= currentModule.lessons.length
           ? moduleIndex + 1
           : moduleIndex;
       const nextLessonIdxInModule =
-        nextLessonIdx >= currentModule.lessons.length
-          ? 0
-          : nextLessonIdx;
+        nextLessonIdx >= currentModule.lessons.length ? 0 : nextLessonIdx;
 
       const progressUpdate = {
         ...course.progress,
@@ -487,18 +497,26 @@ const AILessonViewer = () => {
         currentLessonIndex: nextLessonIdxInModule,
       };
 
-      console.log("📈 Marking lesson complete and updating progress:", progressUpdate);
-      
+      console.log(
+        "📈 Marking lesson complete and updating progress:",
+        progressUpdate,
+      );
+
       // Save to database directly and wait for it
       try {
-        const result = await updateCourse(courseId, { progress: progressUpdate });
+        const result = await updateCourse(courseId, {
+          progress: progressUpdate,
+        });
         if (result.success) {
           console.log("✅ Progress saved to database");
           // Also update local context
           updateCourseProgress(courseId, progressUpdate);
-          
+
           // Award XP for completing the lesson
-          await handleAwardXP(TOKEN_REWARDS.COMPLETE_LESSON * 10, `Completed lesson: ${lesson?.title || 'Lesson'}`);
+          await handleAwardXP(
+            TOKEN_REWARDS.COMPLETE_LESSON * 10,
+            `Completed lesson: ${lesson?.title || "Lesson"}`,
+          );
         } else {
           console.error("❌ Failed to save progress:", result.error);
         }
@@ -582,7 +600,7 @@ const AILessonViewer = () => {
                 </p>
               )}
             </div>
-            <button 
+            <button
               className={styles.levelUpClose}
               onClick={() => setLevelUpNotification(null)}
             >
@@ -679,32 +697,41 @@ const AILessonViewer = () => {
           <div className={styles.lessonActions}>
             {isChooseYourPath ? (
               // Choose Your Path lesson - mark complete then proceed to onboarding
-              <Button 
-                variant="primary" 
+              <Button
+                variant="primary"
                 onClick={async () => {
                   // Mark lesson as complete first
-                  const completedLessons = course.progress?.completedLessons || [];
-                  
+                  const completedLessons =
+                    course.progress?.completedLessons || [];
+
                   if (!completedLessons.includes(lessonId)) {
-                    const updatedCompletedLessons = [...completedLessons, lessonId];
+                    const updatedCompletedLessons = [
+                      ...completedLessons,
+                      lessonId,
+                    ];
                     const progressUpdate = {
                       ...course.progress,
                       completedLessons: updatedCompletedLessons,
                       currentModuleIndex: moduleIndex,
                       currentLessonIndex: lessonIndex,
                     };
-                    
+
                     try {
-                      const result = await updateCourse(courseId, { progress: progressUpdate });
+                      const result = await updateCourse(courseId, {
+                        progress: progressUpdate,
+                      });
                       if (result.success) {
                         updateCourseProgress(courseId, progressUpdate);
-                        await handleAwardXP(TOKEN_REWARDS.COMPLETE_LESSON * 10, `Completed lesson: ${lesson?.title || 'Lesson'}`);
+                        await handleAwardXP(
+                          TOKEN_REWARDS.COMPLETE_LESSON * 10,
+                          `Completed lesson: ${lesson?.title || "Lesson"}`,
+                        );
                       }
                     } catch (err) {
                       console.error("Error saving progress:", err);
                     }
                   }
-                  
+
                   // Navigate to onboarding
                   navigate("/onboarding", { state: { fromFoundation: true } });
                 }}
@@ -797,7 +824,10 @@ const AILessonViewer = () => {
                           <div className={styles.codeChallenge}>
                             <textarea
                               className={styles.codeInput}
-                              placeholder={question.starterCode || "Write your code here..."}
+                              placeholder={
+                                question.starterCode ||
+                                "Write your code here..."
+                              }
                               rows={8}
                               onChange={(e) =>
                                 setSubmission((prev) => ({
@@ -829,16 +859,17 @@ const AILessonViewer = () => {
                                 ))}
                               </ul>
                             </div>
-                            {question.stretchGoals && question.stretchGoals.length > 0 && (
-                              <div className={styles.stretchGoals}>
-                                <h4>Stretch Goals (Optional):</h4>
-                                <ul>
-                                  {question.stretchGoals.map((goal, idx) => (
-                                    <li key={idx}>{goal}</li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
+                            {question.stretchGoals &&
+                              question.stretchGoals.length > 0 && (
+                                <div className={styles.stretchGoals}>
+                                  <h4>Stretch Goals (Optional):</h4>
+                                  <ul>
+                                    {question.stretchGoals.map((goal, idx) => (
+                                      <li key={idx}>{goal}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
                             <input
                               type="url"
                               className={styles.urlInput}
@@ -846,9 +877,9 @@ const AILessonViewer = () => {
                               onChange={(e) =>
                                 setSubmission((prev) => ({
                                   ...prev,
-                                  [questionId]: { 
+                                  [questionId]: {
                                     ...prev[questionId],
-                                    githubUrl: e.target.value 
+                                    githubUrl: e.target.value,
                                   },
                                 }))
                               }
@@ -860,9 +891,9 @@ const AILessonViewer = () => {
                               onChange={(e) =>
                                 setSubmission((prev) => ({
                                   ...prev,
-                                  [questionId]: { 
+                                  [questionId]: {
                                     ...prev[questionId],
-                                    liveUrl: e.target.value 
+                                    liveUrl: e.target.value,
                                   },
                                 }))
                               }
@@ -874,9 +905,9 @@ const AILessonViewer = () => {
                               onChange={(e) =>
                                 setSubmission((prev) => ({
                                   ...prev,
-                                  [questionId]: { 
+                                  [questionId]: {
                                     ...prev[questionId],
-                                    description: e.target.value 
+                                    description: e.target.value,
                                   },
                                 }))
                               }

@@ -23,8 +23,13 @@ const COURSES_PER_PAGE = 6;
 
 const Dashboard = () => {
   const { user, profile, refreshProfile } = useUser();
-  const { enrolledCourses: contextEnrolledCourses, generatedCourses, foundationCourse, foundationCompleted, loading: coursesLoading } =
-    useCourseGeneration();
+  const {
+    enrolledCourses: contextEnrolledCourses,
+    generatedCourses,
+    foundationCourse,
+    foundationCompleted,
+    loading: coursesLoading,
+  } = useCourseGeneration();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -46,20 +51,21 @@ const Dashboard = () => {
     }
     return aiCourses;
   }, [generatedCourses, foundationCourse, foundationCompleted]);
-  
-  const enrolledCourses = useMemo(
-    () => {
-      const enrolled = contextEnrolledCourses?.length > 0
+
+  const enrolledCourses = useMemo(() => {
+    const enrolled =
+      contextEnrolledCourses?.length > 0
         ? contextEnrolledCourses
         : allCourses.filter((c) => c.status === "enrolled");
-      // Include foundation course in enrolled if exists
-      if (foundationCourse && !enrolled.find(c => c.id === foundationCourse.id)) {
-        return [foundationCourse, ...enrolled];
-      }
-      return enrolled;
-    },
-    [contextEnrolledCourses, allCourses, foundationCourse],
-  );
+    // Include foundation course in enrolled if exists
+    if (
+      foundationCourse &&
+      !enrolled.find((c) => c.id === foundationCourse.id)
+    ) {
+      return [foundationCourse, ...enrolled];
+    }
+    return enrolled;
+  }, [contextEnrolledCourses, allCourses, foundationCourse]);
 
   // Pagination
   const totalPages = Math.ceil(allCourses.length / COURSES_PER_PAGE);

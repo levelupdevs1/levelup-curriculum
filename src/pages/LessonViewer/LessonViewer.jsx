@@ -45,8 +45,8 @@ const LessonViewer = () => {
   const isFoundationCourse = courseId === "foundation";
 
   // Find course and lesson from AI-generated courses OR foundation course
-  const course = isFoundationCourse 
-    ? foundationCourse 
+  const course = isFoundationCourse
+    ? foundationCourse
     : generatedCourses?.find((c) => c.id === courseId);
   const lesson = course?.modules
     ?.flatMap((m) => m.lessons)

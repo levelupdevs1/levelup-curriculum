@@ -282,7 +282,9 @@ const Profile = () => {
                       <Button
                         variant="secondary"
                         onClick={() =>
-                          navigate("/onboarding", { state: { from: "/profile" } })
+                          navigate("/onboarding", {
+                            state: { from: "/profile" },
+                          })
                         }
                       >
                         Update Learning Preferences
@@ -293,7 +295,8 @@ const Profile = () => {
                   <div className={styles.emptyState}>
                     <Target size={48} className={styles.emptyIcon} />
                     <p className={styles.emptyText}>
-                      Complete the Foundation course and choose your learning path to set your preferences
+                      Complete the Foundation course and choose your learning
+                      path to set your preferences
                     </p>
                     <Button
                       variant="primary"

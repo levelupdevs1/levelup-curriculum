@@ -29,10 +29,7 @@ const AICatalog = () => {
     foundationCompleted,
     foundationCourse,
   } = useCourseGeneration();
-  const {
-    useTokens: consumeTokens,
-    tokensRemaining,
-  } = useAIToken();
+  const { useTokens: consumeTokens, tokensRemaining } = useAIToken();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("all");
@@ -46,9 +43,12 @@ const AICatalog = () => {
 
   // Filter courses based on active tab, search, and difficulty
   const filteredCourses = useMemo(() => {
-    let courses = activeTab === "enrolled"
-      ? generatedCourses.filter((c) => enrolledCourses.some((e) => e.id === c.id))
-      : generatedCourses;
+    let courses =
+      activeTab === "enrolled"
+        ? generatedCourses.filter((c) =>
+            enrolledCourses.some((e) => e.id === c.id),
+          )
+        : generatedCourses;
 
     // Apply search filter
     if (searchQuery.trim()) {
@@ -56,19 +56,26 @@ const AICatalog = () => {
       courses = courses.filter(
         (course) =>
           course.title?.toLowerCase().includes(query) ||
-          course.description?.toLowerCase().includes(query)
+          course.description?.toLowerCase().includes(query),
       );
     }
 
     // Apply difficulty filter
     if (difficultyFilter !== "All") {
       courses = courses.filter(
-        (course) => course.difficulty?.toLowerCase() === difficultyFilter.toLowerCase()
+        (course) =>
+          course.difficulty?.toLowerCase() === difficultyFilter.toLowerCase(),
       );
     }
 
     return courses;
-  }, [generatedCourses, enrolledCourses, activeTab, searchQuery, difficultyFilter]);
+  }, [
+    generatedCourses,
+    enrolledCourses,
+    activeTab,
+    searchQuery,
+    difficultyFilter,
+  ]);
 
   // Pagination
   const totalPages = Math.ceil(filteredCourses.length / COURSES_PER_PAGE);
@@ -156,15 +163,15 @@ const AICatalog = () => {
     // 1. No courses exist yet, OR
     // 2. Coming from preference update with ?generate=true
     const shouldAutoGenerate = generatedCourses.length === 0 || shouldGenerate;
-    
+
     if (shouldAutoGenerate && !hasGeneratedRef.current) {
       hasGeneratedRef.current = true;
-      
+
       // Clear the generate param from URL
       if (shouldGenerate) {
         setSearchParams({});
       }
-      
+
       generateCourses();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -273,10 +280,13 @@ const AICatalog = () => {
         <div className={styles.empty}>
           {!foundationCompleted ? (
             <>
-              <p>Complete the Foundation course first to unlock AI-generated personalized courses</p>
+              <p>
+                Complete the Foundation course first to unlock AI-generated
+                personalized courses
+              </p>
               {foundationCourse && (
-                <Button 
-                  variant="primary" 
+                <Button
+                  variant="primary"
                   onClick={() => navigate(`/courses/${foundationCourse.id}`)}
                 >
                   Continue Foundation Course
@@ -303,14 +313,23 @@ const AICatalog = () => {
         </div>
       )}
 
-      {paginatedCourses.length === 0 && activeTab === "all" && filteredCourses.length === 0 && generatedCourses.length > 0 && (
-        <div className={styles.empty}>
-          <p>No courses match your search criteria</p>
-          <Button variant="secondary" onClick={() => { setSearchQuery(""); setDifficultyFilter("All"); }}>
-            Clear Filters
-          </Button>
-        </div>
-      )}
+      {paginatedCourses.length === 0 &&
+        activeTab === "all" &&
+        filteredCourses.length === 0 &&
+        generatedCourses.length > 0 && (
+          <div className={styles.empty}>
+            <p>No courses match your search criteria</p>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setSearchQuery("");
+                setDifficultyFilter("All");
+              }}
+            >
+              Clear Filters
+            </Button>
+          </div>
+        )}
 
       <div className={styles.coursesGrid}>
         {paginatedCourses.map((course) => {
@@ -338,7 +357,7 @@ const AICatalog = () => {
             <ChevronLeft size={20} />
             Previous
           </button>
-          
+
           <div className={styles.pageNumbers}>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <button
@@ -350,10 +369,12 @@ const AICatalog = () => {
               </button>
             ))}
           </div>
-          
+
           <button
             className={styles.pageButton}
-            onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
             disabled={currentPage === totalPages}
           >
             Next
