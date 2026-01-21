@@ -237,10 +237,13 @@ export const fetchRepoTree = async (owner, repo, branch = "main") => {
  */
 export const fetchProjectContent = async (repoUrl) => {
   console.log("🔍 [ProjectValidation] Starting validation for:", repoUrl);
-  
+
   const parsed = parseGitHubUrl(repoUrl);
   if (!parsed) {
-    console.error("❌ [ProjectValidation] Failed to parse GitHub URL:", repoUrl);
+    console.error(
+      "❌ [ProjectValidation] Failed to parse GitHub URL:",
+      repoUrl,
+    );
     return {
       success: false,
       error:
@@ -278,7 +281,9 @@ export const fetchProjectContent = async (repoUrl) => {
   console.log(`🌲 [ProjectValidation] Fetching file tree...`);
   const tree = await fetchRepoTree(owner, repo, repoInfo.data.defaultBranch);
   const availableFiles = tree.success ? tree.files : [];
-  console.log(`📂 [ProjectValidation] Found ${availableFiles.length} files in repo`);
+  console.log(
+    `📂 [ProjectValidation] Found ${availableFiles.length} files in repo`,
+  );
 
   // Find which target files exist in the repo
   const filesToFetch = TARGET_FILES.filter((targetFile) =>
@@ -293,7 +298,10 @@ export const fetchProjectContent = async (repoUrl) => {
     const webFiles = availableFiles.filter((f) =>
       /\.(html?|css|jsx?|tsx?)$/i.test(f),
     );
-    console.log(`🔎 [ProjectValidation] Fallback web files:`, webFiles.slice(0, 5));
+    console.log(
+      `🔎 [ProjectValidation] Fallback web files:`,
+      webFiles.slice(0, 5),
+    );
     filesToFetch.push(...webFiles.slice(0, 5));
   }
 
@@ -308,7 +316,9 @@ export const fetchProjectContent = async (repoUrl) => {
   }
 
   // Fetch content of each file
-  console.log(`📥 [ProjectValidation] Fetching ${filesToFetch.length} files...`);
+  console.log(
+    `📥 [ProjectValidation] Fetching ${filesToFetch.length} files...`,
+  );
   const fileContents = [];
   let totalContentLength = 0;
 
@@ -323,7 +333,9 @@ export const fetchProjectContent = async (repoUrl) => {
     );
 
     if (result.success) {
-      console.log(`✅ [ProjectValidation] Fetched: ${filePath} (${result.content.length} chars)`);
+      console.log(
+        `✅ [ProjectValidation] Fetched: ${filePath} (${result.content.length} chars)`,
+      );
       const contentToAdd = result.content.slice(
         0,
         MAX_TOTAL_CONTENT_LENGTH - totalContentLength,
@@ -350,7 +362,9 @@ export const fetchProjectContent = async (repoUrl) => {
     };
   }
 
-  console.log(`✅ [ProjectValidation] Successfully fetched ${fileContents.length} files, total ${totalContentLength} chars`);
+  console.log(
+    `✅ [ProjectValidation] Successfully fetched ${fileContents.length} files, total ${totalContentLength} chars`,
+  );
   return {
     success: true,
     repoInfo: repoInfo.data,
@@ -417,8 +431,11 @@ REVIEW INSTRUCTIONS:
 export const validateProjectSubmission = async (submission, requirements) => {
   console.log("🚀 [ProjectValidation] validateProjectSubmission called");
   console.log("📎 [ProjectValidation] Submission:", JSON.stringify(submission));
-  console.log("📋 [ProjectValidation] Requirements:", requirements?.substring(0, 100));
-  
+  console.log(
+    "📋 [ProjectValidation] Requirements:",
+    requirements?.substring(0, 100),
+  );
+
   const results = {
     repoValidation: null,
     liveUrlValidation: null,
@@ -429,7 +446,10 @@ export const validateProjectSubmission = async (submission, requirements) => {
 
   // Validate GitHub repo
   if (submission.repoUrl) {
-    console.log("🔗 [ProjectValidation] Validating repo URL:", submission.repoUrl);
+    console.log(
+      "🔗 [ProjectValidation] Validating repo URL:",
+      submission.repoUrl,
+    );
     const parsed = parseGitHubUrl(submission.repoUrl);
     if (!parsed) {
       console.error("❌ [ProjectValidation] Invalid GitHub URL format");
@@ -445,7 +465,10 @@ export const validateProjectSubmission = async (submission, requirements) => {
         valid: results.projectContent.success,
         error: results.projectContent.error,
       };
-      console.log("📊 [ProjectValidation] Content fetch result:", results.projectContent.success ? "SUCCESS" : "FAILED");
+      console.log(
+        "📊 [ProjectValidation] Content fetch result:",
+        results.projectContent.success ? "SUCCESS" : "FAILED",
+      );
     }
   } else {
     console.error("❌ [ProjectValidation] No repo URL provided");
@@ -457,13 +480,19 @@ export const validateProjectSubmission = async (submission, requirements) => {
 
   // Validate live URL (basic check)
   if (submission.liveUrl) {
-    console.log("🌐 [ProjectValidation] Validating live URL:", submission.liveUrl);
+    console.log(
+      "🌐 [ProjectValidation] Validating live URL:",
+      submission.liveUrl,
+    );
     results.liveUrlValidation = await validateUrl(submission.liveUrl);
   }
 
   // Determine if ready for review
   results.readyForReview = results.repoValidation?.valid === true;
-  console.log("🎯 [ProjectValidation] Ready for review:", results.readyForReview);
+  console.log(
+    "🎯 [ProjectValidation] Ready for review:",
+    results.readyForReview,
+  );
 
   // Format content for AI if validation passed
   if (results.readyForReview && results.projectContent) {
@@ -471,9 +500,14 @@ export const validateProjectSubmission = async (submission, requirements) => {
       results.projectContent,
       requirements,
     );
-    console.log("📝 [ProjectValidation] Formatted content length:", results.formattedContent?.length);
+    console.log(
+      "📝 [ProjectValidation] Formatted content length:",
+      results.formattedContent?.length,
+    );
   } else {
-    console.warn("⚠️ [ProjectValidation] Formatting error message for failed validation");
+    console.warn(
+      "⚠️ [ProjectValidation] Formatting error message for failed validation",
+    );
     // Format error message for AI
     results.formattedContent = `
 PROJECT VALIDATION FAILED:
