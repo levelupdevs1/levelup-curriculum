@@ -5,6 +5,8 @@
  * Anti-hallucination: Strict prompt engineering, fact-based only
  */
 
+import { validateProjectSubmission } from "./projectValidationService";
+
 const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
@@ -1013,6 +1015,20 @@ export const reviewSubmissionBatchGroq = async (
   );
   console.log("📝 Submission answers:", submissionAnswers);
 
+  // Check for project-type questions and validate them
+  const projectQuestions = questions.filter((q) => q.type === "project");
+  const projectValidations = {};
+
+  for (const pq of projectQuestions) {
+    const submission = submissionAnswers[pq.id];
+    if (submission && typeof submission === "object") {
+      console.log(`🔍 Validating project submission for ${pq.id}...`);
+      const validation = await validateProjectSubmission(submission, pq.question);
+      projectValidations[pq.id] = validation;
+      console.log(`📊 Project validation result:`, validation.readyForReview ? "PASSED" : "FAILED");
+    }
+  }
+
   // Build structured format with all Q&A pairs, mapping indices to actual answers
   const questionsData = questions
     .map((q, idx) => {
@@ -1035,22 +1051,30 @@ export const reviewSubmissionBatchGroq = async (
         }
       }
 
-      // For project submissions, format the object with repo and live URLs
+      // For project submissions, use validated content with actual code
       if (
         q.type === "project" &&
         typeof answerText === "object" &&
         answerText !== null
       ) {
-        const projectParts = [];
-        if (answerText.repoUrl)
-          projectParts.push(`GitHub Repository: ${answerText.repoUrl}`);
-        if (answerText.liveUrl)
-          projectParts.push(`Live Demo: ${answerText.liveUrl}`);
-        answerText =
-          projectParts.length > 0
-            ? projectParts.join("\n")
-            : "[NO PROJECT LINKS PROVIDED]";
-        console.log(`  Formatted project submission: ${answerText}`);
+        const validation = projectValidations[q.id];
+        if (validation && validation.formattedContent) {
+          // Use the validated content with actual code
+          answerText = validation.formattedContent;
+          console.log(`  ✅ Using validated project content (${answerText.length} chars)`);
+        } else {
+          // Fallback to basic URL display if validation not available
+          const projectParts = [];
+          if (answerText.repoUrl)
+            projectParts.push(`GitHub Repository: ${answerText.repoUrl}`);
+          if (answerText.liveUrl)
+            projectParts.push(`Live Demo: ${answerText.liveUrl}`);
+          answerText =
+            projectParts.length > 0
+              ? projectParts.join("\n") + "\n\nWARNING: Project content could not be validated. Review URLs manually."
+              : "[NO PROJECT LINKS PROVIDED]";
+          console.log(`  ⚠️ Using fallback project format`);
+        }
       }
 
       // Handle unanswered questions
