@@ -856,7 +856,11 @@ const AILessonViewer = () => {
                         {question.type === "coding" && (
                           <textarea
                             className={styles.codeInput}
-                            value={submission[questionId] || question.starterCode || ""}
+                            value={
+                              submission[questionId] ||
+                              question.starterCode ||
+                              ""
+                            }
                             placeholder="Write your code here..."
                             rows={10}
                             onChange={(e) =>
@@ -872,7 +876,11 @@ const AILessonViewer = () => {
                           <div className={styles.codeChallenge}>
                             <textarea
                               className={styles.codeInput}
-                              value={submission[questionId] || question.starterCode || ""}
+                              value={
+                                submission[questionId] ||
+                                question.starterCode ||
+                                ""
+                              }
                               placeholder="Write your code here..."
                               rows={8}
                               onChange={(e) =>

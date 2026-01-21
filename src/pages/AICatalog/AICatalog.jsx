@@ -352,8 +352,11 @@ const AICatalog = () => {
       <div className={styles.coursesGrid}>
         {paginatedCourses.map((course) => {
           // Foundation course is always enrolled
-          const isFoundation = course.is_foundation || (foundationCourse && course.id === foundationCourse.id);
-          const isEnrolled = isFoundation || enrolledCourses.some((c) => c.id === course.id);
+          const isFoundation =
+            course.is_foundation ||
+            (foundationCourse && course.id === foundationCourse.id);
+          const isEnrolled =
+            isFoundation || enrolledCourses.some((c) => c.id === course.id);
 
           return (
             <AICourseCard
