@@ -444,13 +444,16 @@ export const validateProjectSubmission = async (submission, requirements) => {
     formattedContent: null,
   };
 
+  // Get the repo URL - support both 'repoUrl' and 'githubUrl' field names
+  const repoUrl = submission.repoUrl || submission.githubUrl;
+
   // Validate GitHub repo
-  if (submission.repoUrl) {
+  if (repoUrl) {
     console.log(
       "🔗 [ProjectValidation] Validating repo URL:",
-      submission.repoUrl,
+      repoUrl,
     );
-    const parsed = parseGitHubUrl(submission.repoUrl);
+    const parsed = parseGitHubUrl(repoUrl);
     if (!parsed) {
       console.error("❌ [ProjectValidation] Invalid GitHub URL format");
       results.repoValidation = {
@@ -460,7 +463,7 @@ export const validateProjectSubmission = async (submission, requirements) => {
     } else {
       console.log("✅ [ProjectValidation] URL parsed, fetching content...");
       // Fetch project content
-      results.projectContent = await fetchProjectContent(submission.repoUrl);
+      results.projectContent = await fetchProjectContent(repoUrl);
       results.repoValidation = {
         valid: results.projectContent.success,
         error: results.projectContent.error,
@@ -508,10 +511,12 @@ export const validateProjectSubmission = async (submission, requirements) => {
     console.warn(
       "⚠️ [ProjectValidation] Formatting error message for failed validation",
     );
+    // Get the repo URL for error message
+    const repoUrlForMessage = submission.repoUrl || submission.githubUrl || "Not provided";
     // Format error message for AI
     results.formattedContent = `
 PROJECT VALIDATION FAILED:
-- Repository URL: ${submission.repoUrl || "Not provided"}
+- Repository URL: ${repoUrlForMessage}
 - Repository Error: ${results.repoValidation?.error || "Unknown error"}
 - Live URL: ${submission.liveUrl || "Not provided"}
 - Live URL Valid: ${results.liveUrlValidation?.valid ? "Yes" : "No"}
