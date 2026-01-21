@@ -1166,7 +1166,7 @@ export const reviewSubmissionBatchGemini = async (
         pq.question,
       );
       projectValidations[pq.id] = validation;
-      
+
       // Log comprehensive validation results
       console.log(`📊 Project validation result:`, {
         readyForReview: validation.readyForReview,
@@ -1247,9 +1247,11 @@ Student Answer: ${answerText}
 
   // Check if there are project questions for stricter review
   const hasProjectQuestions = questions.some((q) => q.type === "project");
-  
+
   // Get validation metadata for project questions
-  const projectMeta = hasProjectQuestions ? Object.values(projectValidations)[0]?.validationSummary : null;
+  const projectMeta = hasProjectQuestions
+    ? Object.values(projectValidations)[0]?.validationSummary
+    : null;
 
   const prompt = `Review this student's assessment submission. For EACH question, provide feedback.
 
@@ -1262,12 +1264,16 @@ ${
   hasProjectQuestions
     ? `
 === STRICT ANTI-HALLUCINATION REVIEW MODE ===
-${projectMeta ? `Validation ID: ${projectMeta.validationId || 'N/A'}
+${
+  projectMeta
+    ? `Validation ID: ${projectMeta.validationId || "N/A"}
 Files Reviewed: ${projectMeta.filesAvailable || 0}
 Code Coverage: ${projectMeta.coverage || 0}%
-Repository Accessible: ${projectMeta.repoAccessible ? 'YES' : 'NO'}
-Live URL Accessible: ${projectMeta.liveUrlAccessible ? 'YES' : 'NO'}
-` : ''}
+Repository Accessible: ${projectMeta.repoAccessible ? "YES" : "NO"}
+Live URL Accessible: ${projectMeta.liveUrlAccessible ? "YES" : "NO"}
+`
+    : ""
+}
 MANDATORY RULES FOR PROJECT REVIEW:
 1. ONLY use evidence from the ACTUAL CODE provided
 2. NEVER assume features exist without code proof
