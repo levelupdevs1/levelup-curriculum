@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: 0;
   background-color: #f9fafb;
 }
 
@@ -146,7 +146,7 @@
 
 @media (max-width: 768px) {
   .container {
-    padding: 16px;
+    padding: 0;
   }
 
   .questionCard {
