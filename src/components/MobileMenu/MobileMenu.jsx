@@ -22,7 +22,7 @@ const MobileMenu = ({ isOpen, onClose }) => {
   const menuItems = isAuthenticated
     ? [
         { path: "/dashboard", label: "Dashboard", icon: Trophy },
-        { path: "/courses", label: "Courses", icon: BookOpen },
+        { path: "/course-catalog", label: "Courses", icon: BookOpen },
         { path: "/rewards", label: "Rewards", icon: Award },
         { path: "/discussion", label: "Discussion", icon: MessageSquare },
         { path: "/profile", label: "Profile", icon: User },
