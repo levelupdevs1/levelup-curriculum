@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import { useUser } from "../../hooks/useUser";
+import { useLoadingBar } from "../../components/TopLoadingBar";
 import Button from "../../components/Button/Button";
 import Card from "../../components/Card/Card";
 import Modal from "../../components/Modal/Modal";
@@ -58,6 +59,7 @@ const Onboarding = () => {
   const { updateUserProfile, userProfile, generatedCourses } =
     useCourseGeneration();
   const { refreshProfile, profile } = useUser();
+  const loadingBar = useLoadingBar();
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState({});
   const [customInput, setCustomInput] = useState("");
@@ -137,6 +139,7 @@ const Onboarding = () => {
 
   const handleComplete = async () => {
     setSaving(true);
+    loadingBar.start();
 
     const newProfile = {
       learning_goal: answers.learning_goal,
@@ -151,6 +154,7 @@ const Onboarding = () => {
     if (result?.success) {
       await refreshProfile();
       setSaving(false);
+      loadingBar.complete();
 
       // If updating and has existing courses, ask if they want new courses
       if (isUpdateMode && hasExistingCourses) {
@@ -164,6 +168,7 @@ const Onboarding = () => {
     } else {
       console.error("Failed to save profile:", result?.error);
       setSaving(false);
+      loadingBar.complete();
     }
   };
 

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import { useAIToken } from "../../hooks/useAIToken";
+import { useLoadingBar } from "../../components/TopLoadingBar";
 import {
   generateCourseStructure,
   AI_TOKEN_COSTS,
@@ -19,6 +20,7 @@ const AICourseDetail = () => {
   const { getCourseById, userProfile, setCurrentCourse } =
     useCourseGeneration();
   const { canUseTokens, useTokens, tokensRemaining } = useAIToken();
+  const loadingBar = useLoadingBar();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -77,6 +79,7 @@ const AICourseDetail = () => {
 
     setLoading(true);
     setError(null);
+    loadingBar.start();
 
     try {
       console.log(`🔨 Generating structure for: ${enrolledCourse.title}`);
@@ -128,6 +131,7 @@ const AICourseDetail = () => {
       setError(err.message || "An error occurred");
     } finally {
       setLoading(false);
+      loadingBar.complete();
     }
   };
 

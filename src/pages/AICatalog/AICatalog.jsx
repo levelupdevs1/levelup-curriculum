@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import { useAIToken } from "../../hooks/useAIToken";
+import { useLoadingBar } from "../../components/TopLoadingBar";
 import {
   generateCourseCatalog,
   AI_TOKEN_COSTS,
@@ -30,6 +31,7 @@ const AICatalog = () => {
     foundationCourse,
   } = useCourseGeneration();
   const { useTokens: consumeTokens, tokensRemaining } = useAIToken();
+  const loadingBar = useLoadingBar();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("all");
@@ -127,6 +129,7 @@ const AICatalog = () => {
 
     setLoading(true);
     setError(null);
+    loadingBar.start();
 
     try {
       console.log(`🤖 Generating courses with ${getActiveProvider()}...`);
@@ -158,6 +161,7 @@ const AICatalog = () => {
       setError(err.message || "An error occurred");
     } finally {
       setLoading(false);
+      loadingBar.complete();
     }
   };
 

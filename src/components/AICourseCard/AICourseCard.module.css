@@ -195,3 +195,199 @@
   width: calc(100% - 32px);
   margin: 0 16px 16px 16px;
 }
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .courseImage {
+    height: 160px;
+  }
+
+  .courseContent {
+    padding: 18px;
+  }
+
+  .courseTitle {
+    font-size: 17px;
+    min-height: 46px;
+  }
+
+  .difficulty {
+    padding: 5px 11px;
+    font-size: 10px;
+  }
+
+  .description {
+    font-size: 13px;
+    min-height: 60px;
+  }
+
+  .courseStats {
+    gap: 14px;
+    padding: 14px;
+  }
+
+  .statValue {
+    font-size: 16px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .courseCard:hover {
+    transform: translateY(-2px);
+  }
+
+  .courseImage {
+    height: 150px;
+  }
+
+  .courseContent {
+    padding: 16px;
+    gap: 10px;
+  }
+
+  .courseTitle {
+    font-size: 16px;
+    min-height: 44px;
+  }
+
+  .difficulty {
+    padding: 5px 10px;
+    font-size: 10px;
+    top: 10px;
+    right: 10px;
+  }
+
+  .description {
+    font-size: 13px;
+    min-height: 57px;
+  }
+
+  .courseStats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .statLabel {
+    font-size: 11px;
+  }
+
+  .statValue {
+    font-size: 16px;
+  }
+
+  .progressSection {
+    padding: 12px;
+  }
+
+  .progressHeader {
+    font-size: 12px;
+    margin-bottom: 6px;
+  }
+
+  .progressBar {
+    height: 5px;
+  }
+
+  .tags {
+    padding: 12px;
+    gap: 6px;
+    min-height: 40px;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+
+  .tagOverflow {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+
+  .actionButton {
+    width: calc(100% - 24px);
+    margin: 0 12px 12px 12px;
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .courseImage {
+    height: 130px;
+  }
+
+  .courseContent {
+    padding: 12px;
+  }
+
+  .courseTitle {
+    font-size: 15px;
+    min-height: 40px;
+  }
+
+  .difficulty {
+    padding: 4px 8px;
+    font-size: 9px;
+    top: 8px;
+    right: 8px;
+  }
+
+  .description {
+    font-size: 12px;
+    min-height: 51px;
+  }
+
+  .courseStats {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .statLabel {
+    font-size: 10px;
+  }
+
+  .statValue {
+    font-size: 14px;
+  }
+
+  .progressSection {
+    padding: 10px;
+  }
+
+  .progressHeader {
+    font-size: 11px;
+  }
+
+  .progressBar {
+    height: 4px;
+  }
+
+  .tags {
+    padding: 10px;
+    gap: 5px;
+    min-height: 36px;
+  }
+
+  .tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    max-width: 120px;
+  }
+
+  .tagOverflow {
+    font-size: 10px;
+    padding: 2px 8px;
+    min-width: 30px;
+  }
+
+  .actionButton {
+    width: calc(100% - 20px);
+    margin: 0 10px 10px 10px;
+    padding: 9px 14px;
+    font-size: 13px;
+  }
+}

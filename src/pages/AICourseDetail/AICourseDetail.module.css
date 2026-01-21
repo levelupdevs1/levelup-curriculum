@@ -236,6 +236,30 @@
   margin: 0;
 }
 
+/* Tablet */
+@media (max-width: 1024px) {
+  .courseHeader {
+    padding: 24px;
+  }
+
+  .courseTitle h1 {
+    font-size: 28px;
+  }
+
+  .description {
+    font-size: 15px;
+  }
+
+  .moduleCard {
+    padding: 20px;
+  }
+
+  .moduleHeader h2 {
+    font-size: 22px;
+  }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
   .container {
     padding: 0;
@@ -243,37 +267,219 @@
 
   .header {
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
     align-items: stretch;
+    margin-bottom: 20px;
   }
 
   .tokenDisplay {
     justify-content: center;
+    padding: 10px 16px;
+  }
+
+  .tokenLabel {
+    font-size: 13px;
+  }
+
+  .tokenValue {
+    font-size: 16px;
   }
 
   .courseHeader {
-    padding: 24px;
+    padding: 20px;
+    margin-bottom: 24px;
   }
 
   .courseTitle {
     flex-direction: column;
+    gap: 12px;
+    margin-bottom: 12px;
   }
 
   .courseTitle h1 {
-    font-size: 24px;
+    font-size: 22px;
+    line-height: 1.3;
+  }
+
+  .difficulty {
+    padding: 5px 12px;
+    font-size: 11px;
+    align-self: flex-start;
+  }
+
+  .description {
+    font-size: 14px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+
+  .progressSection {
+    padding-top: 20px;
+  }
+
+  .progressHeader {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  .modules {
+    gap: 20px;
+  }
+
+  .moduleCard {
+    padding: 16px;
+  }
+
+  .moduleHeader {
+    margin-bottom: 20px;
+    padding-bottom: 12px;
   }
 
   .moduleHeader h2 {
-    font-size: 20px;
+    font-size: 18px;
+    margin-bottom: 6px;
+  }
+
+  .moduleHeader p {
+    font-size: 13px;
+  }
+
+  .lessons {
+    gap: 10px;
   }
 
   .lessonItem {
     flex-direction: column;
     align-items: stretch;
     gap: 12px;
+    padding: 14px;
+  }
+
+  .lessonInfo h3 {
+    font-size: 15px;
+    margin-bottom: 6px;
+  }
+
+  .lessonMeta {
+    gap: 12px;
+    font-size: 13px;
+    flex-wrap: wrap;
   }
 
   .lessonItem button {
     width: 100%;
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .lockedBadge {
+    padding: 6px 12px;
+    font-size: 13px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .emptyState {
+    padding: 32px 20px;
+  }
+
+  .emptyState p {
+    font-size: 14px;
+  }
+
+  .loadingContainer {
+    min-height: 300px;
+    padding: 20px;
+  }
+
+  .loadingContainer p {
+    font-size: 14px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .courseHeader {
+    padding: 16px;
+  }
+
+  .courseTitle h1 {
+    font-size: 20px;
+  }
+
+  .difficulty {
+    padding: 4px 10px;
+    font-size: 10px;
+  }
+
+  .description {
+    font-size: 13px;
+  }
+
+  .progressHeader {
+    font-size: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .tokenDisplay {
+    padding: 8px 12px;
+  }
+
+  .tokenLabel {
+    font-size: 12px;
+  }
+
+  .tokenValue {
+    font-size: 14px;
+  }
+
+  .moduleCard {
+    padding: 12px;
+  }
+
+  .moduleHeader {
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+  }
+
+  .moduleHeader h2 {
+    font-size: 17px;
+  }
+
+  .moduleHeader p {
+    font-size: 12px;
+  }
+
+  .lessonItem {
+    padding: 12px;
+  }
+
+  .lessonInfo h3 {
+    font-size: 14px;
+  }
+
+  .lessonMeta {
+    font-size: 12px;
+    gap: 10px;
+  }
+
+  .lessonItem button {
+    padding: 9px 14px;
+    font-size: 13px;
+  }
+
+  .lockedBadge {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .emptyState {
+    padding: 24px 16px;
+  }
+
+  .emptyState p {
+    font-size: 13px;
   }
 }

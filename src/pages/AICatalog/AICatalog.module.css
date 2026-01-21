@@ -305,6 +305,23 @@
   margin: 0 16px 16px 16px;
 }
 
+/* Tablet */
+@media (max-width: 1024px) {
+  .coursesGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+  }
+
+  .header p {
+    font-size: 15px;
+  }
+}
+
+/* Mobile */
 @media (max-width: 768px) {
   .container {
     padding: 0;
@@ -313,27 +330,64 @@
   .header {
     flex-direction: column;
     gap: 16px;
+    align-items: stretch;
+    margin-bottom: 24px;
   }
 
   .header h1 {
     font-size: 24px;
+    margin-bottom: 6px;
+  }
+
+  .header p {
+    font-size: 14px;
   }
 
   .tokenDisplay {
     width: 100%;
     justify-content: center;
+    padding: 10px 16px;
   }
 
-  .coursesGrid {
-    grid-template-columns: 1fr;
+  .tokenLabel {
+    font-size: 13px;
+  }
+
+  .tokenValue {
+    font-size: 16px;
+  }
+
+  .tabs {
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab {
+    padding: 10px 18px;
+    font-size: 13px;
+    white-space: nowrap;
   }
 
   .searchFilters {
     flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
   }
 
   .searchContainer {
     width: 100%;
+    max-width: 100%;
+  }
+
+  .searchInput {
+    padding: 10px 12px 10px 40px;
+    font-size: 14px;
   }
 
   .filterContainer {
@@ -342,15 +396,255 @@
 
   .filterSelect {
     width: 100%;
+    padding: 10px 36px 10px 36px;
+    font-size: 14px;
+  }
+
+  .resultsCount {
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  .coursesGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .courseCard {
+    transition: transform 0.2s ease;
+  }
+
+  .courseCard:hover {
+    transform: translateY(-2px);
+  }
+
+  .courseImage {
+    height: 160px;
+  }
+
+  .courseContent {
+    padding: 16px;
+    gap: 10px;
+  }
+
+  .courseTitle {
+    font-size: 16px;
+    min-height: 44px;
+  }
+
+  .courseHeader h3 {
+    font-size: 18px;
+    min-height: 46px;
+  }
+
+  .difficulty {
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+
+  .description {
+    font-size: 13px;
+    min-height: 57px;
+    -webkit-line-clamp: 3;
+  }
+
+  .courseStats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .statLabel {
+    font-size: 11px;
+  }
+
+  .statValue {
+    font-size: 16px;
+  }
+
+  .tags {
+    padding: 12px;
+    gap: 6px;
+    min-height: 40px;
+  }
+
+  .tag {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+
+  .tagOverflow {
+    font-size: 11px;
+    padding: 3px 10px;
+  }
+
+  .enrollButton {
+    width: calc(100% - 24px);
+    margin: 0 12px 12px 12px;
+    padding: 10px 16px;
+    font-size: 14px;
   }
 
   .pagination {
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
   }
 
   .pageNumbers {
     order: -1;
+  }
+
+  .pageButton {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+
+  .pageNumber {
+    width: 36px;
+    height: 36px;
+    font-size: 13px;
+  }
+
+  .loadingContainer,
+  .empty {
+    min-height: 300px;
+    padding: 20px;
+  }
+
+  .loadingContainer p,
+  .empty p {
+    font-size: 14px;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .header p {
+    font-size: 13px;
+  }
+
+  .tokenDisplay {
+    padding: 8px 12px;
+  }
+
+  .tokenLabel {
+    font-size: 12px;
+  }
+
+  .tokenValue {
+    font-size: 14px;
+  }
+
+  .tab {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .courseImage {
+    height: 140px;
+  }
+
+  .courseContent {
+    padding: 12px;
+  }
+
+  .courseTitle {
+    font-size: 15px;
+    min-height: 40px;
+  }
+
+  .courseHeader h3 {
+    font-size: 16px;
+    min-height: 42px;
+  }
+
+  .difficulty {
+    padding: 4px 8px;
+    font-size: 9px;
+    top: 8px;
+    right: 8px;
+  }
+
+  .description {
+    font-size: 12px;
+    min-height: 51px;
+  }
+
+  .courseStats {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .statLabel {
+    font-size: 10px;
+  }
+
+  .statValue {
+    font-size: 14px;
+  }
+
+  .tags {
+    padding: 10px;
+    gap: 5px;
+    min-height: 36px;
+  }
+
+  .tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    max-width: 120px;
+  }
+
+  .tagOverflow {
+    font-size: 10px;
+    padding: 2px 8px;
+    min-width: 30px;
+  }
+
+  .enrollButton {
+    width: calc(100% - 20px);
+    margin: 0 10px 10px 10px;
+    padding: 9px 14px;
+    font-size: 13px;
+  }
+
+  .searchInput {
+    padding: 9px 10px 9px 38px;
+    font-size: 13px;
+  }
+
+  .searchIcon {
+    left: 10px;
+    font-size: 14px;
+  }
+
+  .filterSelect {
+    padding: 9px 34px 9px 34px;
+    font-size: 13px;
+    background-position: right 10px center;
+    background-size: 14px 14px;
+  }
+
+  .filterIcon {
+    left: 10px;
+    font-size: 14px;
+  }
+
+  .pageButton {
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+
+  .pageNumber {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
   }
 }
 

@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import { useAIToken } from "../../hooks/useAIToken";
 import { useUser } from "../../hooks/useUser";
+import { useLoadingBar } from "../../components/TopLoadingBar";
 import {
   generateLessonContent,
   generateAssessment,
@@ -26,6 +27,7 @@ const AILessonViewer = () => {
   const { getCourseById, updateCourseProgress } = useCourseGeneration();
   const { useTokens, tokensRemaining } = useAIToken();
   const { user, refreshProfile } = useUser();
+  const loadingBar = useLoadingBar();
 
   const [course, setCourse] = useState(null);
   const [lesson, setLesson] = useState(null);
@@ -162,6 +164,7 @@ const AILessonViewer = () => {
 
     setLoading(true);
     setError(null);
+    loadingBar.start();
 
     try {
       // Generate lesson content with real AI
@@ -241,12 +244,14 @@ const AILessonViewer = () => {
       setError(err.message || "An error occurred while generating the lesson");
     } finally {
       setLoading(false);
+      loadingBar.complete();
     }
   };
 
   const handleSubmitAssessment = async () => {
     setSubmitting(true);
     setError(null);
+    loadingBar.start();
 
     try {
       // Normalize questions to have IDs if missing
@@ -268,10 +273,12 @@ const AILessonViewer = () => {
 
         // Transform Gemini response into UI-compatible format
         const review = result.review;
+        const overallScore = review.overallScore || 0;
+        const passingScore = assessment.passingScore || 70;
         const aggregatedReview = {
-          passed: review.passed || false,
-          score: review.overallScore || 0,
-          passingScore: assessment.passingScore || 70,
+          passed: overallScore >= passingScore, // Calculate passed based on score
+          score: overallScore,
+          passingScore: passingScore,
           totalQuestions: assessment.questions?.length || 0,
           questionsReviewed: review.reviewedQuestions?.length || 0,
           details: review.reviewedQuestions || [],
@@ -439,6 +446,7 @@ const AILessonViewer = () => {
       setError(err.message || "An error occurred");
     } finally {
       setSubmitting(false);
+      loadingBar.complete();
     }
   };
 
@@ -469,6 +477,33 @@ const AILessonViewer = () => {
       }
     } catch (err) {
       console.error("Failed to award XP:", err);
+    }
+  };
+
+  const handlePrevLesson = () => {
+    const modules = course.structure?.modules || course.modules;
+    const currentModule = modules[moduleIndex];
+
+    // Navigate to previous lesson
+    const prevLessonIndex = lessonIndex - 1;
+    if (prevLessonIndex >= 0) {
+      const prevLesson = currentModule.lessons[prevLessonIndex];
+      navigate(`/courses/${courseId}/lessons/${prevLesson.id}`, {
+        state: { moduleIndex, lessonIndex: prevLessonIndex },
+      });
+    } else {
+      // Go to last lesson of previous module
+      const prevModuleIndex = moduleIndex - 1;
+      if (prevModuleIndex >= 0) {
+        const prevModule = modules[prevModuleIndex];
+        const prevLesson = prevModule.lessons[prevModule.lessons.length - 1];
+        navigate(`/courses/${courseId}/lessons/${prevLesson.id}`, {
+          state: {
+            moduleIndex: prevModuleIndex,
+            lessonIndex: prevModule.lessons.length - 1,
+          },
+        });
+      }
     }
   };
 
@@ -740,13 +775,25 @@ const AILessonViewer = () => {
                 🚀 Choose Your Learning Path
               </Button>
             ) : !assessment ? (
-              // No assessment required - show next lesson button
-              <Button variant="primary" onClick={handleNextLesson}>
-                Next Lesson →
-              </Button>
+              // No assessment required - show navigation buttons
+              <div className={styles.completedActions}>
+                {(moduleIndex > 0 || lessonIndex > 0) && (
+                  <Button variant="secondary" onClick={handlePrevLesson}>
+                    ← Previous Lesson
+                  </Button>
+                )}
+                <Button variant="primary" onClick={handleNextLesson}>
+                  Next Lesson →
+                </Button>
+              </div>
             ) : review?.passed ? (
               // Assessment already passed - show navigation and review buttons
               <div className={styles.completedActions}>
+                {(moduleIndex > 0 || lessonIndex > 0) && (
+                  <Button variant="secondary" onClick={handlePrevLesson}>
+                    ← Previous Lesson
+                  </Button>
+                )}
                 <Button
                   variant="secondary"
                   onClick={() => setShowAssessment(true)}
@@ -1014,9 +1061,16 @@ const AILessonViewer = () => {
 
                 <div className={styles.reviewActions}>
                   {review.passed ? (
-                    <Button variant="primary" onClick={handleNextLesson}>
-                      Next Lesson
-                    </Button>
+                    <>
+                      {(moduleIndex > 0 || lessonIndex > 0) && (
+                        <Button variant="secondary" onClick={handlePrevLesson}>
+                          ← Previous Lesson
+                        </Button>
+                      )}
+                      <Button variant="primary" onClick={handleNextLesson}>
+                        Next Lesson
+                      </Button>
+                    </>
                   ) : (
                     <>
                       <Button
