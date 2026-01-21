@@ -13,7 +13,7 @@ export const LoadingBarProvider = ({ children }) => {
   const start = useCallback(() => {
     setIsLoading(true);
     setProgress(0);
-    
+
     // Animate progress incrementally
     let currentProgress = 0;
     const interval = setInterval(() => {
@@ -34,7 +34,7 @@ export const LoadingBarProvider = ({ children }) => {
       clearInterval(window.__loadingBarInterval);
     }
     setProgress(100);
-    
+
     // Hide the bar after animation completes
     setTimeout(() => {
       setIsLoading(false);
@@ -54,8 +54,8 @@ export const LoadingBarProvider = ({ children }) => {
     <LoadingBarContext.Provider value={{ start, complete, stop, isLoading }}>
       {isLoading && (
         <div className={styles.loadingBarContainer}>
-          <div 
-            className={styles.loadingBar} 
+          <div
+            className={styles.loadingBar}
             style={{ width: `${progress}%` }}
           />
         </div>
