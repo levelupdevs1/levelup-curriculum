@@ -195,9 +195,14 @@ const AICatalog = () => {
   }, [shouldGenerate]);
 
   const handleEnroll = async (courseId) => {
-    const isEnrolled = foundationCourse
-      ? true
-      : enrolledCourses.some((c) => c.id === courseId);
+    // Check if it's the foundation course (always enrolled)
+    const isFoundation = foundationCourse && courseId === foundationCourse.id;
+    if (isFoundation) {
+      navigate(`/courses/${courseId}`);
+      return;
+    }
+
+    const isEnrolled = enrolledCourses.some((c) => c.id === courseId);
     if (isEnrolled) {
       navigate(`/courses/${courseId}`);
       return;
@@ -346,9 +351,9 @@ const AICatalog = () => {
 
       <div className={styles.coursesGrid}>
         {paginatedCourses.map((course) => {
-          const isEnrolled = foundationCourse
-            ? true
-            : enrolledCourses.some((c) => c.id === course.id);
+          // Foundation course is always enrolled
+          const isFoundation = course.is_foundation || (foundationCourse && course.id === foundationCourse.id);
+          const isEnrolled = isFoundation || enrolledCourses.some((c) => c.id === course.id);
 
           return (
             <AICourseCard
