@@ -1174,11 +1174,20 @@ export const reviewSubmissionBatchGemini = async (
       }
 
       // For project submissions, format the object with repo and live URLs
-      if (q.type === "project" && typeof answerText === "object" && answerText !== null) {
+      if (
+        q.type === "project" &&
+        typeof answerText === "object" &&
+        answerText !== null
+      ) {
         const projectParts = [];
-        if (answerText.repoUrl) projectParts.push(`GitHub Repository: ${answerText.repoUrl}`);
-        if (answerText.liveUrl) projectParts.push(`Live Demo: ${answerText.liveUrl}`);
-        answerText = projectParts.length > 0 ? projectParts.join("\n") : "[NO PROJECT LINKS PROVIDED]";
+        if (answerText.repoUrl)
+          projectParts.push(`GitHub Repository: ${answerText.repoUrl}`);
+        if (answerText.liveUrl)
+          projectParts.push(`Live Demo: ${answerText.liveUrl}`);
+        answerText =
+          projectParts.length > 0
+            ? projectParts.join("\n")
+            : "[NO PROJECT LINKS PROVIDED]";
         console.log(`  Formatted project submission: ${answerText}`);
       }
 
