@@ -1028,10 +1028,16 @@ export const reviewSubmissionBatchGroq = async (
         pq.question,
       );
       projectValidations[pq.id] = validation;
-      console.log(
-        `📊 Project validation result:`,
-        validation.readyForReview ? "PASSED" : "FAILED",
-      );
+      
+      // Log comprehensive validation results
+      console.log(`📊 Project validation result:`, {
+        readyForReview: validation.readyForReview,
+        validationId: validation.validationId,
+        filesAvailable: validation.validationSummary?.filesAvailable || 0,
+        coverage: validation.validationSummary?.coverage || 0,
+        repoAccessible: validation.validationSummary?.repoAccessible,
+        liveUrlAccessible: validation.validationSummary?.liveUrlAccessible,
+      });
     }
   }
 
@@ -1101,6 +1107,12 @@ Student Answer: ${answerText}
 
   console.log("📤 Sending to Groq:", questionsData.substring(0, 300));
 
+  // Check if there are project questions for stricter review
+  const hasProjectQuestions = questions.some((q) => q.type === "project");
+  
+  // Get validation metadata for project questions
+  const projectMeta = hasProjectQuestions ? Object.values(projectValidations)[0]?.validationSummary : null;
+
   const prompt = `Review this student's assessment submission. For EACH question, provide feedback.
 
 ASSESSMENT QUESTIONS AND ANSWERS:
@@ -1108,9 +1120,32 @@ ${questionsData}
 
 PASSING SCORE REQUIREMENT: 70% (Student must score >= 70 to pass)
 
+${
+  hasProjectQuestions
+    ? `
+=== STRICT ANTI-HALLUCINATION REVIEW MODE ===
+${projectMeta ? `Validation ID: ${projectMeta.validationId || 'N/A'}
+Files Reviewed: ${projectMeta.filesAvailable || 0}
+Code Coverage: ${projectMeta.coverage || 0}%
+Repository Accessible: ${projectMeta.repoAccessible ? 'YES' : 'NO'}
+Live URL Accessible: ${projectMeta.liveUrlAccessible ? 'YES' : 'NO'}
+` : ''}
+MANDATORY RULES FOR PROJECT REVIEW:
+1. ONLY use evidence from the ACTUAL CODE provided
+2. NEVER assume features exist without code proof
+3. CITE specific file paths and line numbers
+4. Mark requirements as NOT MET if no code evidence found
+5. If "VALIDATION FAILED" appears, score MUST be 0
+6. Partial implementations = NOT MET
+7. No hallucinations - evidence only
+===
+`
+    : ""
+}
+
 For each question:
 1. Is the answer correct, partially correct, or incorrect?
-2. Key strengths
+2. Key strengths (cite specific evidence from their answer/code)
 3. What to improve
 4. Next steps
 
@@ -1119,6 +1154,7 @@ IMPORTANT:
 - Be CONCISE. Max 1-2 sentences per field.
 - Calculate overallScore as percentage of correct answers
 - Set "passed" to true ONLY if overallScore >= 70
+- For projects: verify EACH requirement against actual code
 
 === RESPONSE FORMAT (USE THESE EXACT DELIMITERS) ===
 <<<PASSED>>>
@@ -1148,11 +1184,15 @@ You [did/didn't] understand X because Y. Your answer was clear.
 <<<ENCOURAGEMENT>>>
 Keep going`;
 
+  // Use stricter system prompt for project reviews
+  const systemPrompt = hasProjectQuestions
+    ? "You are a strict code reviewer with anti-hallucination training. For project submissions: ONLY cite evidence from the provided code. NEVER assume features exist. Quote exact file paths and line numbers. If no code evidence, mark as NOT MET. Provide brief, personalized feedback using 'You' and 'Your'. Use the exact delimiter format specified."
+    : "You are a concise technical educator. Provide brief, personalized feedback using 'You' and 'Your'. Be direct and avoid long explanations. Use the exact delimiter format specified.";
+
   const messages = [
     {
       role: "system",
-      content:
-        "You are a concise technical educator. Provide brief, personalized feedback using 'You' and 'Your'. Be direct and avoid long explanations. Use the exact delimiter format specified.",
+      content: systemPrompt,
     },
     {
       role: "user",
