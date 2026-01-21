@@ -257,6 +257,14 @@
           "type": "assignment",
           "filePath": "module-5-how-the-internet-works/assignment-5-flow-of-web-request.md",
           "points": 20
+        },
+        {
+          "id": "lesson-6-choose-your-path",
+          "title": "Choose Your Path",
+          "type": "lesson",
+          "filePath": "module-5-how-the-internet-works/lesson-6-choose-your-path.md",
+          "points": 50,
+          "isChooseYourPath": true
         }
       ]
     }

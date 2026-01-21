@@ -82,12 +82,8 @@ const Register = () => {
       );
 
       if (result.success) {
-        // Redirect based on onboarding status
-        // New users go to onboarding, returning users (edge case) go to dashboard
-        const destination = hasCompletedOnboarding
-          ? "/dashboard"
-          : "/onboarding";
-        navigate(destination, { replace: true });
+        // New users go straight to dashboard (onboarding happens after foundation course)
+        navigate("/dashboard", { replace: true });
       } else {
         setErrors({
           general: result.error || "Registration failed. Please try again.",

@@ -8,12 +8,18 @@ import {
   saveGeneratedCourses,
   enrollInCourse as enrollInCourseDB,
 } from "../services/courseDataService";
+import {
+  getFoundationCourse,
+  hasCompletedFoundation,
+} from "../services/foundationCourseService";
 
 export const CourseGenerationProvider = ({ children }) => {
   const { user } = useUser();
   const [userProfile, setUserProfile] = useState(null);
   const [generatedCourses, setGeneratedCourses] = useState([]);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const [foundationCourse, setFoundationCourse] = useState(null);
+  const [foundationCompleted, setFoundationCompleted] = useState(false);
   const [currentCourse, setCurrentCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [generationStatus, setGenerationStatus] = useState({
@@ -37,17 +43,33 @@ export const CourseGenerationProvider = ({ children }) => {
         setUserProfile(profileResult.data);
       }
 
+      // Load foundation course (creates if doesn't exist)
+      const foundationResult = await getFoundationCourse(user.id);
+      if (foundationResult.success && foundationResult.data) {
+        setFoundationCourse(foundationResult.data);
+        console.log("📚 Foundation course loaded:", foundationResult.data.id);
+      }
+
+      // Check foundation completion status
+      const completionResult = await hasCompletedFoundation(user.id);
+      if (completionResult.success) {
+        setFoundationCompleted(completionResult.completed);
+        console.log("📊 Foundation completed:", completionResult.completed);
+      }
+
       // Load all generated courses (both recommended and enrolled)
       const coursesResult = await getCourses(user.id);
       if (coursesResult.success) {
         const allCourses = coursesResult.data || [];
+        // Filter out foundation course from regular courses (it's handled separately)
+        const nonFoundationCourses = allCourses.filter((c) => !c.is_foundation);
         // Separate enrolled and non-enrolled courses
-        const enrolled = allCourses.filter((c) => c.status === "enrolled");
-        const recommended = allCourses.filter(
+        const enrolled = nonFoundationCourses.filter((c) => c.status === "enrolled");
+        const recommended = nonFoundationCourses.filter(
           (c) => c.status === "recommended",
         );
 
-        setGeneratedCourses(allCourses); // Show all courses in catalog
+        setGeneratedCourses(nonFoundationCourses); // Show all non-foundation courses in catalog
         setEnrolledCourses(enrolled);
       }
 
@@ -147,12 +169,31 @@ export const CourseGenerationProvider = ({ children }) => {
   );
 
   const updateCourseProgress = useCallback((courseId, progress) => {
-    // Update progress in local state
-    setEnrolledCourses((prev) => {
-      return prev.map((course) =>
-        course.id === courseId ? { ...course, progress } : course,
-      );
-    });
+    // Check if this is the foundation course
+    const isFoundation = foundationCourse && foundationCourse.id === courseId;
+    
+    if (isFoundation) {
+      // Update foundation course progress
+      setFoundationCourse((prev) => prev ? { ...prev, progress } : prev);
+      
+      // Check if foundation is now complete
+      const completedLessons = progress?.completedLessons || [];
+      let totalLessons = 0;
+      for (const module of foundationCourse.modules || []) {
+        totalLessons += module.lessons?.length || 0;
+      }
+      if (totalLessons > 0 && completedLessons.length >= totalLessons) {
+        setFoundationCompleted(true);
+        console.log("🎉 Foundation course completed!");
+      }
+    } else {
+      // Update progress in local state for AI courses
+      setEnrolledCourses((prev) => {
+        return prev.map((course) =>
+          course.id === courseId ? { ...course, progress } : course,
+        );
+      });
+    }
 
     // Save progress to database
     import("../services/courseDataService").then(({ updateCourse }) => {
@@ -167,7 +208,7 @@ export const CourseGenerationProvider = ({ children }) => {
         }
       });
     });
-  }, []);
+  }, [foundationCourse]);
 
   const setGenerating = useCallback(
     (isGenerating, type = null, progress = 0) => {
@@ -198,9 +239,13 @@ export const CourseGenerationProvider = ({ children }) => {
 
   const getCourseById = useCallback(
     (courseId) => {
+      // Check foundation course first
+      if (foundationCourse && foundationCourse.id === courseId) {
+        return foundationCourse;
+      }
       return enrolledCourses.find((c) => c.id === courseId) || null;
     },
-    [enrolledCourses],
+    [enrolledCourses, foundationCourse],
   );
 
   const hasCompletedOnboarding = useCallback(() => {
@@ -211,6 +256,8 @@ export const CourseGenerationProvider = ({ children }) => {
     userProfile,
     generatedCourses,
     enrolledCourses,
+    foundationCourse,
+    foundationCompleted,
     currentCourse,
     generationStatus,
     updateUserProfile,

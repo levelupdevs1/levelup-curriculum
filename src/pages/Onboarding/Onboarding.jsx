@@ -70,6 +70,9 @@ const Onboarding = () => {
   const isUpdateMode =
     existingProfile?.learning_goal || existingProfile?.onboarding_completed;
   const hasExistingCourses = generatedCourses?.length > 0;
+  
+  // Check if user came from foundation course
+  const isFromFoundation = location.state?.fromFoundation === true;
 
   // Pre-fill answers from existing profile
   useEffect(() => {
@@ -190,10 +193,16 @@ const Onboarding = () => {
       <div className={styles.content}>
         <div className={styles.header}>
           <h1>
-            {isUpdateMode ? "Update Your Preferences" : "Welcome to Level Up"}
+            {isFromFoundation
+              ? "Choose Your Learning Path"
+              : isUpdateMode
+              ? "Update Your Preferences"
+              : "Welcome to Level Up"}
           </h1>
           <p>
-            {isUpdateMode
+            {isFromFoundation
+              ? "Congratulations on completing the Foundation course! Now let's personalize your next learning journey."
+              : isUpdateMode
               ? "Update your learning preferences. Your existing courses will be kept."
               : "Let's personalize your learning experience"}
           </p>

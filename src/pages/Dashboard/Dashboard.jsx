@@ -23,7 +23,7 @@ const COURSES_PER_PAGE = 6;
 
 const Dashboard = () => {
   const { user, profile, refreshProfile } = useUser();
-  const { enrolledCourses: contextEnrolledCourses, generatedCourses } =
+  const { enrolledCourses: contextEnrolledCourses, generatedCourses, foundationCourse, foundationCompleted, loading: coursesLoading } =
     useCourseGeneration();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,13 +37,28 @@ const Dashboard = () => {
   }, [user]);
 
   // Show all personalized courses on dashboard (not just enrolled)
-  const allCourses = useMemo(() => generatedCourses || [], [generatedCourses]);
+  // Include foundation course if it exists and is not completed
+  const allCourses = useMemo(() => {
+    const aiCourses = generatedCourses || [];
+    // Add foundation course at the beginning if not completed
+    if (foundationCourse && !foundationCompleted) {
+      return [foundationCourse, ...aiCourses];
+    }
+    return aiCourses;
+  }, [generatedCourses, foundationCourse, foundationCompleted]);
+  
   const enrolledCourses = useMemo(
-    () =>
-      contextEnrolledCourses?.length > 0
+    () => {
+      const enrolled = contextEnrolledCourses?.length > 0
         ? contextEnrolledCourses
-        : allCourses.filter((c) => c.status === "enrolled"),
-    [contextEnrolledCourses, allCourses],
+        : allCourses.filter((c) => c.status === "enrolled");
+      // Include foundation course in enrolled if exists
+      if (foundationCourse && !enrolled.find(c => c.id === foundationCourse.id)) {
+        return [foundationCourse, ...enrolled];
+      }
+      return enrolled;
+    },
+    [contextEnrolledCourses, allCourses, foundationCourse],
   );
 
   // Pagination
@@ -136,7 +151,7 @@ const Dashboard = () => {
 
   return (
     <div className={styles.dashboard}>
-      {!profile ? (
+      {!profile || coursesLoading ? (
         <LoadingSpinner size="lg" message="Loading your dashboard..." />
       ) : (
         <>

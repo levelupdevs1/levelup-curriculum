@@ -67,11 +67,8 @@ const Login = () => {
         // Check if user came from a protected route
         const from = location.state?.from?.pathname;
 
-        // If user has completed onboarding, go to requested page or dashboard
-        // If not, redirect to onboarding
-        const destination = hasCompletedOnboarding
-          ? from || "/dashboard"
-          : "/onboarding";
+        // Go to requested page or dashboard
+        const destination = from || "/dashboard";
 
         navigate(destination, { replace: true });
       } else {
