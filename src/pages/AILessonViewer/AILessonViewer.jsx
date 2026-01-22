@@ -552,7 +552,7 @@ const AILessonViewer = () => {
                   >
                     <ChevronLeft size={18} />
                     <span className={styles.navText}>Prev</span>
-                    <span className={styles.navTextFull}>ious Lesson</span>
+                    <span className={styles.navTextFull}>Lesson</span>
                   </Button>
                 )}
                 <Button variant="primary" onClick={handleNextLesson}>
