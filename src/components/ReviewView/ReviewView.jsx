@@ -77,10 +77,10 @@ const ReviewView = ({ review, onClose, onNext, onRetry, onReviewLesson }) => {
             ) : (
               <>
                 <Button variant="secondary" onClick={onReviewLesson}>
-                  Review Lesson
+                  Close
                 </Button>
                 <Button variant="primary" onClick={onRetry}>
-                  Retry Assessment
+                  Retry
                 </Button>
               </>
             )}
