@@ -55,7 +55,7 @@ export const CourseProvider = ({ children }) => {
           if (user) {
             const { enrollments } = await getUserEnrollments(user.id);
             const enrolledCourseIds = new Set(
-              enrollments?.map((e) => e.course_id) || []
+              enrollments?.map((e) => e.course_id) || [],
             );
 
             // For each enrolled course, fetch progress and mark completed lessons
@@ -78,7 +78,7 @@ export const CourseProvider = ({ children }) => {
                   if (progSuccess && progressData && progressData.length > 0) {
                     // Create a set of completed lesson IDs for quick lookup
                     const completedLessonIds = new Set(
-                      progressData.map((p) => p.lesson_id)
+                      progressData.map((p) => p.lesson_id),
                     );
 
                     // Mark lessons as completed
@@ -90,7 +90,7 @@ export const CourseProvider = ({ children }) => {
                             ...lesson,
                             isCompleted: completedLessonIds.has(lesson.id),
                           })),
-                        })
+                        }),
                       );
                     }
                   }
@@ -106,7 +106,7 @@ export const CourseProvider = ({ children }) => {
                     ...module,
                     lessons: (module.lessons || []).map((lesson) => {
                       const lessonPosition = allLessons.findIndex(
-                        (l) => l.id === lesson.id
+                        (l) => l.id === lesson.id,
                       );
 
                       // First lesson is always unlocked
@@ -128,10 +128,10 @@ export const CourseProvider = ({ children }) => {
                     modules: updatedModules,
                   });
                   const completedCount = allLessonsUpdated.filter(
-                    (l) => l.isCompleted
+                    (l) => l.isCompleted,
                   ).length;
                   progressPercentage = Math.round(
-                    (completedCount / allLessonsUpdated.length) * 100
+                    (completedCount / allLessonsUpdated.length) * 100,
                   );
 
                   return {
@@ -150,7 +150,7 @@ export const CourseProvider = ({ children }) => {
                         isLocked: true,
                         isCompleted: false,
                       })),
-                    })
+                    }),
                   );
                   return {
                     ...courseWithEnrollment,
@@ -159,7 +159,7 @@ export const CourseProvider = ({ children }) => {
                     isCompleted: false,
                   };
                 }
-              })
+              }),
             );
           } else {
             // User not authenticated, no enrollments - all lessons locked
@@ -229,8 +229,8 @@ export const CourseProvider = ({ children }) => {
         prevCourses.map((course) =>
           course.id === courseId
             ? { ...course, isEnrolled: true, progress: 0 }
-            : course
-        )
+            : course,
+        ),
       );
       return true;
     } catch {
@@ -241,8 +241,8 @@ export const CourseProvider = ({ children }) => {
   const updateCourseProgress = (courseId, newProgress) => {
     setCourses((prevCourses) =>
       prevCourses.map((course) =>
-        course.id === courseId ? { ...course, progress: newProgress } : course
-      )
+        course.id === courseId ? { ...course, progress: newProgress } : course,
+      ),
     );
   };
 
@@ -257,7 +257,7 @@ export const CourseProvider = ({ children }) => {
               const updatedLessons = module.lessons.map((lesson) =>
                 lesson.id === lessonId
                   ? { ...lesson, isCompleted: true }
-                  : lesson
+                  : lesson,
               );
               return { ...module, lessons: updatedLessons };
             }
@@ -270,10 +270,10 @@ export const CourseProvider = ({ children }) => {
             modules: updatedModules,
           });
           const completedLessons = allLessons.filter(
-            (lesson) => lesson.isCompleted
+            (lesson) => lesson.isCompleted,
           );
           const newProgress = Math.round(
-            (completedLessons.length / allLessons.length) * 100
+            (completedLessons.length / allLessons.length) * 100,
           );
 
           // Check if course is completed
@@ -287,7 +287,7 @@ export const CourseProvider = ({ children }) => {
           };
         }
         return course;
-      })
+      }),
     );
 
     // Award EXP based on lesson type
@@ -329,7 +329,7 @@ export const CourseProvider = ({ children }) => {
           // Get all lessons to find the next one
           const allLessons = getAllLessons(course);
           const currentLessonIndex = allLessons.findIndex(
-            (lesson) => lesson.id === lessonId
+            (lesson) => lesson.id === lessonId,
           );
 
           if (
@@ -356,7 +356,7 @@ export const CourseProvider = ({ children }) => {
           }
         }
         return course;
-      })
+      }),
     );
   };
 
@@ -383,7 +383,7 @@ export const CourseProvider = ({ children }) => {
   const getSubmissionsForLesson = (courseId, lessonId) => {
     return Object.values(submissions).filter(
       (submission) =>
-        submission.courseId === courseId && submission.lessonId === lessonId
+        submission.courseId === courseId && submission.lessonId === lessonId,
     );
   };
 
@@ -393,7 +393,7 @@ export const CourseProvider = ({ children }) => {
         submission.courseId === courseId &&
         submission.lessonId === lessonId &&
         submission.authorId !== "1" && // Not current user's submissions
-        submission.needsPeerReview
+        submission.needsPeerReview,
     );
   };
 
@@ -413,7 +413,7 @@ export const CourseProvider = ({ children }) => {
         user.id,
         submissionId,
         review.rating,
-        review.feedback
+        review.feedback,
       );
 
       if (!success) {
@@ -471,7 +471,7 @@ export const CourseProvider = ({ children }) => {
         user.id,
         courseId,
         lessonId,
-        request
+        request,
       );
 
       if (!success) {
@@ -538,7 +538,7 @@ export const CourseProvider = ({ children }) => {
 
   const claimCertificate = (certificateId) => {
     const certificate = availableCertificates.find(
-      (cert) => cert.id === certificateId
+      (cert) => cert.id === certificateId,
     );
     if (!certificate || !certificate.isClaimable || certificate.claimed) {
       return false;
@@ -559,8 +559,8 @@ export const CourseProvider = ({ children }) => {
     // Update available certificates
     setAvailableCertificates((prev) =>
       prev.map((cert) =>
-        cert.id === certificateId ? { ...cert, claimed: true, tokenId } : cert
-      )
+        cert.id === certificateId ? { ...cert, claimed: true, tokenId } : cert,
+      ),
     );
 
     // Award EXP and coins for claiming
@@ -572,7 +572,7 @@ export const CourseProvider = ({ children }) => {
 
   const getAvailableCertificates = () => {
     return availableCertificates.filter(
-      (cert) => cert.isClaimable && !cert.claimed
+      (cert) => cert.isClaimable && !cert.claimed,
     );
   };
 
@@ -608,7 +608,7 @@ export const CourseProvider = ({ children }) => {
         // Show level-up notification
         addNotification(
           `🎉 Level Up! You've reached Level ${newLevel}!`,
-          "success"
+          "success",
         );
 
         // Record the level claim for token rewards (if user is logged in)
@@ -643,7 +643,7 @@ export const CourseProvider = ({ children }) => {
     if (amount > 0) {
       addNotification(
         `+${amount} coins earned${source ? ` for ${source}` : ""}!`,
-        "success"
+        "success",
       );
     }
   };

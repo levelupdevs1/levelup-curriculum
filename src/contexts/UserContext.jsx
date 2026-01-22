@@ -27,10 +27,9 @@ export const UserProvider = ({ children }) => {
         setIsAuthenticated(true);
 
         // Fetch user profile from users table
-        const {
-          success,
-          profile: userProfile,
-        } = await getUserProfile(authUser.id);
+        const { success, profile: userProfile } = await getUserProfile(
+          authUser.id,
+        );
 
         // Check if user has completed onboarding and get AI profile data
         const { success: profileSuccess, data: aiProfile } =
@@ -87,10 +86,7 @@ export const UserProvider = ({ children }) => {
   const refreshProfile = async () => {
     if (!user) return;
     try {
-      const {
-        success,
-        profile: userProfile,
-      } = await getUserProfile(user.id);
+      const { success, profile: userProfile } = await getUserProfile(user.id);
 
       // Re-check onboarding status and get AI profile data
       const { success: profileSuccess, data: aiProfile } =
