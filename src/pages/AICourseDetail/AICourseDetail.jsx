@@ -1,31 +1,18 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
-import { useAIToken } from "../../hooks/useAIToken";
-import { useLoadingBar } from "../../components/TopLoadingBar";
-import {
-  generateCourseStructure,
-  AI_TOKEN_COSTS,
-} from "../../services/aiServiceReal";
-import { updateCourse } from "../../services/courseDataService";
 import { ChevronLeft, CheckCircle2, Circle, Lock } from "lucide-react";
 import Button from "../../components/Button/Button";
 import Card from "../../components/Card/Card";
-import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import ProgressBar from "../../components/ProgressBar/ProgressBar";
 import styles from "./AICourseDetail.module.css";
 
 const AICourseDetail = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const { getCourseById, userProfile, setCurrentCourse } =
-    useCourseGeneration();
-  const { canUseTokens, useTokens, tokensRemaining } = useAIToken();
-  const loadingBar = useLoadingBar();
+  const { getCourseById, setCurrentCourse } = useCourseGeneration();
   const [course, setCourse] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const hasGeneratedRef = useRef(false);
 
   useEffect(() => {
     const enrolledCourse = getCourseById(courseId);
@@ -34,16 +21,6 @@ const AICourseDetail = () => {
       return;
     }
 
-    console.log("📚 Course data from DB:", {
-      title: enrolledCourse.title,
-      status: enrolledCourse.status,
-      hasModules: !!enrolledCourse.modules,
-      modulesIsArray: Array.isArray(enrolledCourse.modules),
-      modulesLength: enrolledCourse.modules?.length,
-      progress: enrolledCourse.progress,
-      completedLessons: enrolledCourse.progress?.completedLessons,
-    });
-
     // Structure should already exist from enrollment - just load it
     const hasValidStructure =
       enrolledCourse.modules &&
@@ -51,11 +28,6 @@ const AICourseDetail = () => {
       enrolledCourse.modules.length > 0;
 
     if (hasValidStructure) {
-      console.log(
-        "✅ Loading structure with",
-        enrolledCourse.modules.length,
-        "modules",
-      );
       setCourse({
         ...enrolledCourse,
         structure: { modules: enrolledCourse.modules },
@@ -63,78 +35,11 @@ const AICourseDetail = () => {
       setCurrentCourse(enrolledCourse);
     } else {
       // This shouldn't happen if enrollment worked correctly
-      console.error("❌ No modules found after enrollment. This is a bug.");
       setError("Course structure missing. Please try enrolling again.");
       setCourse(enrolledCourse);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId, getCourseById]);
-
-  const generateStructure = async (enrolledCourse) => {
-    const tokenCost = AI_TOKEN_COSTS.GENERATE_COURSE_STRUCTURE;
-
-    // DISABLED: No token restrictions
-    // if (!canUseTokens(tokenCost)) {
-    //   setError("Insufficient AI tokens to generate course structure");
-    //   return;
-    // }
-
-    setLoading(true);
-    setError(null);
-    loadingBar.start();
-
-    try {
-      console.log(`🔨 Generating structure for: ${enrolledCourse.title}`);
-      const result = await generateCourseStructure(
-        enrolledCourse.title,
-        enrolledCourse.description,
-        enrolledCourse.modules_count || enrolledCourse.modulesCount || 6,
-      );
-
-      if (result.success) {
-        // Update tokens
-        useTokens(result.tokensUsed, "generate_structure", {
-          courseId: enrolledCourse.id,
-        });
-
-        // Check if actual module count matches expected
-        const expectedCount =
-          enrolledCourse.modules_count || enrolledCourse.modulesCount;
-        const actualCount = result.actualModuleCount || result.modules.length;
-
-        if (actualCount !== expectedCount) {
-          console.warn(
-            `⚠️ Course specified ${expectedCount} modules, AI generated ${actualCount}. ` +
-              `Updating course metadata to match reality.`,
-          );
-        }
-
-        // Save structure to database (both modules and metadata)
-        await updateCourse(enrolledCourse.id, {
-          modules: result.modules,
-          modules_count: actualCount,
-        });
-
-        const updatedCourse = {
-          ...enrolledCourse,
-          modules: result.modules,
-          modules_count: actualCount,
-          structure: { modules: result.modules },
-        };
-        setCourse(updatedCourse);
-
-        console.log(
-          `✅ Generated ${actualCount} modules successfully and saved to database`,
-        );
-      } else {
-        setError(result.error || "Failed to generate course structure");
-      }
-    } catch (err) {
-      setError(err.message || "An error occurred");
-    } finally {
-      setLoading(false);
-      loadingBar.complete();
-    }
-  };
 
   const startLesson = (moduleIndex, lessonIndex, lessonId) => {
     navigate(`/courses/${courseId}/lessons/${lessonId}`, {
@@ -169,17 +74,6 @@ const AICourseDetail = () => {
       totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
     return result > 100 ? 100 : result;
   };
-
-  if (loading) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.loadingContainer}>
-          <LoadingSpinner />
-          <p>Generating course structure...</p>
-        </div>
-      </div>
-    );
-  }
 
   if (!course) {
     return null;

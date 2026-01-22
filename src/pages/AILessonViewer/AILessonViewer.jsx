@@ -4,6 +4,8 @@ import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import { useAIToken } from "../../hooks/useAIToken";
 import { useUser } from "../../hooks/useUser";
 import { useLoadingBar } from "../../components/TopLoadingBar";
+import { useLessonNavigation } from "../../hooks/useLessonNavigation";
+import { useXPAward } from "../../hooks/useXPAward";
 import {
   generateLessonContent,
   generateAssessment,
@@ -11,14 +13,17 @@ import {
   AI_TOKEN_COSTS,
 } from "../../services/aiServiceReal";
 import { updateCourse } from "../../services/courseDataService";
-import { awardXP, TOKEN_REWARDS } from "../../services/platformTokenService";
+import { TOKEN_REWARDS } from "../../services/platformTokenService";
 import { logResourceValidation } from "../../utils/resourceValidation";
 import { isChooseYourPathLesson } from "../../services/foundationCourseService";
 import { ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import Button from "../../components/Button/Button";
 import Card from "../../components/Card/Card";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
-import ReactMarkdown from "react-markdown";
+import LevelUpNotification from "../../components/LevelUpNotification/LevelUpNotification";
+import LessonContent from "../../components/LessonContent/LessonContent";
+import AssessmentView from "../../components/AssessmentView/AssessmentView";
+import ReviewView from "../../components/ReviewView/ReviewView";
 import styles from "./AILessonViewer.module.css";
 
 const AILessonViewer = () => {
@@ -26,16 +31,20 @@ const AILessonViewer = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { getCourseById, updateCourseProgress } = useCourseGeneration();
-  const { useTokens, tokensRemaining } = useAIToken();
+  const { consumeTokens } = useAIToken();
   const { user, refreshProfile } = useUser();
   const loadingBar = useLoadingBar();
+
+  const { moduleIndex, lessonIndex } = location.state || {
+    moduleIndex: 0,
+    lessonIndex: 0,
+  };
 
   const [course, setCourse] = useState(null);
   const [lesson, setLesson] = useState(null);
   const [assessment, setAssessment] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [levelUpNotification, setLevelUpNotification] = useState(null);
   const [showAssessment, setShowAssessment] = useState(false);
   const [submission, setSubmission] = useState({});
   const [review, setReview] = useState(null);
@@ -43,10 +52,10 @@ const AILessonViewer = () => {
   const [isChooseYourPath, setIsChooseYourPath] = useState(false);
   const hasGeneratedRef = useRef(false);
 
-  const { moduleIndex, lessonIndex } = location.state || {
-    moduleIndex: 0,
-    lessonIndex: 0,
-  };
+  const { handleAwardXP, levelUpNotification, setLevelUpNotification } =
+    useXPAward(user, refreshProfile);
+  const { navigateToPreviousLesson, navigateToNextLesson, canGoBack } =
+    useLessonNavigation(course, courseId, moduleIndex, lessonIndex);
 
   useEffect(() => {
     // Reset state when lesson changes
@@ -59,7 +68,6 @@ const AILessonViewer = () => {
 
     // Prevent double execution in React StrictMode
     if (hasGeneratedRef.current) {
-      console.log("⏭️ useEffect skipped - already processed");
       return;
     }
 
@@ -71,26 +79,18 @@ const AILessonViewer = () => {
 
     setCourse(enrolledCourse);
     loadLesson(enrolledCourse);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courseId, lessonId]);
 
   const loadLesson = async (enrolledCourse) => {
     // Mark as processing immediately to prevent race conditions
     if (hasGeneratedRef.current) {
-      console.log("⏭️ loadLesson skipped - already processing");
       return;
     }
     hasGeneratedRef.current = true;
 
-    console.log("📖 loadLesson called", {
-      courseId: enrolledCourse.id,
-      lessonId,
-      moduleIndex,
-      lessonIndex,
-    });
-
     // Check if structure exists
     if (!enrolledCourse.structure && !enrolledCourse.modules) {
-      console.error("No structure found in enrolledCourse");
       setError(
         "Course structure not generated. Please go back to the course page.",
       );
@@ -101,7 +101,6 @@ const AILessonViewer = () => {
     const modules = enrolledCourse.modules || enrolledCourse.structure?.modules;
 
     if (!modules || !Array.isArray(modules) || modules.length === 0) {
-      console.error("❌ No modules found in course");
       setError(
         "Course modules not found. Please regenerate the course structure.",
       );
@@ -111,14 +110,12 @@ const AILessonViewer = () => {
     const module = modules[moduleIndex];
 
     if (!module) {
-      console.error("Module not found at index:", moduleIndex);
       setError("Module not found");
       return;
     }
 
     const lessonData = module.lessons?.[lessonIndex];
     if (!lessonData) {
-      console.error("Lesson not found at index:", lessonIndex);
       setError("Lesson not found");
       return;
     }
@@ -126,13 +123,9 @@ const AILessonViewer = () => {
     // Check if this is the "Choose Your Path" lesson
     const isPathLesson = isChooseYourPathLesson(lessonData);
     setIsChooseYourPath(isPathLesson);
-    if (isPathLesson) {
-      console.log("🎯 This is the Choose Your Path lesson");
-    }
 
     // Check if lesson content already exists in database
     if (lessonData.content) {
-      console.log("✅ Loading existing lesson content from database");
       setLesson(lessonData.content);
 
       // Load assessment if it exists (some lessons don't have assessments)
@@ -142,7 +135,6 @@ const AILessonViewer = () => {
 
       // Load existing review if available
       if (lessonData.review) {
-        console.log("✅ Found existing review:", lessonData.review);
         setReview(lessonData.review);
       }
 
@@ -150,11 +142,8 @@ const AILessonViewer = () => {
       return;
     }
 
-    console.log("🔨 No existing content found, generating new content...");
-
     const lessonTitle = lessonData.title;
     const lessonDescription = lessonData.description || "";
-    console.log("🔨 Generating content for:", lessonTitle);
 
     // Token check disabled for development
     // const contentCost = AI_TOKEN_COSTS.GENERATE_LESSON_CONTENT;
@@ -170,7 +159,6 @@ const AILessonViewer = () => {
 
     try {
       // Generate lesson content with real AI
-      console.log("🤖 Generating lesson content with Gemini...");
       const contentResult = await generateLessonContent(
         lessonTitle,
         lessonDescription,
@@ -191,9 +179,6 @@ const AILessonViewer = () => {
       const assessmentType = lessonData.assessmentType || "coding_challenge";
 
       if (requiresAssessment) {
-        console.log(
-          `🤖 Generating ${assessmentType} assessment with Gemini...`,
-        );
         assessmentResult = await generateAssessment(
           lessonTitle,
           contentResult.content,
@@ -201,19 +186,14 @@ const AILessonViewer = () => {
         );
 
         if (!assessmentResult.success) {
-          console.warn(
-            "⚠️ Assessment generation failed, continuing without assessment",
-          );
           // Don't fail the entire lesson, just skip assessment
         } else {
           tokensUsed += assessmentResult.tokensUsed;
         }
-      } else {
-        console.log("ℹ️ This lesson does not require an assessment");
       }
 
       // Update tokens used
-      useTokens(tokensUsed, "generate_lesson", {
+      consumeTokens(tokensUsed, "generate_lesson", {
         courseId: enrolledCourse.id,
         lessonId,
       });
@@ -230,7 +210,6 @@ const AILessonViewer = () => {
         modules: updatedModules,
       });
 
-      console.log("✅ Lesson content generated and saved to database");
       setLesson(contentResult.content);
       setAssessment(assessmentResult?.assessment || null);
 
@@ -242,7 +221,6 @@ const AILessonViewer = () => {
         );
       }
     } catch (err) {
-      console.error("❌ Error generating lesson:", err);
       setError(err.message || "An error occurred while generating the lesson");
     } finally {
       setLoading(false);
@@ -262,16 +240,13 @@ const AILessonViewer = () => {
         id: q.id || `q${idx + 1}`,
       }));
 
-      console.log("🤖 Batch reviewing all questions with Gemini...");
       const result = await reviewSubmissionBatch(
         normalizedQuestions,
         submission,
       );
 
-      console.log("📥 Review result received:", result);
-
       if (result.success) {
-        useTokens(result.tokensUsed, "review_submission", { lessonId });
+        consumeTokens(result.tokensUsed, "review_submission", { lessonId });
 
         // Transform Gemini response into UI-compatible format
         const review = result.review;
@@ -300,37 +275,18 @@ const AILessonViewer = () => {
           },
         };
 
-        console.log("📊 Aggregated review:", {
-          passed: aggregatedReview.passed,
-          score: aggregatedReview.score,
-          passingScore: aggregatedReview.passingScore,
-        });
-
         setReview(aggregatedReview);
 
         // Save review to database
         try {
-          console.log("💾 Saving review to database...");
-
           // Get fresh course data from context
           const freshCourse = getCourseById(courseId);
           const courseModules =
             freshCourse?.structure?.modules || freshCourse?.modules;
 
           if (!freshCourse || !courseModules) {
-            console.error("❌ Course structure not found!", {
-              freshCourse,
-              hasStructure: !!freshCourse?.structure,
-              hasModules: !!freshCourse?.modules,
-            });
             throw new Error("Course structure is missing");
           }
-
-          console.log(
-            "📦 Using course modules:",
-            courseModules.length,
-            "modules",
-          );
           const updatedModules = courseModules.map((mod, mIdx) => {
             if (mIdx === moduleIndex) {
               return {
@@ -352,43 +308,27 @@ const AILessonViewer = () => {
             return mod;
           });
 
-          const dbResult = await updateCourse(courseId, {
+          await updateCourse(courseId, {
             modules: updatedModules,
           });
-          console.log("✅ Review saved to database:", dbResult);
-        } catch (dbErr) {
-          console.error("⚠️ Failed to save review to database:", dbErr);
+        } catch {
+          // Failed to save review
         }
 
         if (aggregatedReview.passed) {
-          console.log("🎉 Assessment PASSED! Updating progress...");
-
           // Award XP for passing assessment
           const isPerfectScore = aggregatedReview.score === 100;
           const xpAmount = isPerfectScore
-            ? TOKEN_REWARDS.PERFECT_SCORE * 10 // 250 XP for perfect
-            : TOKEN_REWARDS.PASS_ASSESSMENT * 10; // 100 XP for pass
+            ? TOKEN_REWARDS.PERFECT_SCORE * 10
+            : TOKEN_REWARDS.PASS_ASSESSMENT * 10;
 
-          // We'll call handleAwardXP after defining it - for now just log
           if (user?.id) {
-            awardXP(
-              user.id,
+            handleAwardXP(
               xpAmount,
               isPerfectScore
                 ? "Perfect score on assessment"
                 : "Passed assessment",
-            )
-              .then((result) => {
-                if (result?.success && result?.leveledUp) {
-                  setLevelUpNotification({
-                    newLevel: result.currentLevel,
-                    tokenReward: result.tokenReward,
-                  });
-                  setTimeout(() => setLevelUpNotification(null), 5000);
-                }
-                if (refreshProfile) refreshProfile();
-              })
-              .catch((err) => console.error("Failed to award XP:", err));
+            );
           }
 
           // Get fresh course data again for progress calculation
@@ -397,7 +337,6 @@ const AILessonViewer = () => {
             freshCourse?.structure?.modules || freshCourse?.modules;
 
           if (!freshCourse || !progressModules) {
-            console.error("❌ Cannot find course for progress update");
             return;
           }
 
@@ -405,8 +344,6 @@ const AILessonViewer = () => {
             ...(freshCourse.progress?.completedLessons || []),
             lessonId,
           ];
-
-          console.log("📝 Completed lessons:", completedLessons);
 
           const nextLessonIndex = lessonIndex + 1;
           const nextModuleIndex =
@@ -428,23 +365,14 @@ const AILessonViewer = () => {
             currentLessonIndex: nextLessonIndexInModule,
           };
 
-          console.log("📈 Updating progress:", progressUpdate);
           updateCourseProgress(courseId, progressUpdate);
-          console.log("✅ Progress updated!");
         } else {
-          console.log(
-            "❌ Assessment NOT PASSED. Score:",
-            aggregatedReview.score,
-            "Required:",
-            aggregatedReview.passingScore,
-          );
+          // Assessment not passed
         }
       } else {
-        console.error("❌ Review failed:", result.error);
         setError(result.error || "Failed to review submission");
       }
     } catch (err) {
-      console.error("❌ Error submitting assessment:", err);
       setError(err.message || "An error occurred");
     } finally {
       setSubmitting(false);
@@ -452,73 +380,14 @@ const AILessonViewer = () => {
     }
   };
 
-  // Helper to award XP and handle level up notifications
-  const handleAwardXP = async (xpAmount, reason) => {
-    if (!user?.id) return;
-
-    try {
-      const result = await awardXP(user.id, xpAmount, reason);
-      if (result.success) {
-        console.log(`🎯 Awarded ${xpAmount} XP for: ${reason}`);
-
-        // Show level up notification
-        if (result.leveledUp) {
-          setLevelUpNotification({
-            newLevel: result.currentLevel,
-            tokenReward: result.tokenReward,
-          });
-
-          // Auto-hide after 5 seconds
-          setTimeout(() => setLevelUpNotification(null), 5000);
-        }
-
-        // Refresh user profile to update UI
-        if (refreshProfile) {
-          refreshProfile();
-        }
-      }
-    } catch (err) {
-      console.error("Failed to award XP:", err);
-    }
-  };
-
-  const handlePrevLesson = () => {
-    const modules = course.structure?.modules || course.modules;
-    const currentModule = modules[moduleIndex];
-
-    // Navigate to previous lesson
-    const prevLessonIndex = lessonIndex - 1;
-    if (prevLessonIndex >= 0) {
-      const prevLesson = currentModule.lessons[prevLessonIndex];
-      navigate(`/courses/${courseId}/lessons/${prevLesson.id}`, {
-        state: { moduleIndex, lessonIndex: prevLessonIndex },
-      });
-    } else {
-      // Go to last lesson of previous module
-      const prevModuleIndex = moduleIndex - 1;
-      if (prevModuleIndex >= 0) {
-        const prevModule = modules[prevModuleIndex];
-        const prevLesson = prevModule.lessons[prevModule.lessons.length - 1];
-        navigate(`/courses/${courseId}/lessons/${prevLesson.id}`, {
-          state: {
-            moduleIndex: prevModuleIndex,
-            lessonIndex: prevModule.lessons.length - 1,
-          },
-        });
-      }
-    }
-  };
-
   const handleNextLesson = async () => {
     const modules = course.structure?.modules || course.modules;
-    const currentModule = modules[moduleIndex];
-
-    // Mark current lesson as complete if not already
     const completedLessons = course.progress?.completedLessons || [];
     if (!completedLessons.includes(lessonId)) {
       const updatedCompletedLessons = [...completedLessons, lessonId];
 
       const nextLessonIdx = lessonIndex + 1;
+      const currentModule = modules[moduleIndex];
       const nextModIdx =
         nextLessonIdx >= currentModule.lessons.length
           ? moduleIndex + 1
@@ -534,18 +403,12 @@ const AILessonViewer = () => {
         currentLessonIndex: nextLessonIdxInModule,
       };
 
-      console.log(
-        "📈 Marking lesson complete and updating progress:",
-        progressUpdate,
-      );
-
       // Save to database directly and wait for it
       try {
         const result = await updateCourse(courseId, {
           progress: progressUpdate,
         });
         if (result.success) {
-          console.log("✅ Progress saved to database");
           // Also update local context
           updateCourseProgress(courseId, progressUpdate);
 
@@ -554,33 +417,13 @@ const AILessonViewer = () => {
             TOKEN_REWARDS.COMPLETE_LESSON * 10,
             `Completed lesson: ${lesson?.title || "Lesson"}`,
           );
-        } else {
-          console.error("❌ Failed to save progress:", result.error);
         }
-      } catch (err) {
-        console.error("❌ Error saving progress:", err);
+      } catch {
+        // Error saving progress
       }
     }
 
-    // Navigate to next lesson
-    const nextLessonIndex = lessonIndex + 1;
-    if (nextLessonIndex < currentModule.lessons.length) {
-      const nextLesson = currentModule.lessons[nextLessonIndex];
-      navigate(`/courses/${courseId}/lessons/${nextLesson.id}`, {
-        state: { moduleIndex, lessonIndex: nextLessonIndex },
-      });
-    } else {
-      const nextModuleIndex = moduleIndex + 1;
-      if (nextModuleIndex < modules.length) {
-        const nextModule = modules[nextModuleIndex];
-        const nextLesson = nextModule.lessons[0];
-        navigate(`/courses/${courseId}/lessons/${nextLesson.id}`, {
-          state: { moduleIndex: nextModuleIndex, lessonIndex: 0 },
-        });
-      } else {
-        navigate(`/courses/${courseId}`);
-      }
-    }
+    navigateToNextLesson();
   };
 
   if (loading) {
@@ -625,29 +468,10 @@ const AILessonViewer = () => {
 
   return (
     <div className={styles.container}>
-      {/* Level Up Notification */}
-      {levelUpNotification && (
-        <div className={styles.levelUpNotification}>
-          <div className={styles.levelUpContent}>
-            <span className={styles.levelUpIcon}>🎉</span>
-            <div className={styles.levelUpText}>
-              <h3>Level Up!</h3>
-              <p>You reached Level {levelUpNotification.newLevel}!</p>
-              {levelUpNotification.tokenReward > 0 && (
-                <p className={styles.tokenReward}>
-                  +{levelUpNotification.tokenReward} tokens earned!
-                </p>
-              )}
-            </div>
-            <button
-              className={styles.levelUpClose}
-              onClick={() => setLevelUpNotification(null)}
-            >
-              ×
-            </button>
-          </div>
-        </div>
-      )}
+      <LevelUpNotification
+        notification={levelUpNotification}
+        onClose={() => setLevelUpNotification(null)}
+      />
 
       <div className={styles.header}>
         <Button
@@ -671,65 +495,7 @@ const AILessonViewer = () => {
 
       {!showAssessment ? (
         <div className={styles.lessonContent}>
-          <Card className={styles.lessonCard}>
-            <h1>{lesson.title}</h1>
-
-            {/* Render objectives if available */}
-            {lesson.objectives?.length > 0 && (
-              <div className={styles.objectives}>
-                <h3>Learning Objectives</h3>
-                <ul>
-                  {lesson.objectives.map((objective, index) => (
-                    <li key={index}>{objective}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Render markdown content */}
-            {lesson.content && (
-              <div className={styles.markdownContent}>
-                <ReactMarkdown>{lesson.content}</ReactMarkdown>
-              </div>
-            )}
-
-            {/* Render key takeaways */}
-            {lesson.keyTakeaways?.length > 0 && (
-              <div className={styles.takeaways}>
-                <h3>Key Takeaways</h3>
-                <ul>
-                  {lesson.keyTakeaways.map((takeaway, index) => (
-                    <li key={index}>{takeaway}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            {/* Render external resources */}
-            {lesson.externalResources?.length > 0 && (
-              <div className={styles.resources}>
-                <h3>Additional Resources</h3>
-                <ul>
-                  {lesson.externalResources.map((resource, index) => (
-                    <li key={index}>
-                      <a
-                        href={resource.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        {resource.title}
-                      </a>
-                      {resource.description && (
-                        <p className={styles.resourceDescription}>
-                          {resource.description}
-                        </p>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </Card>
+          <LessonContent lesson={lesson} />
 
           <div className={styles.lessonActions}>
             {isChooseYourPath ? (
@@ -764,8 +530,8 @@ const AILessonViewer = () => {
                           `Completed lesson: ${lesson?.title || "Lesson"}`,
                         );
                       }
-                    } catch (err) {
-                      console.error("Error saving progress:", err);
+                    } catch {
+                      // Error saving progress
                     }
                   }
 
@@ -774,13 +540,16 @@ const AILessonViewer = () => {
                 }}
                 className={styles.choosePathButton}
               >
-                🚀 Choose Your Learning Path
+                Choose Your Learning Path
               </Button>
             ) : !assessment ? (
               // No assessment required - show navigation buttons
               <div className={styles.completedActions}>
-                {(moduleIndex > 0 || lessonIndex > 0) && (
-                  <Button variant="secondary" onClick={handlePrevLesson}>
+                {canGoBack() && (
+                  <Button
+                    variant="secondary"
+                    onClick={navigateToPreviousLesson}
+                  >
                     <ChevronLeft size={18} />
                     <span className={styles.navText}>Prev</span>
                     <span className={styles.navTextFull}>ious Lesson</span>
@@ -795,11 +564,14 @@ const AILessonViewer = () => {
             ) : review?.passed ? (
               // Assessment already passed - show navigation and review buttons
               <div className={styles.completedActions}>
-                {(moduleIndex > 0 || lessonIndex > 0) && (
-                  <Button variant="secondary" onClick={handlePrevLesson}>
+                {canGoBack() && (
+                  <Button
+                    variant="secondary"
+                    onClick={navigateToPreviousLesson}
+                  >
                     <ChevronLeft size={18} />
                     <span className={styles.navText}>Prev</span>
-                    <span className={styles.navTextFull}>ious Lesson</span>
+                    <span className={styles.navTextFull}>Lesson</span>
                   </Button>
                 )}
                 <Button
@@ -824,304 +596,31 @@ const AILessonViewer = () => {
           </div>
         </div>
       ) : showAssessment && assessment ? (
-        <div className={styles.assessmentContent}>
-          <Card className={styles.assessmentCard}>
-            <h1>{assessment.title}</h1>
-            <p className={styles.description}>{assessment.description}</p>
-            <p className={styles.passingScore}>
-              Passing Score: {assessment.passingScore}% (
-              {assessment.totalPoints} points)
-            </p>
-
-            {!review ? (
-              <>
-                <div className={styles.questions}>
-                  {assessment.questions?.map((question, questionIndex) => {
-                    // Generate ID if missing
-                    const questionId = question.id || `q${questionIndex + 1}`;
-                    return (
-                      <div key={questionId} className={styles.question}>
-                        <h3>{question.question}</h3>
-
-                        {question.type === "multiple_choice" && (
-                          <div className={styles.options}>
-                            {question.options.map((option, index) => (
-                              <label key={index} className={styles.option}>
-                                <input
-                                  type="radio"
-                                  name={questionId}
-                                  value={index}
-                                  onChange={(e) =>
-                                    setSubmission((prev) => ({
-                                      ...prev,
-                                      [questionId]: parseInt(e.target.value),
-                                    }))
-                                  }
-                                />
-                                <span>{option}</span>
-                              </label>
-                            ))}
-                          </div>
-                        )}
-
-                        {question.type === "coding" && (
-                          <textarea
-                            className={styles.codeInput}
-                            value={
-                              submission[questionId] ||
-                              question.starterCode ||
-                              ""
-                            }
-                            placeholder="Write your code here..."
-                            rows={10}
-                            onChange={(e) =>
-                              setSubmission((prev) => ({
-                                ...prev,
-                                [questionId]: e.target.value,
-                              }))
-                            }
-                          />
-                        )}
-
-                        {question.type === "code_challenge" && (
-                          <div className={styles.codeChallenge}>
-                            <textarea
-                              className={styles.codeInput}
-                              value={
-                                submission[questionId] ||
-                                question.starterCode ||
-                                ""
-                              }
-                              placeholder="Write your code here..."
-                              rows={8}
-                              onChange={(e) =>
-                                setSubmission((prev) => ({
-                                  ...prev,
-                                  [questionId]: e.target.value,
-                                }))
-                              }
-                            />
-                            {question.hints && question.hints.length > 0 && (
-                              <details className={styles.hints}>
-                                <summary>💡 Hints</summary>
-                                <ul>
-                                  {question.hints.map((hint, idx) => (
-                                    <li key={idx}>{hint}</li>
-                                  ))}
-                                </ul>
-                              </details>
-                            )}
-                          </div>
-                        )}
-
-                        {question.type === "project" && (
-                          <div className={styles.projectSubmission}>
-                            <div className={styles.projectRequirements}>
-                              <h4>Required Features:</h4>
-                              <ul>
-                                {question.requirements?.map((req, idx) => (
-                                  <li key={idx}>{req}</li>
-                                ))}
-                              </ul>
-                            </div>
-                            {question.stretchGoals &&
-                              question.stretchGoals.length > 0 && (
-                                <div className={styles.stretchGoals}>
-                                  <h4>Stretch Goals (Optional):</h4>
-                                  <ul>
-                                    {question.stretchGoals.map((goal, idx) => (
-                                      <li key={idx}>{goal}</li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              )}
-                            <input
-                              type="url"
-                              className={styles.urlInput}
-                              placeholder="GitHub Repository URL (required)"
-                              onChange={(e) =>
-                                setSubmission((prev) => ({
-                                  ...prev,
-                                  [questionId]: {
-                                    ...prev[questionId],
-                                    githubUrl: e.target.value,
-                                  },
-                                }))
-                              }
-                            />
-                            <input
-                              type="url"
-                              className={styles.urlInput}
-                              placeholder="Live Demo URL (optional)"
-                              onChange={(e) =>
-                                setSubmission((prev) => ({
-                                  ...prev,
-                                  [questionId]: {
-                                    ...prev[questionId],
-                                    liveUrl: e.target.value,
-                                  },
-                                }))
-                              }
-                            />
-                            <textarea
-                              className={styles.textInput}
-                              placeholder="Project description (what you built, challenges faced, what you learned)"
-                              rows={4}
-                              onChange={(e) =>
-                                setSubmission((prev) => ({
-                                  ...prev,
-                                  [questionId]: {
-                                    ...prev[questionId],
-                                    description: e.target.value,
-                                  },
-                                }))
-                              }
-                            />
-                          </div>
-                        )}
-
-                        {question.type === "short_answer" && (
-                          <textarea
-                            className={styles.textInput}
-                            placeholder="Type your answer here..."
-                            rows={6}
-                            onChange={(e) =>
-                              setSubmission((prev) => ({
-                                ...prev,
-                                [questionId]: e.target.value,
-                              }))
-                            }
-                          />
-                        )}
-
-                        <div className={styles.points}>
-                          Points: {question.points}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-
-                <div className={styles.assessmentActions}>
-                  <Button
-                    variant="secondary"
-                    onClick={() => setShowAssessment(false)}
-                  >
-                    <ChevronLeft size={18} />
-                    <span className={styles.backText}>Back</span>
-                    <span className={styles.backTextFull}>to Lesson</span>
-                  </Button>
-                  <Button
-                    variant="primary"
-                    onClick={handleSubmitAssessment}
-                    disabled={submitting}
-                  >
-                    {submitting ? "Submitting..." : "Submit"}
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <div className={styles.review}>
-                <div
-                  className={`${styles.reviewHeader} ${review.passed ? styles.passed : styles.failed}`}
-                >
-                  <div className={styles.resultIndicator}>
-                    <h2>{review.passed ? "Passed" : "Did Not Pass"}</h2>
-                    <div className={styles.score}>{review.score}%</div>
-                  </div>
-                  <div className={styles.scoreInfo}>
-                    Passing score: {review.passingScore}%
-                  </div>
-                </div>
-
-                <div className={styles.feedback}>
-                  {review.feedback?.overall && (
-                    <div className={styles.overallSection}>
-                      <h3>Assessment Results</h3>
-                      <p>{review.feedback.overall}</p>
-                    </div>
-                  )}
-
-                  {review.details?.length > 0 && (
-                    <div className={styles.detailsSection}>
-                      <h3>Question Breakdown</h3>
-                      {review.details.map((detail, index) => (
-                        <div
-                          key={index}
-                          className={`${styles.questionResult} ${
-                            detail.isCorrect ? styles.correct : styles.incorrect
-                          }`}
-                        >
-                          <div className={styles.questionHeader}>
-                            <span className={styles.questionNum}>
-                              Q{index + 1}
-                            </span>
-                            <span className={styles.questionText}>
-                              {detail.questionText}
-                            </span>
-                            <span className={styles.score}>
-                              {detail.score}%
-                            </span>
-                          </div>
-                          <p className={styles.feedback}>{detail.feedback}</p>
-                          {detail.suggestions?.length > 0 && (
-                            <div className={styles.suggestionsList}>
-                              {detail.suggestions.map((suggestion, sIdx) => (
-                                <div key={sIdx} className={styles.suggestion}>
-                                  {suggestion}
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className={styles.reviewActions}>
-                  {review.passed ? (
-                    <>
-                      <Button
-                        variant="secondary"
-                        onClick={() => setShowAssessment(false)}
-                      >
-                        Close Feedback
-                      </Button>
-                      <Button variant="primary" onClick={handleNextLesson}>
-                        <span className={styles.navText}>Next</span>
-                        <span className={styles.navTextFull}> Lesson</span>
-                        <ChevronRight size={18} />
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <Button
-                        variant="secondary"
-                        onClick={() => {
-                          setReview(null);
-                          setSubmission({});
-                          setShowAssessment(false);
-                        }}
-                      >
-                        Review Lesson
-                      </Button>
-                      <Button
-                        variant="primary"
-                        onClick={() => {
-                          setReview(null);
-                          setSubmission({});
-                        }}
-                      >
-                        Retry Assessment
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-            )}
-          </Card>
-        </div>
+        !review ? (
+          <AssessmentView
+            assessment={assessment}
+            submission={submission}
+            setSubmission={setSubmission}
+            onSubmit={handleSubmitAssessment}
+            onBack={() => setShowAssessment(false)}
+            submitting={submitting}
+          />
+        ) : (
+          <ReviewView
+            review={review}
+            onClose={() => setShowAssessment(false)}
+            onNext={handleNextLesson}
+            onRetry={() => {
+              setReview(null);
+              setSubmission({});
+            }}
+            onReviewLesson={() => {
+              setReview(null);
+              setSubmission({});
+              setShowAssessment(false);
+            }}
+          />
+        )
       ) : showAssessment && !assessment ? (
         <div className={styles.container}>
           <div className={styles.loadingContainer}>

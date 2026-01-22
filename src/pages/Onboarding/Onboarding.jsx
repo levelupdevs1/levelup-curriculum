@@ -166,7 +166,6 @@ const Onboarding = () => {
         }, 100);
       }
     } else {
-      console.error("Failed to save profile:", result?.error);
       setSaving(false);
       loadingBar.complete();
     }

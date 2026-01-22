@@ -208,7 +208,6 @@ export const getFoundationCourse = async (userId) => {
       throw insertError;
     }
 
-    console.log("✅ Foundation course created for user:", userId);
     return { success: true, data: newCourse, isNew: true };
   } catch (error) {
     console.error("Error getting foundation course:", error);

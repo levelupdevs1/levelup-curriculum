@@ -7,12 +7,12 @@ import {
   generateCourseCatalog,
   AI_TOKEN_COSTS,
   isAIConfigured,
-  getActiveProvider,
 } from "../../services/aiServiceReal";
 import Button from "../../components/Button/Button";
 import AICourseCard from "../../components/AICourseCard/AICourseCard";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
-import { Search, ChevronLeft, ChevronRight, Filter } from "lucide-react";
+import SearchFilter from "../../components/SearchFilter/SearchFilter";
+import Pagination from "../../components/Pagination/Pagination";
 import styles from "./AICatalog.module.css";
 
 const COURSES_PER_PAGE = 6;
@@ -132,14 +132,9 @@ const AICatalog = () => {
     loadingBar.start();
 
     try {
-      console.log(`🤖 Generating courses with ${getActiveProvider()}...`);
       const result = await generateCourseCatalog(userProfile);
 
       if (result.success) {
-        console.log(
-          `✅ Generated ${result.courses.length} courses using ${result.tokensUsed} tokens`,
-        );
-
         const tokenResult = await consumeTokens(
           result.tokensUsed,
           "generate_course_catalog",
@@ -255,32 +250,18 @@ const AICatalog = () => {
       </div>
 
       {/* Search and Filters */}
-      <div className={styles.searchFilters}>
-        <div className={styles.searchContainer}>
-          <Search className={styles.searchIcon} size={20} />
-          <input
-            type="text"
-            placeholder="Search courses..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className={styles.searchInput}
-          />
-        </div>
-        <div className={styles.filterContainer}>
-          <Filter className={styles.filterIcon} size={18} />
-          <select
-            value={difficultyFilter}
-            onChange={(e) => setDifficultyFilter(e.target.value)}
-            className={styles.filterSelect}
-          >
-            {DIFFICULTY_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {option === "All" ? "All Levels" : option}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      <SearchFilter
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        filterValue={difficultyFilter}
+        onFilterChange={setDifficultyFilter}
+        filterOptions={DIFFICULTY_OPTIONS.map((option) => ({
+          value: option,
+          label: option === "All" ? "All Levels" : option,
+        }))}
+        searchPlaceholder="Search courses..."
+        filterLabel="Difficulty"
+      />
 
       {/* Results count */}
       {filteredCourses.length > 0 && (
@@ -399,41 +380,11 @@ const AICatalog = () => {
       </div>
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className={styles.pagination}>
-          <button
-            className={styles.pageButton}
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            <ChevronLeft size={20} />
-            <span className={styles.pageButtonText}>Prev</span>
-          </button>
-
-          <div className={styles.pageNumbers}>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                className={`${styles.pageNumber} ${currentPage === page ? styles.activePage : ""}`}
-                onClick={() => setCurrentPage(page)}
-              >
-                {page}
-              </button>
-            ))}
-          </div>
-
-          <button
-            className={styles.pageButton}
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            disabled={currentPage === totalPages}
-          >
-            <span className={styles.pageButtonText}>Next</span>
-            <ChevronRight size={20} />
-          </button>
-        </div>
-      )}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
     </div>
   );
 };

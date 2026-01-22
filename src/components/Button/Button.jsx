@@ -1,18 +1,17 @@
-import React from 'react';
-import styles from './Button.module.css';
+import styles from "./Button.module.css";
 
-const Button = ({ 
-  children, 
-  variant = 'primary', 
-  size = 'md', 
-  disabled = false, 
+const Button = ({
+  children,
+  variant = "primary",
+  size = "md",
+  disabled = false,
   loading = false,
   icon,
-  iconPosition = 'left',
+  iconPosition = "left",
   onClick,
-  type = 'button',
-  className = '',
-  ...props 
+  type = "button",
+  className = "",
+  ...props
 }) => {
   const buttonClasses = [
     styles.button,
@@ -20,8 +19,10 @@ const Button = ({
     styles[size],
     disabled && styles.disabled,
     loading && styles.loading,
-    className
-  ].filter(Boolean).join(' ');
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <button
@@ -31,14 +32,12 @@ const Button = ({
       onClick={onClick}
       {...props}
     >
-      {loading && (
-        <div className={styles.spinner} />
-      )}
-      {!loading && icon && iconPosition === 'left' && (
+      {loading && <div className={styles.spinner} />}
+      {!loading && icon && iconPosition === "left" && (
         <span className={styles.iconLeft}>{icon}</span>
       )}
       {children}
-      {!loading && icon && iconPosition === 'right' && (
+      {!loading && icon && iconPosition === "right" && (
         <span className={styles.iconRight}>{icon}</span>
       )}
     </button>

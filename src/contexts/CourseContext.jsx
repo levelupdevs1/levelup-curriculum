@@ -35,16 +35,13 @@ export const CourseProvider = ({ children }) => {
         // HYBRID LOADER: Development vs Production
         if (import.meta.env.DEV) {
           // DEV MODE: Load from local src/courses/ files for instant testing
-          console.log("🔧 DEV MODE: Loading courses from local files");
           const { loadAllCourses } = await import("../utils/courseLoader");
           loadedCourses = await loadAllCourses();
         } else {
           // PRODUCTION MODE: Fetch from Supabase (synced via GitHub Actions)
-          console.log("🚀 PRODUCTION MODE: Fetching courses from Supabase");
-          const { success, courses, error } = await fetchCourses();
+          const { success, courses } = await fetchCourses();
 
           if (!success) {
-            console.error("Failed to fetch courses:", error);
             return;
           }
 
@@ -224,7 +221,6 @@ export const CourseProvider = ({ children }) => {
 
   const enrollInCourse = async (courseId) => {
     if (!user) {
-      console.error("User not authenticated");
       return false;
     }
     try {
@@ -237,8 +233,7 @@ export const CourseProvider = ({ children }) => {
         )
       );
       return true;
-    } catch (error) {
-      console.error("Error enrolling in course:", error);
+    } catch {
       return false;
     }
   };

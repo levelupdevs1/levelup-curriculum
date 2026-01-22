@@ -30,7 +30,6 @@ export const UserProvider = ({ children }) => {
         const {
           success,
           profile: userProfile,
-          error: profileError,
         } = await getUserProfile(authUser.id);
 
         // Check if user has completed onboarding and get AI profile data
@@ -49,7 +48,6 @@ export const UserProvider = ({ children }) => {
           };
           setProfile(mergedProfile);
         } else {
-          console.error("Error fetching user profile:", profileError);
           const defaultProfile = {
             id: authUser.id,
             email: authUser.email,
@@ -92,7 +90,6 @@ export const UserProvider = ({ children }) => {
       const {
         success,
         profile: userProfile,
-        error: profileError,
       } = await getUserProfile(user.id);
 
       // Re-check onboarding status and get AI profile data
@@ -110,11 +107,9 @@ export const UserProvider = ({ children }) => {
           platform_tokens_balance: aiProfile?.platform_tokens_balance || 0,
         };
         setProfile(mergedProfile);
-      } else {
-        console.error("Error refreshing user profile:", profileError);
       }
-    } catch (error) {
-      console.error("Error in refreshProfile:", error);
+    } catch {
+      // Error handled silently
     }
   };
 
@@ -131,7 +126,6 @@ export const UserProvider = ({ children }) => {
 
       return { success: true };
     } catch (err) {
-      console.error("Login error:", err);
       const errorMessage = err.message || "Login failed. Please try again.";
       setError(errorMessage);
       return { success: false, error: errorMessage };
@@ -161,7 +155,6 @@ export const UserProvider = ({ children }) => {
 
       return { success: true };
     } catch (err) {
-      console.error("Register error:", err);
       const errorMessage =
         err.message || "Registration failed. Please try again.";
       setError(errorMessage);
@@ -187,7 +180,6 @@ export const UserProvider = ({ children }) => {
       setIsAuthenticated(false);
       return { success: true };
     } catch (err) {
-      console.error("Logout error:", err);
       const errorMessage = err.message || "Logout failed. Please try again.";
       setError(errorMessage);
       return { success: false, error: errorMessage };

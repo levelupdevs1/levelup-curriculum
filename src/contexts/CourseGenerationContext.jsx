@@ -47,14 +47,12 @@ export const CourseGenerationProvider = ({ children }) => {
       const foundationResult = await getFoundationCourse(user.id);
       if (foundationResult.success && foundationResult.data) {
         setFoundationCourse(foundationResult.data);
-        console.log("📚 Foundation course loaded:", foundationResult.data.id);
       }
 
       // Check foundation completion status
       const completionResult = await hasCompletedFoundation(user.id);
       if (completionResult.success) {
         setFoundationCompleted(completionResult.completed);
-        console.log("📊 Foundation completed:", completionResult.completed);
       }
 
       // Load all generated courses (both recommended and enrolled)
@@ -66,9 +64,6 @@ export const CourseGenerationProvider = ({ children }) => {
         // Separate enrolled and non-enrolled courses
         const enrolled = nonFoundationCourses.filter(
           (c) => c.status === "enrolled",
-        );
-        const recommended = nonFoundationCourses.filter(
-          (c) => c.status === "recommended",
         );
 
         setGeneratedCourses(nonFoundationCourses); // Show all non-foundation courses in catalog
@@ -133,20 +128,15 @@ export const CourseGenerationProvider = ({ children }) => {
 
       // Check if already enrolled
       if (course.status === "enrolled") {
-        console.log("ℹ️ Already enrolled in this course");
         return { success: true, data: course };
       }
 
-      console.log("🔄 Calling enrollInCourseDB...");
       const { success, data, error } = await enrollInCourseDB(
         courseId,
         user.id,
       );
 
       if (success) {
-        console.log("✅ Enrollment successful, updating context...");
-        console.log("📦 Enrolled course data:", data);
-
         // Update enrolledCourses
         setEnrolledCourses((prev) => {
           // Check if already in list
@@ -164,7 +154,6 @@ export const CourseGenerationProvider = ({ children }) => {
         return { success: true, data };
       }
 
-      console.error("❌ Enrollment failed:", error);
       return { success: false, error: error || "Failed to enroll" };
     },
     [generatedCourses, user],
@@ -187,7 +176,6 @@ export const CourseGenerationProvider = ({ children }) => {
         }
         if (totalLessons > 0 && completedLessons.length >= totalLessons) {
           setFoundationCompleted(true);
-          console.log("🎉 Foundation course completed!");
         }
       } else {
         // Update progress in local state for AI courses
@@ -200,16 +188,7 @@ export const CourseGenerationProvider = ({ children }) => {
 
       // Save progress to database
       import("../services/courseDataService").then(({ updateCourse }) => {
-        updateCourse(courseId, { progress }).then((result) => {
-          if (result.success) {
-            console.log("✅ Progress saved to database:", progress);
-          } else {
-            console.error(
-              "❌ Failed to save progress to database:",
-              result.error,
-            );
-          }
-        });
+        updateCourse(courseId, { progress });
       });
     },
     [foundationCourse],

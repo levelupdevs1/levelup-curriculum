@@ -3,20 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../../hooks/useUser";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import { getLevelProgress } from "../../services/platformTokenService";
-import {
-  Trophy,
-  BookOpen,
-  Flame,
-  Star,
-  Zap,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { Trophy, BookOpen, Flame, Star, Zap } from "lucide-react";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import ProgressBar from "../../components/ProgressBar/ProgressBar";
 import Card from "../../components/Card/Card";
 import Button from "../../components/Button/Button";
 import AICourseCard from "../../components/AICourseCard/AICourseCard";
+import Pagination from "../../components/Pagination/Pagination";
 import styles from "./Dashboard.module.css";
 import StatCard from "../../components/StatCard/StatCard";
 
@@ -247,45 +240,11 @@ const Dashboard = () => {
                 </div>
 
                 {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className={styles.pagination}>
-                    <button
-                      className={styles.pageButton}
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.max(prev - 1, 1))
-                      }
-                      disabled={currentPage === 1}
-                    >
-                      <ChevronLeft size={20} />
-                      <span className={styles.pageButtonText}>Prev</span>
-                    </button>
-
-                    <div className={styles.pageNumbers}>
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                        (page) => (
-                          <button
-                            key={page}
-                            className={`${styles.pageNumber} ${currentPage === page ? styles.activePage : ""}`}
-                            onClick={() => setCurrentPage(page)}
-                          >
-                            {page}
-                          </button>
-                        ),
-                      )}
-                    </div>
-
-                    <button
-                      className={styles.pageButton}
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                      }
-                      disabled={currentPage === totalPages}
-                    >
-                      <span className={styles.pageButtonText}>Next</span>
-                      <ChevronRight size={20} />
-                    </button>
-                  </div>
-                )}
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
               </>
             ) : (
               <Card className={styles.emptyState}>
