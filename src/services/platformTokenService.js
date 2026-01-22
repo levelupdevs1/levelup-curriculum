@@ -122,10 +122,6 @@ export const awardTokens = async (
     const multiplier = TIER_MULTIPLIERS[tier] || 1.0;
     const amount = Math.round(baseAmount * multiplier);
 
-    console.log(
-      `💰 Awarding ${amount} tokens (${baseAmount} × ${multiplier}) for: ${reason}`,
-    );
-
     // Get current balance
     const { data: profile } = await supabase
       .from("ai_user_profiles")
@@ -151,7 +147,6 @@ export const awardTokens = async (
       .single();
 
     if (txError) {
-      console.error("Failed to record token transaction:", txError);
       return { success: false, error: txError.message };
     }
 
@@ -165,11 +160,8 @@ export const awardTokens = async (
       .eq("user_id", userId);
 
     if (updateError) {
-      console.error("Failed to update token balance:", updateError);
       return { success: false, error: updateError.message };
     }
-
-    console.log(`✅ Tokens awarded! New balance: ${newBalance}`);
 
     return {
       success: true,
@@ -178,7 +170,6 @@ export const awardTokens = async (
       transaction,
     };
   } catch (error) {
-    console.error("Error awarding tokens:", error);
     return { success: false, error: error.message };
   }
 };
@@ -188,8 +179,6 @@ export const awardTokens = async (
  */
 export const awardXP = async (userId, xpAmount, reason, tier = "free") => {
   try {
-    console.log(`Awarding ${xpAmount} XP for: ${reason}`);
-
     // Check if user has AI profile
     const { data: aiProfile } = await supabase
       .from("ai_user_profiles")
@@ -208,7 +197,6 @@ export const awardXP = async (userId, xpAmount, reason, tier = "free") => {
       let tokenReward = 0;
 
       if (leveledUp) {
-        console.log(`LEVEL UP! ${currentLevel} → ${newLevel}`);
         tokenReward = LEVEL_REWARDS[newLevel] || 0;
 
         await supabase.from("platform_token_claims").insert({
@@ -239,11 +227,8 @@ export const awardXP = async (userId, xpAmount, reason, tier = "free") => {
         .eq("user_id", userId);
 
       if (updateError) {
-        console.error("Failed to update XP:", updateError);
         return { success: false, error: updateError.message };
       }
-
-      console.log(`XP updated! ${currentXP} → ${newXP} (Level ${newLevel})`);
 
       return {
         success: true,
@@ -270,10 +255,6 @@ export const awardXP = async (userId, xpAmount, reason, tier = "free") => {
 
       const leveledUp = newLevel > currentLevel;
 
-      if (leveledUp) {
-        console.log(`LEVEL UP! ${currentLevel} → ${newLevel}`);
-      }
-
       const { error: updateError } = await supabase
         .from("users")
         .update({
@@ -284,11 +265,8 @@ export const awardXP = async (userId, xpAmount, reason, tier = "free") => {
         .eq("id", userId);
 
       if (updateError) {
-        console.error("Failed to update XP:", updateError);
         return { success: false, error: updateError.message };
       }
-
-      console.log(`XP updated! ${currentXP} → ${newXP} (Level ${newLevel})`);
 
       return {
         success: true,
@@ -302,7 +280,6 @@ export const awardXP = async (userId, xpAmount, reason, tier = "free") => {
       };
     }
   } catch (error) {
-    console.error("Error awarding XP:", error);
     return { success: false, error: error.message };
   }
 };
@@ -397,7 +374,6 @@ export const awardLessonCompletion = async (
       progress: xpResult.progress,
     };
   } catch (error) {
-    console.error("Error awarding lesson completion:", error);
     return { success: false, error: error.message };
   }
 };
@@ -416,7 +392,6 @@ export const getUserRewards = async (userId) => {
       .single();
 
     if (error) {
-      console.error("Failed to get user rewards:", error);
       return { success: false, error: error.message };
     }
 
@@ -431,7 +406,6 @@ export const getUserRewards = async (userId) => {
       progress,
     };
   } catch (error) {
-    console.error("Error getting user rewards:", error);
     return { success: false, error: error.message };
   }
 };

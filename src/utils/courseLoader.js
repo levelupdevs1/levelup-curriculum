@@ -31,7 +31,6 @@ export const loadAllCourses = async () => {
     }
   }
 
-  console.log(`📚 Loaded ${courses.length} courses from local files`);
   return courses;
 };
 

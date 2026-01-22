@@ -52,8 +52,6 @@ export const callGemini = async (messages, options = {}) => {
     const model = FREE_MODELS[i];
 
     try {
-      console.log(`🤖 Trying model: ${model} (${i + 1}/${FREE_MODELS.length})`);
-
       const url = `${GEMINI_API_URL}/${model}:generateContent`;
 
       const body = {
@@ -90,7 +88,6 @@ export const callGemini = async (messages, options = {}) => {
           errorMsg.includes("quota") ||
           errorMsg.includes("rate limit")
         ) {
-          console.warn(`⚠️ Rate limit hit for ${model}, trying next model...`);
           lastError = new Error(`Rate limit: ${errorMsg}`);
           continue; // Try next model
         }
@@ -106,8 +103,6 @@ export const callGemini = async (messages, options = {}) => {
 
       const content = data.candidates[0].content.parts[0].text;
 
-      console.log(`✅ Success with model: ${model}`);
-
       return {
         success: true,
         content,
@@ -119,7 +114,6 @@ export const callGemini = async (messages, options = {}) => {
         model: model,
       };
     } catch (error) {
-      console.error(`❌ ${model} failed:`, error.message);
       lastError = error;
 
       // If it's the last model, throw the error
@@ -133,7 +127,6 @@ export const callGemini = async (messages, options = {}) => {
   }
 
   // All models failed
-  console.error("❌ All models failed");
   return {
     success: false,
     error: lastError?.message || "All models failed",
@@ -242,8 +235,6 @@ Generate at least 3 courses. Include more if the learning goal requires comprehe
       model: result.model,
     };
   } catch (parseError) {
-    console.error("❌ Failed to parse course catalog:", parseError);
-    console.error("Raw response:", result.content?.substring(0, 500));
     return {
       success: false,
       error: `Failed to parse AI response: ${parseError.message}`,
@@ -353,15 +344,10 @@ FINAL CHECK: Count your modules. Must be EXACTLY ${modulesCount}.`;
   }
 
   try {
-    console.log("🔍 Parsing course structure with delimiters...");
     const structure = parseCourseStructure(result.content);
 
     // VALIDATION: Ensure module count matches specification
     if (!structure.modules || structure.modules.length !== modulesCount) {
-      console.warn(
-        `AI generated ${structure.modules?.length || 0} modules, expected ${modulesCount}. ` +
-          `This is a quality issue - the course metadata may need updating.`,
-      );
     }
 
     // VALIDATION: Ensure each module has lessons
@@ -369,7 +355,6 @@ FINAL CHECK: Count your modules. Must be EXACTLY ${modulesCount}.`;
       (m) => m.lessons && m.lessons.length > 0,
     );
     if (validModules.length === 0) {
-      console.error("No valid modules parsed - parsing failed");
       return {
         success: false,
         error: "Invalid course structure: no modules with lessons found",
@@ -404,8 +389,6 @@ FINAL CHECK: Count your modules. Must be EXACTLY ${modulesCount}.`;
       model: result.model,
     };
   } catch (parseError) {
-    console.error("❌ Failed to parse course structure:", parseError);
-    console.error("Raw response:", result.content?.substring(0, 500));
     return {
       success: false,
       error: `Failed to parse course structure: ${parseError.message}`,
@@ -883,7 +866,6 @@ CRITICAL VALIDATION:
 
     // Validate we got content
     if (!lessonData.content || lessonData.content.length < 100) {
-      console.error("❌ Lesson content too short or missing");
       return {
         success: false,
         error: "Generated lesson content was too short or empty",
@@ -897,8 +879,6 @@ CRITICAL VALIDATION:
       model: result.model,
     };
   } catch (parseError) {
-    console.error("❌ Failed to parse lesson content:", parseError);
-    console.error("Raw response:", result.content?.substring(0, 500));
     return {
       success: false,
       error: `Failed to parse lesson content: ${parseError.message}`,
@@ -1043,8 +1023,6 @@ input2 -> expected output2
       model: result.model,
     };
   } catch (parseError) {
-    console.error("❌ Failed to parse assessment:", parseError);
-    console.error("Raw response:", result.content?.substring(0, 500));
     return {
       success: false,
       error: `Failed to parse assessment: ${parseError.message}`,
@@ -1130,8 +1108,6 @@ Positive message`;
       model: result.model,
     };
   } catch (parseError) {
-    console.error("❌ Failed to parse review:", parseError);
-    console.error("Raw response:", result.content?.substring(0, 500));
     return {
       success: false,
       error: `Failed to parse review: ${parseError.message}`,
@@ -1146,13 +1122,6 @@ export const reviewSubmissionBatchGemini = async (
   questions,
   submissionAnswers,
 ) => {
-  // Debug: Log what we're receiving
-  console.log(
-    "📋 Questions:",
-    questions.map((q) => ({ id: q.id, type: q.type })),
-  );
-  console.log("📝 Submission answers:", submissionAnswers);
-
   // Check for project-type questions and validate them
   const projectQuestions = questions.filter((q) => q.type === "project");
   const projectValidations = {};
@@ -1160,22 +1129,11 @@ export const reviewSubmissionBatchGemini = async (
   for (const pq of projectQuestions) {
     const submission = submissionAnswers[pq.id];
     if (submission && typeof submission === "object") {
-      console.log(`🔍 Validating project submission for ${pq.id}...`);
       const validation = await validateProjectSubmission(
         submission,
         pq.question,
       );
       projectValidations[pq.id] = validation;
-
-      // Log comprehensive validation results
-      console.log(`📊 Project validation result:`, {
-        readyForReview: validation.readyForReview,
-        validationId: validation.validationId,
-        filesAvailable: validation.validationSummary?.filesAvailable || 0,
-        coverage: validation.validationSummary?.coverage || 0,
-        repoAccessible: validation.validationSummary?.repoAccessible,
-        liveUrlAccessible: validation.validationSummary?.liveUrlAccessible,
-      });
     }
   }
 
@@ -1184,20 +1142,11 @@ export const reviewSubmissionBatchGemini = async (
     .map((q, idx) => {
       let answerText = submissionAnswers[q.id];
 
-      console.log(
-        `Q${idx + 1} (${q.id}): Got answer:`,
-        answerText,
-        "Type:",
-        q.type,
-      );
-
       // For multiple choice, map index to the actual option text
       if (q.type === "multiple_choice" && answerText !== undefined) {
         const answerIndex = parseInt(answerText);
         if (!isNaN(answerIndex) && q.options && q.options[answerIndex]) {
-          const originalAnswer = answerText;
           answerText = q.options[answerIndex];
-          console.log(`  Mapped index ${originalAnswer} -> "${answerText}"`);
         }
       }
 
@@ -1211,9 +1160,6 @@ export const reviewSubmissionBatchGemini = async (
         if (validation && validation.formattedContent) {
           // Use the validated content with actual code
           answerText = validation.formattedContent;
-          console.log(
-            `  ✅ Using validated project content (${answerText.length} chars)`,
-          );
         } else {
           // Fallback to basic URL display if validation not available
           const projectParts = [];
@@ -1226,7 +1172,6 @@ export const reviewSubmissionBatchGemini = async (
               ? projectParts.join("\n") +
                 "\n\nWARNING: Project content could not be validated. Review URLs manually."
               : "[NO PROJECT LINKS PROVIDED]";
-          console.log(`  ⚠️ Using fallback project format`);
         }
       }
 
@@ -1242,8 +1187,6 @@ Student Answer: ${answerText}
 ---`;
     })
     .join("\n");
-
-  console.log("📤 Sending to Gemini:", questionsData.substring(0, 300));
 
   // Check if there are project questions for stricter review
   const hasProjectQuestions = questions.some((q) => q.type === "project");
@@ -1368,11 +1311,6 @@ Keep going`;
       model: result.model,
     };
   } catch (parseError) {
-    console.error("❌ Failed to parse batch review:", parseError);
-    console.error(
-      "Raw response (first 800 chars):",
-      result.content?.substring(0, 800),
-    );
     return {
       success: false,
       error: `Failed to parse batch review: ${parseError.message}`,

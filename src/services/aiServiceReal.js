@@ -40,8 +40,6 @@ const isGeminiConfigured = () => !!import.meta.env.VITE_GEMINI_API_KEY;
  * Generate personalized course catalog (Groq primary, Gemini fallback)
  */
 export const generateCourseCatalog = async (userProfile) => {
-  console.log(`🤖 Generating course catalog with GROQ (primary)...`);
-
   const result = await generateCourseCatalogGroq(userProfile);
   if (!result.success) {
     console.warn("⚠️ Groq failed, trying Gemini as fallback...");
@@ -58,8 +56,6 @@ export const generateCourseStructure = async (
   courseDescription,
   modulesCount,
 ) => {
-  console.log(`🤖 Generating course structure with GROQ (primary)...`);
-
   const result = await generateCourseStructureGroq(
     courseTitle,
     courseDescription,
@@ -83,8 +79,6 @@ export const generateLessonContent = async (
   moduleTitle,
   lessonTitle,
 ) => {
-  console.log(`🤖 Generating lesson content with GROQ (primary)...`);
-
   const result = await generateLessonContentGroq(
     lessonTitle,
     moduleTitle,
@@ -110,10 +104,6 @@ export const generateAssessment = async (
   lessonContent,
   assessmentType = "coding_challenge",
 ) => {
-  console.log(
-    `🤖 Generating ${assessmentType} assessment with GROQ (primary)...`,
-  );
-
   const result = await generateAssessmentGroq(
     lessonTitle,
     lessonContent,
@@ -145,7 +135,6 @@ export const reviewSubmission = async (
     };
   }
 
-  console.log("🤖 Reviewing submission with Gemini...");
   return await reviewSubmissionGemini(assessmentType, question, userAnswer);
 };
 
@@ -153,8 +142,6 @@ export const reviewSubmission = async (
  * Review entire assessment submission in a single batch call (Groq primary, Gemini fallback)
  */
 export const reviewSubmissionBatch = async (questions, submissionAnswers) => {
-  console.log(`🤖 Batch reviewing with GROQ (primary)...`);
-
   const result = await reviewSubmissionBatchGroq(questions, submissionAnswers);
   if (!result.success || !result.review) {
     console.warn("⚠️ Groq failed, trying Gemini as fallback...");

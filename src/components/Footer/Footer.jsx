@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Trophy, Github, Twitter, Linkedin } from "lucide-react";
+import { Github, Twitter, Linkedin } from "lucide-react";
+import logoImage from "../../assets/logo.jpeg";
 import styles from "./Footer.module.css";
 
 const Footer = () => {
@@ -11,7 +12,11 @@ const Footer = () => {
           {/* Brand Section */}
           <div className={styles.brandSection}>
             <Link to="/" className={styles.brand}>
-              <Trophy className={styles.brandIcon} />
+              <img
+                src={logoImage}
+                alt="Level Up"
+                className={styles.brandIcon}
+              />
               <span className={styles.brandText}>Level Up</span>
             </Link>
             <p className={styles.brandDescription}>

@@ -3,6 +3,7 @@ import Layout from "./components/Layout/Layout";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AuthRoute from "./components/AuthRoute/AuthRoute";
 import HomeRoute from "./components/HomeRoute/HomeRoute";
+import OnboardingRoute from "./components/OnboardingRoute/OnboardingRoute";
 import Landing from "./pages/Landing/Landing";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
@@ -55,9 +56,9 @@ export const router = createBrowserRouter([
       {
         path: "onboarding",
         Component: () => (
-          <ProtectedRoute>
+          <OnboardingRoute>
             <Onboarding />
-          </ProtectedRoute>
+          </OnboardingRoute>
         ),
       },
       {

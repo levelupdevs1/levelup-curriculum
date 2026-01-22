@@ -2,7 +2,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
   User,
-  Trophy,
   Coins,
   ChevronDown,
   BookOpen,
@@ -11,6 +10,7 @@ import {
   LogOut,
   Menu,
 } from "lucide-react";
+import logoImage from "../../assets/logo.jpeg";
 import { useUser } from "../../hooks/useUser";
 import { useAIToken } from "../../hooks/useAIToken";
 import Button from "../Button/Button";
@@ -89,7 +89,7 @@ const Header = () => {
             to={isAuthenticated ? "/dashboard" : "/landing"}
             className={styles.mobileLogo}
           >
-            <Trophy className={styles.logoIcon} />
+            <img src={logoImage} alt="Level Up" className={styles.logoIcon} />
           </NavLink>
         </div>
 
@@ -99,7 +99,7 @@ const Header = () => {
             to={isAuthenticated ? "/dashboard" : "/landing"}
             className={styles.logo}
           >
-            <Trophy className={styles.logoIcon} />
+            <img src={logoImage} alt="Level Up" className={styles.logoIcon} />
             <span className={styles.logoText}>Level Up</span>
           </NavLink>
 
