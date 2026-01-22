@@ -49,6 +49,7 @@ const AILessonViewer = () => {
   const [submission, setSubmission] = useState({});
   const [review, setReview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [isNext, setIsNext] = useState(false);
   const [isChooseYourPath, setIsChooseYourPath] = useState(false);
   const hasGeneratedRef = useRef(false);
 
@@ -404,6 +405,8 @@ const AILessonViewer = () => {
       };
 
       // Save to database directly and wait for it
+      setIsNext(true);
+      loadingBar.start();
       try {
         const result = await updateCourse(courseId, {
           progress: progressUpdate,
@@ -420,6 +423,9 @@ const AILessonViewer = () => {
         }
       } catch {
         // Error saving progress
+      } finally {
+        setIsNext(false);
+        loadingBar.complete();
       }
     }
 
@@ -555,7 +561,11 @@ const AILessonViewer = () => {
                     <span className={styles.navTextFull}>Lesson</span>
                   </Button>
                 )}
-                <Button variant="primary" onClick={handleNextLesson}>
+                <Button
+                  variant="primary"
+                  onClick={handleNextLesson}
+                  disabled={isNext}
+                >
                   <span className={styles.navText}>Next</span>
                   <span className={styles.navTextFull}> Lesson</span>
                   <ChevronRight size={18} />
