@@ -40,7 +40,8 @@ export const UserProvider = ({ children }) => {
           // Merge AI profile data (XP, level) with user profile
           const mergedProfile = {
             ...userProfile,
-            total_experience: aiProfile?.total_experience || 0,
+            total_experience:
+              aiProfile?.total_experience || userProfile?.total_points || 0,
             current_level:
               aiProfile?.current_level || userProfile?.current_level || 1,
             platform_tokens_balance: aiProfile?.platform_tokens_balance || 0,
@@ -97,7 +98,8 @@ export const UserProvider = ({ children }) => {
         // Merge AI profile data (XP, level) with user profile
         const mergedProfile = {
           ...userProfile,
-          total_experience: aiProfile?.total_experience || 0,
+          total_experience:
+            aiProfile?.total_experience || userProfile?.total_points || 0,
           current_level:
             aiProfile?.current_level || userProfile?.current_level || 1,
           platform_tokens_balance: aiProfile?.platform_tokens_balance || 0,

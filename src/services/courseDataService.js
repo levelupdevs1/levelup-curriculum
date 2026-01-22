@@ -6,6 +6,13 @@ import { generateCourseStructure } from "./aiServiceReal";
  */
 export const saveUserProfile = async (userId, profileData) => {
   try {
+    // Get user's current XP from users table (foundation progress)
+    const { data: userData } = await supabase
+      .from("users")
+      .select("total_points, current_level")
+      .eq("id", userId)
+      .single();
+
     const { data, error } = await supabase
       .from("ai_user_profiles")
       .upsert(
@@ -18,6 +25,8 @@ export const saveUserProfile = async (userId, profileData) => {
           learning_style: profileData.learning_style,
           custom_interests: profileData.custom_interests || null,
           onboarding_completed: true,
+          total_experience: userData?.total_points || 0,
+          current_level: userData?.current_level || 1,
           updated_at: new Date().toISOString(),
         },
         {
