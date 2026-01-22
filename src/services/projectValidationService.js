@@ -95,8 +95,7 @@ export const parseGitHubUrl = (url) => {
         };
       }
     }
-  } catch (error) {
-  }
+  } catch (error) {}
 
   return null;
 };
@@ -192,8 +191,7 @@ export const fetchRepoInfo = async (owner, repo, token = null) => {
       if (langsResponse.ok) {
         languages = await langsResponse.json();
       }
-    } catch (langError) {
-    }
+    } catch (langError) {}
 
     return {
       success: true,
@@ -804,8 +802,7 @@ export const analyzeLiveUrl = async (url, repoInfo = null) => {
             .slice(0, 2000);
         }
       }
-    } catch (fetchError) {
-    }
+    } catch (fetchError) {}
 
     return {
       valid: true,
