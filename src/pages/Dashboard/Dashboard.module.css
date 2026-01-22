@@ -718,12 +718,15 @@
   }
 
   .pagination {
-    flex-direction: column;
     gap: 16px;
   }
 
+  .pageButtonText {
+    display: none;
+  }
+
   .pageNumbers {
-    order: -1;
+    display: none;
   }
 }
 

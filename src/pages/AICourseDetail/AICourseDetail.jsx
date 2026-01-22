@@ -8,6 +8,7 @@ import {
   AI_TOKEN_COSTS,
 } from "../../services/aiServiceReal";
 import { updateCourse } from "../../services/courseDataService";
+import { ChevronLeft, CheckCircle2, Circle, Lock } from "lucide-react";
 import Button from "../../components/Button/Button";
 import Card from "../../components/Card/Card";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
@@ -164,7 +165,9 @@ const AICourseDetail = () => {
     );
     const completedLessons = course?.progress?.completedLessons?.length || 0;
 
-    return totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
+    const result =
+      totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
+    return result > 100 ? 100 : result;
   };
 
   if (loading) {
@@ -186,12 +189,10 @@ const AICourseDetail = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <Button variant="secondary" onClick={() => navigate("/course-catalog")}>
-          Back to Catalog
+          <ChevronLeft size={18} />
+          <span className={styles.backText}>Back</span>
+          <span className={styles.backTextFull}>to Catalog</span>
         </Button>
-        <div className={styles.tokenDisplay}>
-          <span className={styles.tokenLabel}>AI Tokens:</span>
-          <span className={styles.tokenValue}>{tokensRemaining}</span>
-        </div>
       </div>
 
       <Card className={styles.courseHeader}>
@@ -250,7 +251,14 @@ const AICourseDetail = () => {
                       key={lessonIndex}
                       className={`${styles.lessonItem} ${
                         !unlocked ? styles.locked : ""
-                      } ${completed ? styles.completed : ""}`}
+                      }`}
+                      onClick={
+                        unlocked
+                          ? () =>
+                              startLesson(moduleIndex, lessonIndex, lesson.id)
+                          : undefined
+                      }
+                      style={{ cursor: unlocked ? "pointer" : "not-allowed" }}
                     >
                       <div className={styles.lessonInfo}>
                         <h3>{lesson.title}</h3>
@@ -260,21 +268,21 @@ const AICourseDetail = () => {
                         </div>
                       </div>
 
-                      {unlocked ? (
-                        <Button
-                          variant={completed ? "secondary" : "primary"}
-                          onClick={() =>
-                            startLesson(moduleIndex, lessonIndex, lesson.id)
-                          }
-                        >
-                          {completed ? "Review" : "Start"}
-                        </Button>
-                      ) : (
-                        <div className={styles.lockedBadge}>Locked</div>
-                      )}
+                      <div className={styles.lessonStatus}>
+                        {!unlocked ? (
+                          <Lock size={24} className={styles.lockedIcon} />
+                        ) : completed ? (
+                          <CheckCircle2
+                            size={24}
+                            className={styles.completedIcon}
+                          />
+                        ) : (
+                          <Circle size={24} className={styles.activeIcon} />
+                        )}
+                      </div>
                     </div>
                   );
-                })}
+                })}  
               </div>
             </Card>
           ))}

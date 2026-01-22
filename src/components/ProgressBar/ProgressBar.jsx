@@ -11,6 +11,8 @@ const ProgressBar = ({
   backgroundColor = "#e5e7eb",
 }) => {
   const percentage = Math.min(Math.max((progress / max) * 100, 0), 100);
+  const isCompleted = percentage >= 100;
+  const fillColor = isCompleted ? "#10b981" : color;
 
   return (
     <div className={styles.progressContainer}>
@@ -33,7 +35,7 @@ const ProgressBar = ({
           className={styles.progressFill}
           style={{
             width: `${percentage}%`,
-            backgroundColor: color,
+            backgroundColor: fillColor,
           }}
         />
       </div>

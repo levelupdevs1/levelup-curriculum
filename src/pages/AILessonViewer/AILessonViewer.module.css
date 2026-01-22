@@ -448,6 +448,11 @@
   display: flex;
   gap: 12px;
   align-items: center;
+  width: 100%;
+}
+
+.completedActions button:first-child {
+  margin-right: auto;
 }
 
 .assessmentContent {
@@ -915,10 +920,11 @@
   }
 
   .header {
-    flex-direction: column;
     gap: 12px;
-    align-items: stretch;
-    margin-bottom: 20px;
+  }
+
+  .header button {
+    padding-block: 8px;
   }
 
   .tokenDisplay {
@@ -1014,20 +1020,20 @@
 
   .lessonActions button,
   .completedActions button {
-    flex: 1;
+    /* flex: 1; */
     min-width: 140px;
   }
 
   .assessmentActions,
   .reviewActions {
-    flex-direction: column;
+    /* flex-direction: column; */
     gap: 12px;
   }
 
-  .assessmentActions button,
+  /* .assessmentActions button,
   .reviewActions button {
     width: 100%;
-  }
+  } */
 
   .questions {
     gap: 24px;
@@ -1137,29 +1143,29 @@
 @media (max-width: 480px) {
   .lessonCard,
   .assessmentCard {
-    padding: 16px;
+    padding: 20px;
   }
 
   .lessonCard h1,
   .assessmentCard h1 {
-    font-size: 20px;
+    font-size: 22px;
     line-height: 1.3;
   }
 
   .markdownContent {
-    font-size: 14px;
+    font-size: 15px;
   }
 
   .markdownContent h1 {
-    font-size: 20px;
+    font-size: 22px;
   }
 
   .markdownContent h2 {
-    font-size: 18px;
+    font-size: 19px;
   }
 
   .markdownContent h3 {
-    font-size: 16px;
+    font-size: 17px;
   }
 
   .markdownContent pre {
@@ -1172,20 +1178,20 @@
   .objectives,
   .takeaways,
   .resources {
-    padding: 12px 14px;
+    padding: 14px 16px;
     margin: 16px 0;
   }
 
   .objectives h3,
   .takeaways h3,
   .resources h3 {
-    font-size: 14px;
+    font-size: 15px;
     margin-bottom: 10px;
   }
 
   .objectives li,
   .takeaways li {
-    font-size: 13px;
+    font-size: 14px;
     padding: 4px 0;
   }
 
@@ -1211,32 +1217,31 @@
 
   .lessonActions,
   .completedActions {
-    flex-direction: column;
-    gap: 8px;
+    gap: 10px;
   }
 
   .lessonActions button,
   .completedActions button {
-    width: 100%;
+    /* width: 100%; */
     min-width: 0;
-    padding: 12px 20px;
-    font-size: 14px;
-  }
-
-  .question {
-    padding: 12px;
-  }
-
-  .question h3 {
+    padding: 14px 22px;
     font-size: 15px;
   }
 
+  .question {
+    padding: 14px;
+  }
+
+  .question h3 {
+    font-size: 16px;
+  }
+
   .option {
-    padding: 8px;
+    padding: 10px;
   }
 
   .option span {
-    font-size: 13px;
+    font-size: 14px;
   }
 
   .codeInput,
@@ -1246,17 +1251,17 @@
   }
 
   .reviewHeader {
-    padding: 12px;
+    padding: 16px;
   }
 
   .resultIndicator {
     flex-direction: column;
     align-items: flex-start;
-    gap: 8px;
+    gap: 10px;
   }
 
   .resultIndicator h2 {
-    font-size: 18px;
+    font-size: 19px;
   }
 
   .resultIndicator .score {
@@ -1303,5 +1308,20 @@
 
   .levelUpClose {
     font-size: 20px;
+  }
+
+  /* Hide full back button text on mobile */
+  .backTextFull {
+    display: none;
+  }
+
+  /* Hide button text on mobile, show only icons */
+  .buttonText {
+    display: none;
+  }
+
+  /* Hide full navigation text on mobile */
+  .navTextFull {
+    display: none;
   }
 }

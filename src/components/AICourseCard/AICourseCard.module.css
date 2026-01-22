@@ -78,6 +78,82 @@
   color: #991b1b;
 }
 
+.completionBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: #10b981;
+  color: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+  z-index: 2;
+}
+
+.completionBadge svg {
+  stroke-width: 3;
+}
+
+.circularProgress {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+}
+
+.circularProgress.completed {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.completedCircle {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #10b981;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+}
+
+.completedCircle svg {
+  color: #ffffff;
+}
+
+.progressRing {
+  transform: rotate(-90deg);
+}
+
+.progressRingCircle {
+  transition: stroke-dashoffset 0.3s ease;
+}
+
+.progressRingProgress {
+  transition: stroke-dashoffset 0.3s ease;
+  stroke-linecap: round;
+}
+
+.progressText {
+  position: absolute;
+  font-size: 13px;
+  font-weight: 700;
+  color: #4a154b;
+}
+
 .description {
   font-size: 14px;
   color: #6b7280;
@@ -317,77 +393,77 @@
 /* Small Mobile */
 @media (max-width: 480px) {
   .courseImage {
-    height: 130px;
+    height: 140px;
   }
 
   .courseContent {
-    padding: 12px;
+    padding: 14px;
   }
 
   .courseTitle {
-    font-size: 15px;
+    font-size: 16px;
     min-height: 40px;
   }
 
   .difficulty {
-    padding: 4px 8px;
-    font-size: 9px;
-    top: 8px;
-    right: 8px;
+    padding: 5px 10px;
+    font-size: 10px;
+    top: 10px;
+    right: 10px;
   }
 
   .description {
-    font-size: 12px;
+    font-size: 14px;
     min-height: 51px;
   }
 
   .courseStats {
-    gap: 8px;
-    padding: 10px;
+    gap: 10px;
+    padding: 12px;
   }
 
   .statLabel {
-    font-size: 10px;
-  }
-
-  .statValue {
-    font-size: 14px;
-  }
-
-  .progressSection {
-    padding: 10px;
-  }
-
-  .progressHeader {
     font-size: 11px;
   }
 
+  .statValue {
+    font-size: 15px;
+  }
+
+  .progressSection {
+    padding: 12px;
+  }
+
+  .progressHeader {
+    font-size: 12px;
+  }
+
   .progressBar {
-    height: 4px;
+    height: 5px;
   }
 
   .tags {
-    padding: 10px;
-    gap: 5px;
-    min-height: 36px;
+    padding: 12px;
+    gap: 6px;
+    min-height: 38px;
   }
 
   .tag {
-    font-size: 10px;
-    padding: 2px 8px;
+    font-size: 11px;
+    padding: 3px 10px;
     max-width: 120px;
   }
 
   .tagOverflow {
-    font-size: 10px;
-    padding: 2px 8px;
-    min-width: 30px;
+    font-size: 11px;
+    padding: 3px 10px;
+    min-width: 32px;
   }
 
   .actionButton {
-    width: calc(100% - 20px);
-    margin: 0 10px 10px 10px;
-    padding: 9px 14px;
-    font-size: 13px;
+    width: calc(100% - 24px);
+    margin: 0 12px 12px 12px;
+    padding: 11px 16px;
+    font-size: 14px;
   }
 }

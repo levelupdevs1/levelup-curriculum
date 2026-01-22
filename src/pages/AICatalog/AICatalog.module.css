@@ -488,14 +488,9 @@
   }
 
   .pagination {
-    flex-direction: column;
     gap: 12px;
     margin-top: 24px;
     padding-top: 20px;
-  }
-
-  .pageNumbers {
-    order: -1;
   }
 
   .pageButton {
@@ -524,123 +519,131 @@
 /* Small Mobile */
 @media (max-width: 480px) {
   .header h1 {
-    font-size: 20px;
+    font-size: 22px;
   }
 
   .header p {
-    font-size: 13px;
-  }
-
-  .tokenDisplay {
-    padding: 8px 12px;
-  }
-
-  .tokenLabel {
-    font-size: 12px;
-  }
-
-  .tokenValue {
     font-size: 14px;
   }
 
+  .tokenDisplay {
+    padding: 10px 14px;
+  }
+
+  .tokenLabel {
+    font-size: 13px;
+  }
+
+  .tokenValue {
+    font-size: 15px;
+  }
+
   .tab {
-    padding: 8px 14px;
-    font-size: 12px;
+    padding: 10px 16px;
+    font-size: 13px;
   }
 
   .courseImage {
-    height: 140px;
+    height: 150px;
   }
 
   .courseContent {
-    padding: 12px;
+    padding: 14px;
   }
 
   .courseTitle {
-    font-size: 15px;
+    font-size: 16px;
     min-height: 40px;
   }
 
   .courseHeader h3 {
-    font-size: 16px;
+    font-size: 17px;
     min-height: 42px;
   }
 
   .difficulty {
-    padding: 4px 8px;
-    font-size: 9px;
-    top: 8px;
-    right: 8px;
+    padding: 5px 10px;
+    font-size: 10px;
+    top: 10px;
+    right: 10px;
   }
 
   .description {
-    font-size: 12px;
+    font-size: 13px;
     min-height: 51px;
   }
 
   .courseStats {
-    gap: 8px;
-    padding: 10px;
+    gap: 10px;
+    padding: 12px;
   }
 
   .statLabel {
-    font-size: 10px;
+    font-size: 11px;
   }
 
   .statValue {
-    font-size: 14px;
+    font-size: 15px;
   }
 
   .tags {
-    padding: 10px;
-    gap: 5px;
-    min-height: 36px;
+    padding: 12px;
+    gap: 6px;
+    min-height: 38px;
   }
 
   .tag {
-    font-size: 10px;
-    padding: 2px 8px;
+    font-size: 11px;
+    padding: 3px 10px;
     max-width: 120px;
   }
 
   .tagOverflow {
-    font-size: 10px;
-    padding: 2px 8px;
-    min-width: 30px;
+    font-size: 11px;
+    padding: 3px 10px;
+    min-width: 32px;
   }
 
   .enrollButton {
-    width: calc(100% - 20px);
-    margin: 0 10px 10px 10px;
-    padding: 9px 14px;
-    font-size: 13px;
+    width: calc(100% - 24px);
+    margin: 0 12px 12px 12px;
+    padding: 11px 16px;
+    font-size: 14px;
   }
 
   .searchInput {
-    padding: 9px 10px 9px 38px;
-    font-size: 13px;
+    padding: 11px 12px 11px 40px;
+    font-size: 14px;
   }
 
   .searchIcon {
-    left: 10px;
-    font-size: 14px;
+    left: 12px;
+    font-size: 15px;
   }
 
   .filterSelect {
-    padding: 9px 34px 9px 34px;
-    font-size: 13px;
-    background-position: right 10px center;
-    background-size: 14px 14px;
+    padding: 11px 36px 11px 36px;
+    font-size: 14px;
+    background-position: right 12px center;
+    background-size: 15px 15px;
   }
 
   .filterIcon {
-    left: 10px;
-    font-size: 14px;
+    left: 12px;
+    font-size: 15px;
   }
 
   .pageButton {
     padding: 7px 12px;
     font-size: 12px;
+  }
+
+  .pageButtonText {
+    display: none;
+  }
+
+  .pageNumbers {
+    display: none;
   }
 
   .pageNumber {

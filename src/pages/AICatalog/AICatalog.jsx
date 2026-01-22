@@ -30,7 +30,7 @@ const AICatalog = () => {
     foundationCompleted,
     foundationCourse,
   } = useCourseGeneration();
-  const { useTokens: consumeTokens, tokensRemaining } = useAIToken();
+  const { useTokens: consumeTokens } = useAIToken();
   const loadingBar = useLoadingBar();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -234,10 +234,6 @@ const AICatalog = () => {
           <h1>Your Personalized Courses</h1>
           <p>Generated learning paths tailored to your goals</p>
         </div>
-        <div className={styles.tokenDisplay}>
-          <span className={styles.tokenLabel}>AI Tokens:</span>
-          <span className={styles.tokenValue}>{tokensRemaining}</span>
-        </div>
       </div>
 
       {/* Tabs */}
@@ -358,12 +354,45 @@ const AICatalog = () => {
           const isEnrolled =
             isFoundation || enrolledCourses.some((c) => c.id === course.id);
 
+          // Calculate progress for enrolled courses
+          let progress = 0;
+          if (isEnrolled) {
+            if (isFoundation && foundationCourse?.progress?.completedLessons) {
+              // Calculate progress for foundation course
+              const completedCount =
+                foundationCourse.progress.completedLessons.length;
+              const totalLessons =
+                course.modules?.reduce(
+                  (acc, mod) => acc + (mod.lessons?.length || 0),
+                  0,
+                ) || 1;
+              progress = Math.round((completedCount / totalLessons) * 100);
+            } else {
+              // Calculate progress for regular enrolled courses
+              const enrolledCourse = enrolledCourses.find(
+                (c) => c.id === course.id,
+              );
+              if (enrolledCourse?.progress?.completedLessons) {
+                const completedCount =
+                  enrolledCourse.progress.completedLessons.length;
+                const totalLessons =
+                  course.modules?.reduce(
+                    (acc, mod) => acc + (mod.lessons?.length || 0),
+                    0,
+                  ) || 1;
+                progress = Math.round((completedCount / totalLessons) * 100);
+              }
+            }
+          }
+
           return (
             <AICourseCard
               key={course.id}
               course={course}
               isEnrolled={isEnrolled}
               onAction={handleEnroll}
+              showProgress={isEnrolled}
+              progress={progress}
             />
           );
         })}
@@ -378,7 +407,7 @@ const AICatalog = () => {
             disabled={currentPage === 1}
           >
             <ChevronLeft size={20} />
-            Previous
+            <span className={styles.pageButtonText}>Prev</span>
           </button>
 
           <div className={styles.pageNumbers}>
@@ -400,7 +429,7 @@ const AICatalog = () => {
             }
             disabled={currentPage === totalPages}
           >
-            Next
+            <span className={styles.pageButtonText}>Next</span>
             <ChevronRight size={20} />
           </button>
         </div>

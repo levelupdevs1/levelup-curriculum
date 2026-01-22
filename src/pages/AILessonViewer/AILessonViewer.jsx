@@ -14,6 +14,7 @@ import { updateCourse } from "../../services/courseDataService";
 import { awardXP, TOKEN_REWARDS } from "../../services/platformTokenService";
 import { logResourceValidation } from "../../utils/resourceValidation";
 import { isChooseYourPathLesson } from "../../services/foundationCourseService";
+import { ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import Button from "../../components/Button/Button";
 import Card from "../../components/Card/Card";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
@@ -53,6 +54,7 @@ const AILessonViewer = () => {
     setReview(null);
     setSubmission({});
     setShowAssessment(false);
+    setAssessment(null);
     setError(null);
 
     // Prevent double execution in React StrictMode
@@ -601,7 +603,9 @@ const AILessonViewer = () => {
             variant="secondary"
             onClick={() => navigate(`/courses/${courseId}`)}
           >
-            Back to Course
+            <ChevronLeft size={18} />
+            <span className={styles.backText}>Back</span>
+            <span className={styles.backTextFull}>to Course</span>
           </Button>
         </div>
       </div>
@@ -650,12 +654,10 @@ const AILessonViewer = () => {
           variant="secondary"
           onClick={() => navigate(`/courses/${courseId}`)}
         >
-          Back to Course
+          <ChevronLeft size={18} />
+          <span className={styles.backText}>Back</span>
+          <span className={styles.backTextFull}>to Course</span>
         </Button>
-        <div className={styles.tokenDisplay}>
-          <span className={styles.tokenLabel}>AI Tokens:</span>
-          <span className={styles.tokenValue}>{tokensRemaining}</span>
-        </div>
       </div>
 
       {error && (
@@ -779,11 +781,15 @@ const AILessonViewer = () => {
               <div className={styles.completedActions}>
                 {(moduleIndex > 0 || lessonIndex > 0) && (
                   <Button variant="secondary" onClick={handlePrevLesson}>
-                    ← Previous Lesson
+                    <ChevronLeft size={18} />
+                    <span className={styles.navText}>Prev</span>
+                    <span className={styles.navTextFull}>ious Lesson</span>
                   </Button>
                 )}
                 <Button variant="primary" onClick={handleNextLesson}>
-                  Next Lesson →
+                  <span className={styles.navText}>Next</span>
+                  <span className={styles.navTextFull}> Lesson</span>
+                  <ChevronRight size={18} />
                 </Button>
               </div>
             ) : review?.passed ? (
@@ -791,17 +797,22 @@ const AILessonViewer = () => {
               <div className={styles.completedActions}>
                 {(moduleIndex > 0 || lessonIndex > 0) && (
                   <Button variant="secondary" onClick={handlePrevLesson}>
-                    ← Previous Lesson
+                    <ChevronLeft size={18} />
+                    <span className={styles.navText}>Prev</span>
+                    <span className={styles.navTextFull}>ious Lesson</span>
                   </Button>
                 )}
                 <Button
                   variant="secondary"
                   onClick={() => setShowAssessment(true)}
                 >
-                  View Feedback
+                  <Eye size={18} />
+                  <span className={styles.buttonText}>View Feedback</span>
                 </Button>
                 <Button variant="primary" onClick={handleNextLesson}>
-                  Next Lesson →
+                  <span className={styles.navText}>Next</span>
+                  <span className={styles.navTextFull}> Lesson</span>
+                  <ChevronRight size={18} />
                 </Button>
               </div>
             ) : (
@@ -996,14 +1007,16 @@ const AILessonViewer = () => {
                     variant="secondary"
                     onClick={() => setShowAssessment(false)}
                   >
-                    Back to Lesson
+                    <ChevronLeft size={18} />
+                    <span className={styles.backText}>Back</span>
+                    <span className={styles.backTextFull}>to Lesson</span>
                   </Button>
                   <Button
                     variant="primary"
                     onClick={handleSubmitAssessment}
                     disabled={submitting}
                   >
-                    {submitting ? "Submitting..." : "Submit Assessment"}
+                    {submitting ? "Submitting..." : "Submit"}
                   </Button>
                 </div>
               </>
@@ -1069,13 +1082,16 @@ const AILessonViewer = () => {
                 <div className={styles.reviewActions}>
                   {review.passed ? (
                     <>
-                      {(moduleIndex > 0 || lessonIndex > 0) && (
-                        <Button variant="secondary" onClick={handlePrevLesson}>
-                          ← Previous Lesson
-                        </Button>
-                      )}
+                      <Button
+                        variant="secondary"
+                        onClick={() => setShowAssessment(false)}
+                      >
+                        Close Feedback
+                      </Button>
                       <Button variant="primary" onClick={handleNextLesson}>
-                        Next Lesson
+                        <span className={styles.navText}>Next</span>
+                        <span className={styles.navTextFull}> Lesson</span>
+                        <ChevronRight size={18} />
                       </Button>
                     </>
                   ) : (

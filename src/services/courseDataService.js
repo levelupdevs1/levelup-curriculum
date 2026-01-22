@@ -122,7 +122,8 @@ export const getCourses = async (userId, status = null) => {
       .from("generated_courses")
       .select("*")
       .eq("user_id", userId)
-      .order("created_at", { ascending: false });
+      .order("enrolled_at", { ascending: true })
+      .order("estimated_hours", { ascending: true });
 
     if (status) {
       query = query.eq("status", status);

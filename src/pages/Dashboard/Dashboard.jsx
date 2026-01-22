@@ -2,6 +2,7 @@ import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../hooks/useUser";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
+import { getLevelProgress } from "../../services/platformTokenService";
 import {
   Trophy,
   BookOpen,
@@ -27,7 +28,6 @@ const Dashboard = () => {
     enrolledCourses: contextEnrolledCourses,
     generatedCourses,
     foundationCourse,
-    foundationCompleted,
     loading: coursesLoading,
   } = useCourseGeneration();
   const navigate = useNavigate();
@@ -46,11 +46,11 @@ const Dashboard = () => {
   const allCourses = useMemo(() => {
     const aiCourses = generatedCourses || [];
     // Add foundation course at the beginning if not completed
-    if (foundationCourse && !foundationCompleted) {
+    if (foundationCourse) {
       return [foundationCourse, ...aiCourses];
     }
     return aiCourses;
-  }, [generatedCourses, foundationCourse, foundationCompleted]);
+  }, [generatedCourses, foundationCourse]);
 
   const enrolledCourses = useMemo(() => {
     const enrolled =
@@ -119,14 +119,11 @@ const Dashboard = () => {
   ).length;
 
   // Calculate level progress - use total_experience (XP) from profile
-  const currentLevel = profile?.current_level || 1;
   const totalXP = profile?.total_experience || profile?.total_points || 0;
-
-  const xpForCurrentLevel = (currentLevel - 1) * 100;
-  const xpForNextLevel = currentLevel * 100;
-  const xpInCurrentLevel = totalXP - xpForCurrentLevel;
-  const xpNeededForNextLevel = xpForNextLevel - totalXP;
-  const levelProgress = Math.min((xpInCurrentLevel / 100) * 100, 100);
+  const levelData = getLevelProgress(totalXP);
+  const currentLevel = levelData.level;
+  const xpNeededForLevel = levelData.isMaxLevel ? 0 : levelData.xpNeeded - levelData.xpInLevel;
+  const levelProgress = levelData.progress;
 
   const stats = [
     {
@@ -182,7 +179,7 @@ const Dashboard = () => {
                 <span>Level {currentLevel} Progress</span>
               </div>
               <span className={styles.levelPoints}>
-                {xpInCurrentLevel} / 100 XP
+                {levelData.xpInLevel} / {levelData.xpNeeded} XP
               </span>
             </div>
             <ProgressBar
@@ -193,8 +190,9 @@ const Dashboard = () => {
               color="#ffd700"
             />
             <p className={styles.levelHint}>
-              Earn {xpNeededForNextLevel > 0 ? xpNeededForNextLevel : 0} more XP
-              to reach Level {currentLevel + 1}
+              {levelData.isMaxLevel
+                ? "Max level reached!"
+                : `Earn ${xpNeededForLevel} more XP to reach Level ${currentLevel + 1}`}
             </p>
           </Card>
 
@@ -239,9 +237,6 @@ const Dashboard = () => {
                         course={course}
                         isEnrolled={isEnrolled}
                         onAction={handleContinueLearning}
-                        actionLabel={
-                          isEnrolled ? "Continue Learning" : "Start Course"
-                        }
                         showProgress={isEnrolled}
                         progress={progress}
                       />
@@ -260,7 +255,7 @@ const Dashboard = () => {
                       disabled={currentPage === 1}
                     >
                       <ChevronLeft size={20} />
-                      Previous
+                      <span className={styles.pageButtonText}>Prev</span>
                     </button>
 
                     <div className={styles.pageNumbers}>
@@ -284,7 +279,7 @@ const Dashboard = () => {
                       }
                       disabled={currentPage === totalPages}
                     >
-                      Next
+                      <span className={styles.pageButtonText}>Next</span>
                       <ChevronRight size={20} />
                     </button>
                   </div>
