@@ -282,7 +282,7 @@ const AICourseDetail = () => {
                       </div>
                     </div>
                   );
-                })}  
+                })}
               </div>
             </Card>
           ))}

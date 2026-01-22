@@ -122,7 +122,9 @@ const Dashboard = () => {
   const totalXP = profile?.total_experience || profile?.total_points || 0;
   const levelData = getLevelProgress(totalXP);
   const currentLevel = levelData.level;
-  const xpNeededForLevel = levelData.isMaxLevel ? 0 : levelData.xpNeeded - levelData.xpInLevel;
+  const xpNeededForLevel = levelData.isMaxLevel
+    ? 0
+    : levelData.xpNeeded - levelData.xpInLevel;
   const levelProgress = levelData.progress;
 
   const stats = [
