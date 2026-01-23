@@ -78,16 +78,15 @@ const Register = () => {
       const result = await register(
         formData.name,
         formData.email,
-        formData.password,
+        formData.password
       );
 
       if (result.success) {
-        // Redirect based on onboarding status
-        // New users go to onboarding, returning users (edge case) go to dashboard
-        const destination = hasCompletedOnboarding
-          ? "/dashboard"
-          : "/onboarding";
-        navigate(destination, { replace: true });
+        // Redirect to email confirmation page
+        navigate("/confirm-email", {
+          replace: true,
+          state: { email: formData.email },
+        });
       } else {
         setErrors({
           general: result.error || "Registration failed. Please try again.",

@@ -43,7 +43,7 @@ const Dashboard = () => {
       contextEnrolledCourses?.length > 0
         ? contextEnrolledCourses
         : allCourses.filter((c) => c.status === "enrolled"),
-    [contextEnrolledCourses, allCourses],
+    [contextEnrolledCourses, allCourses]
   );
 
   // Pagination
@@ -66,7 +66,7 @@ const Dashboard = () => {
       const modules = course.modules || course.structure?.modules || [];
       const totalLessons = modules.reduce(
         (sum, m) => sum + (m.lessons?.length || 0),
-        0,
+        0
       );
       return totalLessons > 0
         ? Math.round((completedCount / totalLessons) * 100)
@@ -91,10 +91,10 @@ const Dashboard = () => {
   // Calculate stats
   const totalLessonsCompleted = enrolledCourses.reduce(
     (sum, c) => sum + getCompletedLessons(c),
-    0,
+    0
   );
   const completedCoursesCount = enrolledCourses.filter(
-    (c) => getCourseProgress(c) === 100,
+    (c) => getCourseProgress(c) === 100
   ).length;
 
   // Calculate level progress - use total_experience (XP) from profile
@@ -158,7 +158,7 @@ const Dashboard = () => {
             <div className={styles.levelHeader}>
               <div className={styles.levelInfo}>
                 <Zap size={20} className={styles.levelIcon} />
-                <span>Level {currentLevel} Progress</span>
+                <span>Level {currentLevel}</span>
               </div>
               <span className={styles.levelPoints}>
                 {xpInCurrentLevel} / 100 XP
@@ -208,7 +208,7 @@ const Dashboard = () => {
                 <div className={styles.courseGrid}>
                   {paginatedCourses.map((course) => {
                     const isEnrolled = enrolledCourses.some(
-                      (c) => c.id === course.id,
+                      (c) => c.id === course.id
                     );
                     const progress = isEnrolled ? getCourseProgress(course) : 0;
 
@@ -247,12 +247,14 @@ const Dashboard = () => {
                         (page) => (
                           <button
                             key={page}
-                            className={`${styles.pageNumber} ${currentPage === page ? styles.activePage : ""}`}
+                            className={`${styles.pageNumber} ${
+                              currentPage === page ? styles.activePage : ""
+                            }`}
                             onClick={() => setCurrentPage(page)}
                           >
                             {page}
                           </button>
-                        ),
+                        )
                       )}
                     </div>
 
