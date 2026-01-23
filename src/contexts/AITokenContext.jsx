@@ -4,7 +4,7 @@ import { useUser } from "../hooks/useUser";
 import {
   getAITokens,
   initializeAITokens,
-  useAITokens as useTokensFromDB,
+  useAITokens as consumeAITokensDB,
   updateAITokenTier,
 } from "../services/aiTokenService";
 
@@ -114,16 +114,13 @@ export const AITokenProvider = ({ children }) => {
       : config.monthlyLimit;
   }, [tier]);
 
-  const canUseTokens = useCallback(
-    (amount) => {
-      // DISABLED: No token restrictions during development
-      return true;
-      // return getTokensRemaining() >= amount;
-    },
-    [getTokensRemaining],
-  );
+  const canUseTokens = useCallback(() => {
+    // DISABLED: No token restrictions during development
+    return true;
+    // return getTokensRemaining() >= amount;
+  }, []);
 
-  const useTokens = useCallback(
+  const consumeTokens = useCallback(
     async (amount, operation = "unknown", operationDetails = null) => {
       if (!user?.id) {
         return {
@@ -140,7 +137,7 @@ export const AITokenProvider = ({ children }) => {
       //   };
       // }
 
-      const { success, data, error } = await useTokensFromDB(
+      const { success, data, error } = await consumeAITokensDB(
         user.id,
         amount,
         operation,
@@ -161,7 +158,7 @@ export const AITokenProvider = ({ children }) => {
         error: error || "Failed to use tokens",
       };
     },
-    [canUseTokens, user],
+    [user],
   );
 
   const upgradeTier = useCallback(
@@ -200,7 +197,7 @@ export const AITokenProvider = ({ children }) => {
     resetPeriod: TIER_CONFIGS[tier].resetPeriod,
     loading,
     canUseTokens,
-    useTokens,
+    consumeTokens,
     upgradeTier,
     checkAndResetTokens,
   };

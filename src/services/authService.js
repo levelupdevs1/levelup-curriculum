@@ -16,9 +16,6 @@ export const supabase = isSupabaseConfigured
 if (import.meta.env.DEV) {
   if (!isSupabaseConfigured) {
     console.log("📖 READ-ONLY MODE: Supabase not configured");
-    console.log("   - Courses will load from local files");
-    console.log("   - Auth and database features disabled");
-    console.log("   - Perfect for testing course content!");
   } else {
     console.log("🔧 DEV MODE: Connected to Supabase");
     console.log("   - Full features enabled");

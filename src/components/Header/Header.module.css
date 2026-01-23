@@ -21,6 +21,7 @@
   display: flex;
   align-items: center;
   gap: 32px;
+  flex: 1;
 }
 
 .logo {
@@ -35,6 +36,9 @@
 
 .logoIcon {
   color: #ffd700;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
 }
 
 .logoText {
@@ -45,6 +49,8 @@
   display: flex;
   align-items: center;
   gap: 24px;
+  flex: 1;
+  justify-content: center;
 }
 
 .navLink {
@@ -86,6 +92,27 @@
   gap: 8px;
 }
 
+.tokenDisplay {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  background-color: transparent;
+  border: 1px solid #4a154b;
+  border-radius: 8px;
+  margin-right: 8px;
+}
+
+.tokenIcon {
+  color: #4a154b;
+}
+
+.tokenValue {
+  font-size: 14px;
+  font-weight: 700;
+  color: #4a154b;
+}
+
 .authButtons {
   display: flex;
   align-items: center;
@@ -109,7 +136,8 @@
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
     0 4px 6px -2px rgba(0, 0, 0, 0.05);
   min-width: 200px;
   z-index: 50;

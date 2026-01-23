@@ -6,6 +6,13 @@ import { generateCourseStructure } from "./aiServiceReal";
  */
 export const saveUserProfile = async (userId, profileData) => {
   try {
+    // Get user's current XP from users table (foundation progress)
+    const { data: userData } = await supabase
+      .from("users")
+      .select("total_points, current_level")
+      .eq("id", userId)
+      .single();
+
     const { data, error } = await supabase
       .from("ai_user_profiles")
       .upsert(
@@ -18,6 +25,8 @@ export const saveUserProfile = async (userId, profileData) => {
           learning_style: profileData.learning_style,
           custom_interests: profileData.custom_interests || null,
           onboarding_completed: true,
+          total_experience: userData?.total_points || 0,
+          current_level: userData?.current_level || 1,
           updated_at: new Date().toISOString(),
         },
         {
@@ -122,7 +131,8 @@ export const getCourses = async (userId, status = null) => {
       .from("generated_courses")
       .select("*")
       .eq("user_id", userId)
-      .order("created_at", { ascending: false });
+      .order("enrolled_at", { ascending: true })
+      .order("estimated_hours", { ascending: true });
 
     if (status) {
       query = query.eq("status", status);
@@ -160,9 +170,6 @@ export const enrollInCourse = async (courseId, userId) => {
       Array.isArray(course.modules) &&
       course.modules.length > 0
     ) {
-      console.log(
-        "ℹ️ Already enrolled with structure, returning existing course",
-      );
       return { success: true, data: course };
     }
 
@@ -173,8 +180,6 @@ export const enrollInCourse = async (courseId, userId) => {
       course.modules.length === 0;
 
     if (needsStructure) {
-      console.log("🔨 Generating course structure for:", course.title);
-
       // Generate course structure with AI
       const structureResult = await generateCourseStructure(
         course.title,
@@ -190,7 +195,6 @@ export const enrollInCourse = async (courseId, userId) => {
 
       // AI returns modules directly at structureResult.modules, NOT structureResult.structure.modules
       const modules = structureResult.modules || [];
-      console.log("✅ Generated", modules.length, "modules");
 
       if (modules.length === 0) {
         console.error("❌ AI returned 0 modules - this is a critical error");
@@ -217,15 +221,10 @@ export const enrollInCourse = async (courseId, userId) => {
 
       if (updateError) throw updateError;
 
-      console.log(
-        "💾 Saved to database, modules count:",
-        updatedCourse.modules?.length,
-      );
       return { success: true, data: updatedCourse };
     }
 
     // Structure already exists, just update enrollment status
-    console.log("ℹ️ Structure exists, updating enrollment status only");
     const { data, error } = await supabase
       .from("generated_courses")
       .update({

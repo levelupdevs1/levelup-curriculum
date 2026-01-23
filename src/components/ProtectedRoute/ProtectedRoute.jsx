@@ -24,11 +24,8 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Check if user needs to complete onboarding (skip for onboarding page itself)
-  if (!hasCompletedOnboarding && location.pathname !== "/onboarding") {
-    return <Navigate to="/onboarding" replace />;
-  }
-
+  // No forced redirects - users can navigate freely
+  // Foundation completion is only checked when generating AI courses
   return children;
 };
 

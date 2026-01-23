@@ -95,9 +95,7 @@ export const parseGitHubUrl = (url) => {
         };
       }
     }
-  } catch (error) {
-    console.error("URL parsing error:", error);
-  }
+  } catch (error) {}
 
   return null;
 };
@@ -193,9 +191,7 @@ export const fetchRepoInfo = async (owner, repo, token = null) => {
       if (langsResponse.ok) {
         languages = await langsResponse.json();
       }
-    } catch (langError) {
-      console.warn("Failed to fetch languages:", langError);
-    }
+    } catch (langError) {}
 
     return {
       success: true,
@@ -335,10 +331,6 @@ export const fetchFileContent = async (
           continue; // Try next branch
         }
       } catch (error) {
-        console.warn(
-          `Failed to fetch ${filePath} from branch ${branchName}:`,
-          error,
-        );
         continue;
       }
     }
@@ -579,13 +571,9 @@ const prioritizeFiles = (files, repoInfo) => {
  */
 export const fetchProjectContent = async (repoUrl, options = {}) => {
   const startTime = Date.now();
-  console.log(
-    `🚀 [Anti-Hallucination] Starting rigorous review for: ${repoUrl}`,
-  );
 
   const parsed = parseGitHubUrl(repoUrl);
   if (!parsed) {
-    console.error(`❌ [Anti-Hallucination] Invalid GitHub URL: ${repoUrl}`);
     return {
       success: false,
       error:
@@ -595,10 +583,8 @@ export const fetchProjectContent = async (repoUrl, options = {}) => {
   }
 
   const { owner, repo, branch } = parsed;
-  console.log(`📦 [Anti-Hallucination] Repository: ${owner}/${repo}`);
 
   // 1. Fetch comprehensive repository info
-  console.log(`📡 [Anti-Hallucination] Fetching repository metadata...`);
   const repoInfo = await fetchRepoInfo(owner, repo, options.githubToken);
   if (!repoInfo.success) {
     return {
@@ -618,17 +604,7 @@ export const fetchProjectContent = async (repoUrl, options = {}) => {
     };
   }
 
-  console.log(`✅ [Anti-Hallucination] Repository metadata loaded`);
-  console.log(
-    `   Languages: ${Object.keys(repoInfo.data.languages).join(", ") || "None detected"}`,
-  );
-  console.log(`   Default branch: ${repoInfo.data.defaultBranch}`);
-  console.log(
-    `   Last updated: ${new Date(repoInfo.data.pushedAt).toLocaleDateString()}`,
-  );
-
   // 2. Fetch complete file tree
-  console.log(`🌲 [Anti-Hallucination] Fetching repository structure...`);
   const tree = await fetchRepoTree(
     owner,
     repo,
@@ -645,10 +621,6 @@ export const fetchProjectContent = async (repoUrl, options = {}) => {
     };
   }
 
-  console.log(`📂 [Anti-Hallucination] Found ${tree.totalFiles} total files`);
-  console.log(`   Directories: ${tree.directories.length}`);
-  console.log(`   Tree SHA: ${tree.sha.substring(0, 8)}...`);
-
   // 3. Filter for relevant files
   const relevantFiles = tree.files.filter((file) => {
     // Skip ignored patterns
@@ -658,18 +630,11 @@ export const fetchProjectContent = async (repoUrl, options = {}) => {
 
     // Skip very large files (>1MB)
     if (file.size > 1000000) {
-      console.warn(
-        `⚠️ Skipping large file: ${file.path} (${Math.round(file.size / 1024)}KB)`,
-      );
       return false;
     }
 
     return true;
   });
-
-  console.log(
-    `🎯 [Anti-Hallucination] ${relevantFiles.length} relevant files after filtering`,
-  );
 
   if (relevantFiles.length === 0) {
     return {
@@ -684,20 +649,8 @@ export const fetchProjectContent = async (repoUrl, options = {}) => {
 
   // 4. Prioritize and select files for review
   const filesToFetch = prioritizeFiles(relevantFiles, repoInfo.data);
-  console.log(
-    `📥 [Anti-Hallucination] Selected ${filesToFetch.length} files for in-depth review:`,
-  );
-
-  // Log file selection
-  filesToFetch.slice(0, 10).forEach((file, i) => {
-    console.log(`   ${i + 1}. ${file}`);
-  });
-  if (filesToFetch.length > 10) {
-    console.log(`   ... and ${filesToFetch.length - 10} more files`);
-  }
 
   // 5. Fetch file contents with progress tracking
-  console.log(`📄 [Anti-Hallucination] Fetching file contents...`);
   const fileContents = [];
   let totalContentLength = 0;
   let fetchedFiles = 0;
@@ -705,7 +658,6 @@ export const fetchProjectContent = async (repoUrl, options = {}) => {
 
   for (const filePath of filesToFetch) {
     if (totalContentLength >= MAX_TOTAL_CONTENT_LENGTH) {
-      console.log(`⚠️ [Anti-Hallucination] Content limit reached, stopping`);
       break;
     }
 
@@ -742,22 +694,10 @@ export const fetchProjectContent = async (repoUrl, options = {}) => {
 
       totalContentLength += contentToAdd.length;
       fetchedFiles++;
-
-      if (fetchedFiles % 5 === 0) {
-        console.log(
-          `   📊 Progress: ${fetchedFiles}/${filesToFetch.length} files, ${Math.round(totalContentLength / 1024)}KB`,
-        );
-      }
     } else {
       skippedFiles++;
     }
   }
-
-  console.log(
-    `✅ [Anti-Hallucination] Successfully fetched ${fetchedFiles} files`,
-  );
-  console.log(`   Total content: ${Math.round(totalContentLength / 1024)}KB`);
-  console.log(`   Skipped: ${skippedFiles} files`);
 
   if (fileContents.length === 0) {
     return {
@@ -784,8 +724,6 @@ export const fetchProjectContent = async (repoUrl, options = {}) => {
       : 0;
 
   const elapsedTime = Date.now() - startTime;
-  console.log(`⏱️ [Anti-Hallucination] Review completed in ${elapsedTime}ms`);
-  console.log(`📊 [Anti-Hallucination] Code coverage: ${coveragePercentage}%`);
 
   return {
     success: true,
@@ -816,7 +754,6 @@ export const analyzeLiveUrl = async (url, repoInfo = null) => {
   if (!url) return null;
 
   try {
-    console.log(`🌐 [LiveURL] Analyzing: ${url}`);
     const validation = await validateUrl(url, 15000);
 
     if (!validation.valid) {
@@ -865,9 +802,7 @@ export const analyzeLiveUrl = async (url, repoInfo = null) => {
             .slice(0, 2000);
         }
       }
-    } catch (fetchError) {
-      console.warn(`Could not fetch page content: ${fetchError.message}`);
-    }
+    } catch (fetchError) {}
 
     return {
       valid: true,
@@ -1037,15 +972,6 @@ export const validateProjectSubmission = async (
   requirements,
   options = {},
 ) => {
-  console.log("🚀 [ValidationPipeline] Starting anti-hallucination validation");
-  console.log("📎 Submission:", {
-    repoUrl: submission.repoUrl || submission.githubUrl,
-    liveUrl: submission.liveUrl,
-    otherFields: Object.keys(submission).filter(
-      (k) => !["repoUrl", "githubUrl", "liveUrl"].includes(k),
-    ),
-  });
-
   const results = {
     repoValidation: null,
     liveUrlAnalysis: null,
@@ -1061,8 +987,6 @@ export const validateProjectSubmission = async (
 
   // Validate repository
   if (repoUrl) {
-    console.log(`🔗 [ValidationPipeline] Repository URL: ${repoUrl}`);
-
     // Basic URL validation
     const parsed = parseGitHubUrl(repoUrl);
     if (!parsed) {
@@ -1088,7 +1012,6 @@ export const validateProjectSubmission = async (
 
   // Analyze live URL if provided
   if (liveUrl) {
-    console.log(`🌐 [ValidationPipeline] Live URL: ${liveUrl}`);
     results.liveUrlAnalysis = await analyzeLiveUrl(
       liveUrl,
       results.projectContent?.repoInfo,
@@ -1143,15 +1066,6 @@ DO NOT attempt to review without code evidence.
 DO NOT make assumptions about the project.
 DO NOT provide partial scores.`;
   }
-
-  console.log(`✅ [ValidationPipeline] Validation complete`);
-  console.log(`   Ready for review: ${results.readyForReview}`);
-  console.log(
-    `   Files fetched: ${results.projectContent?.files?.length || 0}`,
-  );
-  console.log(
-    `   Content length: ${results.formattedContent?.length || 0} chars`,
-  );
 
   return results;
 };

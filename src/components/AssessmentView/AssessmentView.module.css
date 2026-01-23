@@ -1,0 +1,301 @@
+.assessmentContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.assessmentCard {
+  padding: 40px;
+}
+
+.assessmentCard h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 16px 0;
+}
+
+.description {
+  font-size: 16px;
+  color: #6b7280;
+  margin: 0 0 8px 0;
+}
+
+.passingScore {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a154b;
+  margin: 0 0 32px 0;
+  padding-bottom: 24px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.questions {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+.question {
+  padding: 24px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+}
+
+.question h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 16px 0;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background-color: #ffffff;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.option:hover {
+  border-color: #4a154b;
+}
+
+.option input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.option span {
+  flex: 1;
+  font-size: 16px;
+  color: #374151;
+}
+
+.codeInput,
+.textInput {
+  width: 100%;
+  padding: 16px;
+  font-size: 14px;
+  font-family: "Monaco", "Menlo", "Courier New", monospace;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  resize: vertical;
+  margin-bottom: 16px;
+}
+
+.codeInput {
+  background-color: #1f2937;
+  color: #f9fafb;
+}
+
+.textInput {
+  background-color: #ffffff;
+  color: #111827;
+}
+
+.codeInput:focus,
+.textInput:focus {
+  outline: none;
+  border-color: #4a154b;
+}
+
+.points {
+  font-size: 14px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.assessmentActions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+}
+
+/* Project Assessment Styles */
+.projectSubmission {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.projectRequirements,
+.stretchGoals {
+  padding: 16px;
+  background-color: #f9fafb;
+  border-radius: 8px;
+}
+
+.projectRequirements h4,
+.stretchGoals h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.projectRequirements ul,
+.stretchGoals ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.projectRequirements li,
+.stretchGoals li {
+  margin-bottom: 8px;
+  color: #374151;
+}
+
+.urlInput {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.urlInput:focus {
+  outline: none;
+  border-color: #4a154b;
+  box-shadow: 0 0 0 3px rgba(74, 21, 75, 0.1);
+}
+
+/* Code Challenge Hints */
+.hints {
+  margin-top: 12px;
+  padding: 12px;
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+}
+
+.hints summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: #92400e;
+  user-select: none;
+}
+
+.hints summary:hover {
+  color: #78350f;
+}
+
+.hints ul {
+  margin: 8px 0 0 0;
+  padding-left: 20px;
+}
+
+.hints li {
+  color: #92400e;
+  margin-bottom: 4px;
+}
+
+@media (max-width: 768px) {
+  .assessmentCard {
+    padding: 20px;
+  }
+
+  .assessmentCard h1 {
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+
+  .description {
+    font-size: 14px;
+  }
+
+  .passingScore {
+    font-size: 13px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+  }
+
+  .questions {
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+
+  .question {
+    padding: 16px;
+  }
+
+  .question h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .options {
+    gap: 10px;
+  }
+
+  .option {
+    padding: 10px;
+  }
+
+  .option span {
+    font-size: 14px;
+  }
+
+  .codeInput,
+  .textInput {
+    padding: 12px;
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  .assessmentActions {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .assessmentCard {
+    padding: 20px;
+  }
+
+  .assessmentCard h1 {
+    font-size: 22px;
+    line-height: 1.3;
+  }
+
+  .question {
+    padding: 14px;
+  }
+
+  .question h3 {
+    font-size: 16px;
+  }
+
+  .option {
+    padding: 10px;
+  }
+
+  .option span {
+    font-size: 14px;
+  }
+
+  .codeInput,
+  .textInput {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  /* Hide full back button text on mobile */
+  .backTextFull {
+    display: none;
+  }
+}

@@ -87,18 +87,14 @@ const CourseCatalog = () => {
   const handleEnroll = async (courseId) => {
     setEnrollingCourseId(courseId);
     try {
-      console.log("📝 Enrolling in course:", courseId);
       const result = await enrollInCourse(courseId);
 
       if (result.success) {
-        console.log("✅ Enrollment successful, navigating to course...");
         // Navigate to course detail after successful enrollment
         navigate(`/courses/${courseId}`);
-      } else {
-        console.error("❌ Enrollment failed:", result.error);
       }
     } catch (error) {
-      console.error("Failed to enroll in course:", error);
+      // Error handled silently
     } finally {
       setEnrollingCourseId(null);
     }

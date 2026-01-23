@@ -31,14 +31,13 @@ export const loadAllCourses = async () => {
     }
   }
 
-  console.log(`📚 Loaded ${courses.length} courses from local files`);
   return courses;
 };
 
 export const loadLesson = async (courseId, moduleId, lessonId) => {
   try {
     const response = await fetch(
-      `/src/courses/${courseId}/${moduleId}/${lessonId}.md`
+      `/src/courses/${courseId}/${moduleId}/${lessonId}.md`,
     );
     if (!response.ok) {
       throw new Error(`Failed to fetch ${lessonId}`);
@@ -47,5 +46,32 @@ export const loadLesson = async (courseId, moduleId, lessonId) => {
   } catch (error) {
     console.error(`Error loading lesson ${lessonId}:`, error);
     throw new Error(`Lesson ${lessonId} not found`);
+  }
+};
+
+/**
+ * Load foundation course lesson content from filePath
+ * The filePath is relative to the foundation course directory
+ */
+export const loadFoundationLesson = async (filePath) => {
+  try {
+    // Use Vite's import.meta.glob for dynamic loading of markdown files
+    const lessonModules = import.meta.glob("../courses/foundation/**/*.md", {
+      query: "?raw",
+      import: "default",
+    });
+
+    // Build the full import path
+    const fullPath = `../courses/foundation/${filePath}`;
+
+    if (lessonModules[fullPath]) {
+      const content = await lessonModules[fullPath]();
+      return content;
+    }
+
+    throw new Error(`Lesson file not found: ${filePath}`);
+  } catch (error) {
+    console.error(`Error loading foundation lesson ${filePath}:`, error);
+    throw new Error(`Foundation lesson not found: ${filePath}`);
   }
 };

@@ -95,19 +95,15 @@ const CourseDetail = () => {
   const handleEnroll = async () => {
     setEnrolling(true);
     try {
-      console.log("📝 Enrolling in course from detail page...");
       const result = await enrollInCourse(courseId);
 
       if (result.success && result.data?.modules?.[0]?.lessons?.[0]) {
-        console.log("✅ Enrolled, navigating to first lesson...");
         navigate(
           `/courses/${courseId}/lessons/${result.data.modules[0].lessons[0].id}`,
         );
-      } else if (!result.success) {
-        console.error("❌ Enrollment failed:", result.error);
       }
-    } catch (error) {
-      console.error("Failed to enroll:", error);
+    } catch {
+      // Error handled silently
     } finally {
       setEnrolling(false);
     }
@@ -186,8 +182,13 @@ const CourseDetail = () => {
               size="lg"
               onClick={course.isEnrolled ? handleContinueCourse : handleEnroll}
               icon={<Play size={20} />}
+              disabled={enrolling}
             >
-              {course.isEnrolled ? "Continue Course" : "Enroll Now"}
+              {enrolling
+                ? "Enrolling..."
+                : course.isEnrolled
+                  ? "Continue Course"
+                  : "Enroll Now"}
             </Button>
           </div>
         </div>

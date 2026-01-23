@@ -144,58 +144,200 @@
   max-width: 200px;
 }
 
-@media (max-width: 768px) {
-  .container {
-    padding: 0;
-  }
-
-  .questionCard {
-    padding: 24px;
+/* Tablet */
+@media (max-width: 1024px) {
+  .content {
+    max-width: 650px;
+    padding: 0 20px;
   }
 
   .header h1 {
-    font-size: 24px;
+    font-size: 28px;
+  }
+
+  .questionCard {
+    padding: 32px;
   }
 
   .question {
-    font-size: 20px;
+    font-size: 22px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+    min-height: calc(100vh - 40px);
+  }
+
+  .content {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .header {
+    margin-bottom: 24px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+
+  .header p {
+    font-size: 14px;
+  }
+
+  .progressBar {
+    height: 6px;
+    margin-bottom: 24px;
+  }
+
+  .questionCard {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .stepIndicator {
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  .question {
+    font-size: 18px;
+    margin-bottom: 24px;
+    line-height: 1.4;
   }
 
   .options {
     grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .option {
+    padding: 12px 18px;
+    font-size: 15px;
+  }
+
+  .customInput {
+    gap: 12px;
+  }
+
+  .input {
+    padding: 10px 14px;
+    font-size: 15px;
+  }
+
+  .customActions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .customActions button {
+    width: 100%;
+  }
+
+  .selectedAnswer {
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .navigation {
+    gap: 12px;
+    flex-direction: column;
   }
 
   .navigation button {
+    width: 100%;
     max-width: none;
+    padding: 12px 20px;
+    font-size: 14px;
   }
-}
 
-/* Modal Styles */
-.modalContent {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
+  .modalContent {
+    gap: 12px;
+  }
 
-.modalContent p {
-  margin: 0;
-  color: #4b5563;
-  line-height: 1.6;
-}
+  .modalContent p {
+    font-size: 14px;
+  }
 
-.modalActions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  margin-top: 8px;
-}
-
-@media (max-width: 480px) {
   .modalActions {
     flex-direction: column;
+    gap: 10px;
   }
 
   .modalActions button {
     width: 100%;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 480px) {
+  .container {
+    padding: 20px;
+  }
+
+  .header {
+    margin-bottom: 24px;
+  }
+
+  .header h1 {
+    font-size: 22px;
+  }
+
+  .header p {
+    font-size: 14px;
+  }
+
+  .progressBar {
+    height: 6px;
+    margin-bottom: 24px;
+  }
+
+  .questionCard {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .stepIndicator {
+    font-size: 13px;
+    margin-bottom: 12px;
+  }
+
+  .question {
+    font-size: 18px;
+    margin-bottom: 24px;
+  }
+
+  .options {
+    gap: 10px;
+  }
+
+  .option {
+    padding: 12px 18px;
+    font-size: 15px;
+  }
+
+  .input {
+    padding: 11px 14px;
+    font-size: 15px;
+  }
+
+  .selectedAnswer {
+    margin-top: 20px;
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .navigation button {
+    padding: 12px 18px;
+    font-size: 14px;
+  }
+
+  .modalContent p {
+    font-size: 14px;
   }
 }

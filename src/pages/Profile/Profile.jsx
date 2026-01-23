@@ -23,7 +23,7 @@ import ProgressBar from "../../components/ProgressBar/ProgressBar";
 import styles from "./Profile.module.css";
 
 const Profile = () => {
-  const { user, profile, logout } = useUser();
+  const { user, profile, logout, hasCompletedOnboarding } = useUser();
   const {
     generatedCourses,
     enrolledCourses: contextEnrolledCourses,
@@ -124,15 +124,17 @@ const Profile = () => {
               <p className={styles.profileEmail}>{user?.email}</p>
             </div>
             <div className={styles.profileActions}>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  navigate("/onboarding", { state: { from: "/profile" } })
-                }
-              >
-                Update Preferences
-              </Button>
+              {hasCompletedOnboarding && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    navigate("/onboarding", { state: { from: "/profile" } })
+                  }
+                >
+                  Update Preferences
+                </Button>
+              )}
             </div>
           </div>
 
@@ -220,70 +222,90 @@ const Profile = () => {
             {/* Learning Profile Tab */}
             {activeTab === "overview" && (
               <div className={styles.overviewSection}>
-                <div className={styles.preferencesList}>
-                  <div className={styles.preferenceItem}>
-                    <div className={styles.preferenceIcon}>
-                      <Target size={20} />
+                {hasCompletedOnboarding ? (
+                  <>
+                    <div className={styles.preferencesList}>
+                      <div className={styles.preferenceItem}>
+                        <div className={styles.preferenceIcon}>
+                          <Target size={20} />
+                        </div>
+                        <div className={styles.preferenceInfo}>
+                          <span className={styles.preferenceLabel}>
+                            Learning Goal
+                          </span>
+                          <span className={styles.preferenceValue}>
+                            {learningGoal}
+                          </span>
+                        </div>
+                      </div>
+                      <div className={styles.preferenceItem}>
+                        <div className={styles.preferenceIcon}>
+                          <Zap size={20} />
+                        </div>
+                        <div className={styles.preferenceInfo}>
+                          <span className={styles.preferenceLabel}>
+                            Skill Level
+                          </span>
+                          <span className={styles.preferenceValue}>
+                            {skillLevel}
+                          </span>
+                        </div>
+                      </div>
+                      <div className={styles.preferenceItem}>
+                        <div className={styles.preferenceIcon}>
+                          <Clock size={20} />
+                        </div>
+                        <div className={styles.preferenceInfo}>
+                          <span className={styles.preferenceLabel}>
+                            Time Commitment
+                          </span>
+                          <span className={styles.preferenceValue}>
+                            {timeCommitment}
+                          </span>
+                        </div>
+                      </div>
+                      <div className={styles.preferenceItem}>
+                        <div className={styles.preferenceIcon}>
+                          <BookOpen size={20} />
+                        </div>
+                        <div className={styles.preferenceInfo}>
+                          <span className={styles.preferenceLabel}>
+                            Learning Style
+                          </span>
+                          <span className={styles.preferenceValue}>
+                            {learningStyle}
+                          </span>
+                        </div>
+                      </div>
                     </div>
-                    <div className={styles.preferenceInfo}>
-                      <span className={styles.preferenceLabel}>
-                        Learning Goal
-                      </span>
-                      <span className={styles.preferenceValue}>
-                        {learningGoal}
-                      </span>
+                    <div className={styles.updatePreferences}>
+                      <Button
+                        variant="secondary"
+                        onClick={() =>
+                          navigate("/onboarding", {
+                            state: { from: "/profile" },
+                          })
+                        }
+                      >
+                        Update Learning Preferences
+                      </Button>
                     </div>
+                  </>
+                ) : (
+                  <div className={styles.emptyState}>
+                    <Target size={48} className={styles.emptyIcon} />
+                    <p className={styles.emptyText}>
+                      Complete the Foundation course and choose your learning
+                      path to set your preferences
+                    </p>
+                    <Button
+                      variant="primary"
+                      onClick={() => navigate("/dashboard")}
+                    >
+                      Go to Dashboard
+                    </Button>
                   </div>
-                  <div className={styles.preferenceItem}>
-                    <div className={styles.preferenceIcon}>
-                      <Zap size={20} />
-                    </div>
-                    <div className={styles.preferenceInfo}>
-                      <span className={styles.preferenceLabel}>
-                        Skill Level
-                      </span>
-                      <span className={styles.preferenceValue}>
-                        {skillLevel}
-                      </span>
-                    </div>
-                  </div>
-                  <div className={styles.preferenceItem}>
-                    <div className={styles.preferenceIcon}>
-                      <Clock size={20} />
-                    </div>
-                    <div className={styles.preferenceInfo}>
-                      <span className={styles.preferenceLabel}>
-                        Time Commitment
-                      </span>
-                      <span className={styles.preferenceValue}>
-                        {timeCommitment}
-                      </span>
-                    </div>
-                  </div>
-                  <div className={styles.preferenceItem}>
-                    <div className={styles.preferenceIcon}>
-                      <BookOpen size={20} />
-                    </div>
-                    <div className={styles.preferenceInfo}>
-                      <span className={styles.preferenceLabel}>
-                        Learning Style
-                      </span>
-                      <span className={styles.preferenceValue}>
-                        {learningStyle}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className={styles.updatePreferences}>
-                  <Button
-                    variant="secondary"
-                    onClick={() =>
-                      navigate("/onboarding", { state: { from: "/profile" } })
-                    }
-                  >
-                    Update Learning Preferences
-                  </Button>
-                </div>
+                )}
               </div>
             )}
 
@@ -376,7 +398,7 @@ const Profile = () => {
                         Regenerate Courses
                       </h4>
                       <p className={styles.settingDescription}>
-                        Get new AI-generated courses based on your preferences
+                        Get new Generated courses based on your preferences
                       </p>
                     </div>
                     <Button

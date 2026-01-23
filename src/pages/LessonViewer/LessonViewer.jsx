@@ -38,11 +38,16 @@ import styles from "./LessonViewer.module.css";
 const LessonViewer = () => {
   const { courseId, lessonId } = useParams();
   const { user, profile, refreshProfile } = useUser();
-  const { generatedCourses } = useCourseGeneration();
+  const { generatedCourses, foundationCourse } = useCourseGeneration();
   const navigate = useNavigate();
 
-  // Find course and lesson from AI-generated courses
-  const course = generatedCourses?.find((c) => c.id === courseId);
+  // Check if this is the foundation course
+  const isFoundationCourse = courseId === "foundation";
+
+  // Find course and lesson from AI-generated courses OR foundation course
+  const course = isFoundationCourse
+    ? foundationCourse
+    : generatedCourses?.find((c) => c.id === courseId);
   const lesson = course?.modules
     ?.flatMap((m) => m.lessons)
     .find((l) => l.id === lessonId);

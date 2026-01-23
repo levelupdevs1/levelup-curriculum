@@ -1,5 +1,6 @@
 import Card from "../Card/Card";
 import Button from "../Button/Button";
+import { CheckCircle2 } from "lucide-react";
 import courseDefaultImage from "../../assets/course-default.svg";
 import styles from "./AICourseCard.module.css";
 
@@ -19,6 +20,8 @@ const AICourseCard = ({
 
   // Calculate progress if not provided
   const displayProgress = showProgress ? progress : 0;
+  const isCompleted = showProgress && displayProgress >= 100;
+  const cappedProgress = Math.min(displayProgress, 100); // Cap at 100 for circle calculation
 
   return (
     <Card className={styles.courseCard} onClick={handleClick}>
@@ -29,6 +32,47 @@ const AICourseCard = ({
         >
           {course.difficulty || "Beginner"}
         </span>
+        {showProgress && (
+          <div
+            className={`${styles.circularProgress} ${isCompleted ? styles.completed : ""}`}
+          >
+            {isCompleted ? (
+              <>
+                <div className={styles.completedCircle}>
+                  <CheckCircle2 size={24} strokeWidth={2.5} />
+                </div>
+              </>
+            ) : (
+              <>
+                <svg className={styles.progressRing} width="60" height="60">
+                  <circle
+                    className={styles.progressRingCircle}
+                    stroke="#e5e7eb"
+                    strokeWidth="4"
+                    fill="transparent"
+                    r="26"
+                    cx="30"
+                    cy="30"
+                  />
+                  <circle
+                    className={styles.progressRingProgress}
+                    stroke="#ffd700"
+                    strokeWidth="4"
+                    fill="transparent"
+                    r="26"
+                    cx="30"
+                    cy="30"
+                    style={{
+                      strokeDasharray: `${2 * Math.PI * 26}`,
+                      strokeDashoffset: `${2 * Math.PI * 26 * (1 - cappedProgress / 100)}`,
+                    }}
+                  />
+                </svg>
+                <span className={styles.progressText}>{displayProgress}%</span>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       <div className={styles.courseContent}>
@@ -57,21 +101,6 @@ const AICourseCard = ({
         </div>
       </div>
 
-      {showProgress && (
-        <div className={styles.progressSection}>
-          <div className={styles.progressHeader}>
-            <span>Progress</span>
-            <span>{displayProgress}%</span>
-          </div>
-          <div className={styles.progressBar}>
-            <div
-              className={styles.progressFill}
-              style={{ width: `${displayProgress}%` }}
-            />
-          </div>
-        </div>
-      )}
-
       <div className={styles.tags}>
         {Array.isArray(course.tags) &&
           course.tags.slice(0, 2).map((tag) => (
@@ -90,14 +119,19 @@ const AICourseCard = ({
       </div>
 
       <Button
-        variant={isEnrolled ? "secondary" : "primary"}
+        variant={isCompleted ? "success" : isEnrolled ? "secondary" : "primary"}
         onClick={(e) => {
           e.stopPropagation();
           handleClick();
         }}
         className={styles.actionButton}
       >
-        {actionLabel || (isEnrolled ? "Continue Learning" : "Enroll Now")}
+        {actionLabel ||
+          (isCompleted
+            ? "Review Course"
+            : isEnrolled
+              ? "Continue Learning"
+              : "Enroll Now")}
       </Button>
     </Card>
   );

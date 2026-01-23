@@ -2,20 +2,14 @@ import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../hooks/useUser";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
-import {
-  Trophy,
-  BookOpen,
-  Flame,
-  Star,
-  Zap,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { getLevelProgress } from "../../services/platformTokenService";
+import { Trophy, BookOpen, Flame, Star, Zap } from "lucide-react";
 import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
 import ProgressBar from "../../components/ProgressBar/ProgressBar";
 import Card from "../../components/Card/Card";
 import Button from "../../components/Button/Button";
 import AICourseCard from "../../components/AICourseCard/AICourseCard";
+import Pagination from "../../components/Pagination/Pagination";
 import styles from "./Dashboard.module.css";
 import StatCard from "../../components/StatCard/StatCard";
 
@@ -23,8 +17,12 @@ const COURSES_PER_PAGE = 6;
 
 const Dashboard = () => {
   const { user, profile, refreshProfile } = useUser();
-  const { enrolledCourses: contextEnrolledCourses, generatedCourses } =
-    useCourseGeneration();
+  const {
+    enrolledCourses: contextEnrolledCourses,
+    generatedCourses,
+    foundationCourse,
+    loading: coursesLoading,
+  } = useCourseGeneration();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -37,14 +35,30 @@ const Dashboard = () => {
   }, [user]);
 
   // Show all personalized courses on dashboard (not just enrolled)
-  const allCourses = useMemo(() => generatedCourses || [], [generatedCourses]);
-  const enrolledCourses = useMemo(
-    () =>
+  // Include foundation course if it exists and is not completed
+  const allCourses = useMemo(() => {
+    const aiCourses = generatedCourses || [];
+    // Add foundation course at the beginning if not completed
+    if (foundationCourse) {
+      return [foundationCourse, ...aiCourses];
+    }
+    return aiCourses;
+  }, [generatedCourses, foundationCourse]);
+
+  const enrolledCourses = useMemo(() => {
+    const enrolled =
       contextEnrolledCourses?.length > 0
         ? contextEnrolledCourses
-        : allCourses.filter((c) => c.status === "enrolled"),
-    [contextEnrolledCourses, allCourses]
-  );
+        : allCourses.filter((c) => c.status === "enrolled");
+    // Include foundation course in enrolled if exists
+    if (
+      foundationCourse &&
+      !enrolled.find((c) => c.id === foundationCourse.id)
+    ) {
+      return [foundationCourse, ...enrolled];
+    }
+    return enrolled;
+  }, [contextEnrolledCourses, allCourses, foundationCourse]);
 
   // Pagination
   const totalPages = Math.ceil(allCourses.length / COURSES_PER_PAGE);
@@ -98,14 +112,13 @@ const Dashboard = () => {
   ).length;
 
   // Calculate level progress - use total_experience (XP) from profile
-  const currentLevel = profile?.current_level || 1;
   const totalXP = profile?.total_experience || profile?.total_points || 0;
-
-  const xpForCurrentLevel = (currentLevel - 1) * 100;
-  const xpForNextLevel = currentLevel * 100;
-  const xpInCurrentLevel = totalXP - xpForCurrentLevel;
-  const xpNeededForNextLevel = xpForNextLevel - totalXP;
-  const levelProgress = Math.min((xpInCurrentLevel / 100) * 100, 100);
+  const levelData = getLevelProgress(totalXP);
+  const currentLevel = levelData.level;
+  const xpNeededForLevel = levelData.isMaxLevel
+    ? 0
+    : levelData.xpNeeded - levelData.xpInLevel;
+  const levelProgress = levelData.progress;
 
   const stats = [
     {
@@ -136,7 +149,7 @@ const Dashboard = () => {
 
   return (
     <div className={styles.dashboard}>
-      {!profile ? (
+      {!profile || coursesLoading ? (
         <LoadingSpinner size="lg" message="Loading your dashboard..." />
       ) : (
         <>
@@ -161,7 +174,7 @@ const Dashboard = () => {
                 <span>Level {currentLevel}</span>
               </div>
               <span className={styles.levelPoints}>
-                {xpInCurrentLevel} / 100 XP
+                {levelData.xpInLevel} / {levelData.xpNeeded} XP
               </span>
             </div>
             <ProgressBar
@@ -172,8 +185,11 @@ const Dashboard = () => {
               color="#ffd700"
             />
             <p className={styles.levelHint}>
-              Earn {xpNeededForNextLevel > 0 ? xpNeededForNextLevel : 0} more XP
-              to reach Level {currentLevel + 1}
+              {levelData.isMaxLevel
+                ? "Max level reached!"
+                : `Earn ${xpNeededForLevel} more XP to reach Level ${
+                    currentLevel + 1
+                  }`}
             </p>
           </Card>
 
@@ -218,9 +234,6 @@ const Dashboard = () => {
                         course={course}
                         isEnrolled={isEnrolled}
                         onAction={handleContinueLearning}
-                        actionLabel={
-                          isEnrolled ? "Continue Learning" : "Start Course"
-                        }
                         showProgress={isEnrolled}
                         progress={progress}
                       />
@@ -229,47 +242,11 @@ const Dashboard = () => {
                 </div>
 
                 {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className={styles.pagination}>
-                    <button
-                      className={styles.pageButton}
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.max(prev - 1, 1))
-                      }
-                      disabled={currentPage === 1}
-                    >
-                      <ChevronLeft size={20} />
-                      Previous
-                    </button>
-
-                    <div className={styles.pageNumbers}>
-                      {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                        (page) => (
-                          <button
-                            key={page}
-                            className={`${styles.pageNumber} ${
-                              currentPage === page ? styles.activePage : ""
-                            }`}
-                            onClick={() => setCurrentPage(page)}
-                          >
-                            {page}
-                          </button>
-                        )
-                      )}
-                    </div>
-
-                    <button
-                      className={styles.pageButton}
-                      onClick={() =>
-                        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                      }
-                      disabled={currentPage === totalPages}
-                    >
-                      Next
-                      <ChevronRight size={20} />
-                    </button>
-                  </div>
-                )}
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
               </>
             ) : (
               <Card className={styles.emptyState}>
