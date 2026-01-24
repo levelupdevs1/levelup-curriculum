@@ -60,7 +60,7 @@ const AICatalog = () => {
             (c) =>
               c.status === "enrolled" ||
               c.is_foundation ||
-              enrolledCourses.some((e) => e.id === c.id),
+              enrolledCourses.some((e) => e.id === c.id)
           )
         : allCourses;
 
@@ -70,7 +70,7 @@ const AICatalog = () => {
       courses = courses.filter(
         (course) =>
           course.title?.toLowerCase().includes(query) ||
-          course.description?.toLowerCase().includes(query),
+          course.description?.toLowerCase().includes(query)
       );
     }
 
@@ -78,7 +78,7 @@ const AICatalog = () => {
     if (difficultyFilter !== "All") {
       courses = courses.filter(
         (course) =>
-          course.difficulty?.toLowerCase() === difficultyFilter.toLowerCase(),
+          course.difficulty?.toLowerCase() === difficultyFilter.toLowerCase()
       );
     }
 
@@ -108,14 +108,14 @@ const AICatalog = () => {
     // Check if foundation course is completed first
     if (!foundationCompleted) {
       setError(
-        "Please complete the Foundation Software Development Course first before generating personalized courses.",
+        "Please complete the Foundation Software Development Course first before generating personalized courses."
       );
       return;
     }
 
     if (!isAIConfigured()) {
       setError(
-        "Gemini API not configured. Please add VITE_GEMINI_API_KEY to .env.local (free tier available at ai.google.dev)",
+        "Gemini API not configured. Please add VITE_GEMINI_API_KEY to .env.local (free tier available at ai.google.dev)"
       );
       return;
     }
@@ -135,20 +135,20 @@ const AICatalog = () => {
       const result = await generateCourseCatalog(userProfile);
 
       if (result.success) {
-        const tokenResult = await consumeTokens(
-          result.tokensUsed,
-          "generate_course_catalog",
-          { courses: result.courses.length, model: result.model },
-        );
+        // const tokenResult = await consumeTokens(
+        //   result.tokensUsed,
+        //   "generate_course_catalog",
+        //   { courses: result.courses.length, model: result.model },
+        // );
 
-        if (tokenResult.success) {
-          const addResult = await addGeneratedCourses(result.courses);
-          if (!addResult.success) {
-            setError(addResult.error || "Failed to save courses");
-          }
-        } else {
-          setError(tokenResult.error);
+        // if (tokenResult.success) {
+        const addResult = await addGeneratedCourses(result.courses);
+        if (!addResult.success) {
+          setError(addResult.error || "Failed to save courses");
         }
+        // } else {
+        //   setError(tokenResult.error);
+        // }
       } else {
         setError(result.error || "Failed to generate courses");
       }
@@ -234,14 +234,18 @@ const AICatalog = () => {
       {/* Tabs */}
       <div className={styles.tabs}>
         <button
-          className={`${styles.tab} ${activeTab === "all" ? styles.activeTab : ""}`}
+          className={`${styles.tab} ${
+            activeTab === "all" ? styles.activeTab : ""
+          }`}
           onClick={() => setActiveTab("all")}
         >
           All Courses (
           {(generatedCourses?.length || 0) + (foundationCourse ? 1 : 0)})
         </button>
         <button
-          className={`${styles.tab} ${activeTab === "enrolled" ? styles.activeTab : ""}`}
+          className={`${styles.tab} ${
+            activeTab === "enrolled" ? styles.activeTab : ""
+          }`}
           onClick={() => setActiveTab("enrolled")}
         >
           Enrolled (
@@ -345,13 +349,13 @@ const AICatalog = () => {
               const totalLessons =
                 course.modules?.reduce(
                   (acc, mod) => acc + (mod.lessons?.length || 0),
-                  0,
+                  0
                 ) || 1;
               progress = Math.round((completedCount / totalLessons) * 100);
             } else {
               // Calculate progress for regular enrolled courses
               const enrolledCourse = enrolledCourses.find(
-                (c) => c.id === course.id,
+                (c) => c.id === course.id
               );
               if (enrolledCourse?.progress?.completedLessons) {
                 const completedCount =
@@ -359,7 +363,7 @@ const AICatalog = () => {
                 const totalLessons =
                   course.modules?.reduce(
                     (acc, mod) => acc + (mod.lessons?.length || 0),
-                    0,
+                    0
                   ) || 1;
                 progress = Math.round((completedCount / totalLessons) * 100);
               }
