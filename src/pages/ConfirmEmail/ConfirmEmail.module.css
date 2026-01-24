@@ -1,156 +1,272 @@
 .confirmEmailPage {
   min-height: 100vh;
+  background-color: #f9fafb;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 0;
 }
 
 .container {
   width: 100%;
-  max-width: 600px;
+  max-width: 1200px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.leftSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brandSection {
+  max-width: 500px;
+}
+
+.brandSection h1 {
+  font-size: 42px;
+  font-weight: 700;
+  color: #4a154b;
+  margin: 0 0 16px 0;
+  line-height: 1.2;
+}
+
+.brandSection p {
+  font-size: 18px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.rightSection {
+  display: flex;
+  justify-content: center;
 }
 
 .confirmCard {
-  padding: 3rem;
-  text-align: center;
+  width: 100%;
+  max-width: 480px;
+  padding: 48px;
 }
 
-.iconWrapper {
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.iconContainer {
   position: relative;
-  display: inline-block;
-  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
 }
 
 .mailIcon {
-  color: #667eea;
+  color: #4a154b;
 }
 
 .checkIcon {
   position: absolute;
-  bottom: -5px;
-  right: -5px;
-  background: white;
-  border-radius: 50%;
+  bottom: -4px;
+  right: -4px;
   color: #10b981;
+  background-color: #ffffff;
+  border-radius: 50%;
 }
 
-.confirmCard h1 {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  color: #1f2937;
+.cardHeader {
+  text-align: center;
 }
 
-.subtitle {
-  font-size: 1.125rem;
+.cardHeader h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #4a154b;
+  margin: 0 0 12px 0;
+}
+
+.cardHeader p {
   color: #6b7280;
-  margin-bottom: 1rem;
-}
-
-.email {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #667eea;
-  margin-bottom: 2rem;
-  word-break: break-word;
-}
-
-.instructions {
-  background: #f9fafb;
-  border-radius: 12px;
-  padding: 1.5rem;
-  margin: 2rem 0;
-  text-align: left;
-}
-
-.instructions h3 {
-  font-size: 1.125rem;
-  margin-bottom: 1rem;
-  color: #1f2937;
-}
-
-.instructions ol {
   margin: 0;
-  padding-left: 1.5rem;
-}
-
-.instructions li {
-  margin-bottom: 0.75rem;
-  color: #4b5563;
   line-height: 1.6;
 }
 
-.instructions li:last-child {
-  margin-bottom: 0;
+.cardHeader strong {
+  color: #4a154b;
+  font-weight: 600;
+}
+
+.instructions {
+  width: 100%;
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.instructions h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #4a154b;
+  margin: 0 0 16px 0;
+}
+
+.stepsList {
+  list-style: none;
+  counter-reset: step-counter;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.stepsList li {
+  counter-increment: step-counter;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.stepsList li::before {
+  content: counter(step-counter);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background-color: #4a154b;
+  color: #ffffff;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
 }
 
 .helpSection {
-  margin-top: 2rem;
-  padding-top: 2rem;
-  border-top: 1px solid #e5e7eb;
+  width: 100%;
+  text-align: center;
 }
 
 .helpText {
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 1rem;
-}
-
-.helpList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  text-align: left;
-}
-
-.helpList li {
-  padding: 0.5rem 0;
   color: #6b7280;
-  font-size: 0.875rem;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
 }
 
-.helpList li::before {
-  content: "•";
-  color: #667eea;
-  font-weight: bold;
-  display: inline-block;
-  width: 1em;
-  margin-left: 1em;
+.actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
-.footer {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
+.actions a {
+  width: 100%;
+}
+
+.actions button {
+  width: 100%;
+}
+
+.cardFooter {
+  text-align: center;
+  margin-top: 32px;
+  padding-top: 24px;
   border-top: 1px solid #e5e7eb;
 }
 
-.loginLink {
-  color: #667eea;
+.cardFooter p {
+  color: #6b7280;
+  margin: 0;
+  font-size: 14px;
+}
+
+.supportLink {
+  color: #4a154b;
   text-decoration: none;
-  font-weight: 500;
-  transition: color 0.2s;
+  font-weight: 600;
+  transition: color 0.2s ease;
 }
 
-.loginLink:hover {
-  color: #5568d3;
-  text-decoration: underline;
+.supportLink:hover {
+  color: #ffd700;
 }
 
-@media (max-width: 640px) {
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+  .container {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    max-width: 500px;
+  }
+
+  .brandSection {
+    text-align: center;
+  }
+
+  .brandSection h1 {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 768px) {
+  .confirmEmailPage {
+    padding: 0;
+  }
+
+  .container {
+    gap: 32px;
+  }
+
+  .brandSection h1 {
+    font-size: 32px;
+  }
+
+  .brandSection p {
+    font-size: 16px;
+  }
+
   .confirmCard {
-    padding: 2rem 1.5rem;
+    padding: 32px 24px;
   }
 
-  .confirmCard h1 {
-    font-size: 1.5rem;
-  }
-
-  .email {
-    font-size: 1rem;
+  .cardHeader h2 {
+    font-size: 24px;
   }
 
   .instructions {
-    padding: 1rem;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .brandSection h1 {
+    font-size: 28px;
+  }
+
+  .cardHeader h2 {
+    font-size: 22px;
+  }
+
+  .confirmCard {
+    padding: 24px 20px;
+  }
+
+  .instructions {
+    padding: 16px;
+  }
+
+  .iconContainer {
+    transform: scale(0.9);
   }
 }

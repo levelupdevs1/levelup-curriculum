@@ -149,7 +149,7 @@ const Dashboard = () => {
 
   return (
     <div className={styles.dashboard}>
-      {!profile || coursesLoading ? (
+      {!profile && coursesLoading ? (
         <LoadingSpinner size="lg" message="Loading your dashboard..." />
       ) : (
         <>
