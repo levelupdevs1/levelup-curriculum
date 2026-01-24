@@ -257,14 +257,6 @@
           "type": "assignment",
           "filePath": "module-5-how-the-internet-works/assignment-5-flow-of-web-request.md",
           "points": 20
-        },
-        {
-          "id": "lesson-6-choose-your-path",
-          "title": "Choose Your Path",
-          "type": "lesson",
-          "filePath": "module-5-how-the-internet-works/lesson-6-choose-your-path.md",
-          "points": 50,
-          "isChooseYourPath": true
         }
       ]
     },
@@ -389,6 +381,110 @@
           "type": "assignment",
           "filePath": "module-7-how-to-ask-for-help/assignment-7-write-question.md",
           "points": 20
+        }
+      ]
+    },
+    {
+      "id": "module-8-code-organization",
+      "title": "Module 8: Code Organization & Best Practices",
+      "lessons": [
+        {
+          "id": "lesson-1-why-organization-matters",
+          "title": "Why code organization matters",
+          "type": "lesson",
+          "filePath": "module-8-code-organization/lesson-1-why-organization-matters.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-2-naming-conventions",
+          "title": "Naming conventions and readability",
+          "type": "lesson",
+          "filePath": "module-8-code-organization/lesson-2-naming-conventions.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-3-file-structure-basics",
+          "title": "File and folder structure basics",
+          "type": "lesson",
+          "filePath": "module-8-code-organization/lesson-3-file-structure-basics.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-4-coding-standards",
+          "title": "Introduction to coding standards",
+          "type": "lesson",
+          "filePath": "module-8-code-organization/lesson-4-coding-standards.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-5-dry-principle",
+          "title": "The DRY principle (Don't Repeat Yourself)",
+          "type": "lesson",
+          "filePath": "module-8-code-organization/lesson-5-dry-principle.md",
+          "points": 10
+        },
+        {
+          "id": "assignment-8-refactoring",
+          "title": "Assessment: Refactor a messy code structure into an organized one",
+          "type": "assignment",
+          "filePath": "module-8-code-organization/assignment-8-refactoring.md",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "id": "module-9-next-steps",
+      "title": "Module 9: Next Steps & Continued Learning",
+      "lessons": [
+        {
+          "id": "lesson-1-development-paths",
+          "title": "Overview of development paths (web, mobile, data, etc.)",
+          "type": "lesson",
+          "filePath": "module-9-next-steps/lesson-1-development-paths.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-2-learning-roadmap",
+          "title": "Building a learning roadmap",
+          "type": "lesson",
+          "filePath": "module-9-next-steps/lesson-2-learning-roadmap.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-3-building-in-public",
+          "title": "Building in public and portfolio thinking",
+          "type": "lesson",
+          "filePath": "module-9-next-steps/lesson-3-building-in-public.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-4-staying-current",
+          "title": "Staying current in tech",
+          "type": "lesson",
+          "filePath": "module-9-next-steps/lesson-4-staying-current.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-5-journey-ahead",
+          "title": "The journey ahead",
+          "type": "lesson",
+          "filePath": "module-9-next-steps/lesson-5-journey-ahead.md",
+          "points": 10
+        },
+        {
+          "id": "assignment-9-personal-roadmap",
+          "title": "Final Assessment: Create a personal learning roadmap and share it",
+          "type": "assignment",
+          "filePath": "module-9-next-steps/assignment-9-personal-roadmap.md",
+          "points": 20
+        },
+        {
+          "id": "lesson-6-choose-your-path",
+          "title": "Choose Your Path",
+          "type": "lesson",
+          "filePath": "module-9-next-steps/lesson-6-choose-your-path.md",
+          "points": 50,
+          "isChooseYourPath": true
         }
       ]
     }
