@@ -80,7 +80,7 @@ const Dashboard = () => {
       const modules = course.modules || course.structure?.modules || [];
       const totalLessons = modules.reduce(
         (sum, m) => sum + (m.lessons?.length || 0),
-        0,
+        0
       );
       return totalLessons > 0
         ? Math.round((completedCount / totalLessons) * 100)
@@ -105,10 +105,10 @@ const Dashboard = () => {
   // Calculate stats
   const totalLessonsCompleted = enrolledCourses.reduce(
     (sum, c) => sum + getCompletedLessons(c),
-    0,
+    0
   );
   const completedCoursesCount = enrolledCourses.filter(
-    (c) => getCourseProgress(c) === 100,
+    (c) => getCourseProgress(c) === 100
   ).length;
 
   // Calculate level progress - use total_experience (XP) from profile
@@ -149,7 +149,7 @@ const Dashboard = () => {
 
   return (
     <div className={styles.dashboard}>
-      {!profile || coursesLoading ? (
+      {!profile && coursesLoading ? (
         <LoadingSpinner size="lg" message="Loading your dashboard..." />
       ) : (
         <>
@@ -171,7 +171,7 @@ const Dashboard = () => {
             <div className={styles.levelHeader}>
               <div className={styles.levelInfo}>
                 <Zap size={20} className={styles.levelIcon} />
-                <span>Level {currentLevel} Progress</span>
+                <span>Level {currentLevel}</span>
               </div>
               <span className={styles.levelPoints}>
                 {levelData.xpInLevel} / {levelData.xpNeeded} XP
@@ -187,7 +187,9 @@ const Dashboard = () => {
             <p className={styles.levelHint}>
               {levelData.isMaxLevel
                 ? "Max level reached!"
-                : `Earn ${xpNeededForLevel} more XP to reach Level ${currentLevel + 1}`}
+                : `Earn ${xpNeededForLevel} more XP to reach Level ${
+                    currentLevel + 1
+                  }`}
             </p>
           </Card>
 
@@ -222,7 +224,7 @@ const Dashboard = () => {
                 <div className={styles.courseGrid}>
                   {paginatedCourses.map((course) => {
                     const isEnrolled = enrolledCourses.some(
-                      (c) => c.id === course.id,
+                      (c) => c.id === course.id
                     );
                     const progress = isEnrolled ? getCourseProgress(course) : 0;
 

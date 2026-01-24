@@ -78,12 +78,19 @@ const Register = () => {
       const result = await register(
         formData.name,
         formData.email,
-        formData.password,
+        formData.password
       );
 
       if (result.success) {
+        // Redirect to email confirmation page
+        console.log("confirming email");
+
+        navigate("/confirm-email", {
+          replace: true,
+          state: { email: formData.email },
+        });
         // New users go straight to dashboard (onboarding happens after foundation course)
-        navigate("/dashboard", { replace: true });
+        // navigate("/dashboard", { replace: true });
       } else {
         setErrors({
           general: result.error || "Registration failed. Please try again.",

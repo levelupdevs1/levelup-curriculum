@@ -7,6 +7,7 @@ import OnboardingRoute from "./components/OnboardingRoute/OnboardingRoute";
 import Landing from "./pages/Landing/Landing";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
+import ConfirmEmail from "./pages/ConfirmEmail/ConfirmEmail";
 import Onboarding from "./pages/Onboarding/Onboarding";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import AICatalog from "./pages/AICatalog/AICatalog";
@@ -50,6 +51,14 @@ export const router = createBrowserRouter([
         Component: () => (
           <AuthRoute>
             <Register />
+          </AuthRoute>
+        ),
+      },
+      {
+        path: "confirm-email",
+        Component: () => (
+          <AuthRoute>
+            <ConfirmEmail />
           </AuthRoute>
         ),
       },
