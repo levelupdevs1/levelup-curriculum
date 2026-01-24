@@ -1,4 +1,4 @@
-# Lesson 6: When to Ask for Help vs. When to Keep Trying
+# When to Ask for Help vs. When to Keep Trying
 
 ## The Big Idea
 

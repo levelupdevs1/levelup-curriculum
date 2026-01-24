@@ -465,13 +465,6 @@
           "points": 10
         },
         {
-          "id": "lesson-5-journey-ahead",
-          "title": "The journey ahead",
-          "type": "lesson",
-          "filePath": "module-9-next-steps/lesson-5-journey-ahead.md",
-          "points": 10
-        },
-        {
           "id": "assignment-9-personal-roadmap",
           "title": "Final Assessment: Create a personal learning roadmap and share it",
           "type": "assignment",
@@ -479,10 +472,10 @@
           "points": 20
         },
         {
-          "id": "lesson-6-choose-your-path",
+          "id": "lesson-5-choose-your-path",
           "title": "Choose Your Path",
           "type": "lesson",
-          "filePath": "module-9-next-steps/lesson-6-choose-your-path.md",
+          "filePath": "module-9-next-steps/lesson-5-choose-your-path.md",
           "points": 50,
           "isChooseYourPath": true
         }

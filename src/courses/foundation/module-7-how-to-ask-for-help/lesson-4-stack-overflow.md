@@ -1,4 +1,4 @@
-# Lesson 4: Stack Overflow Etiquette and Searching
+# Stack Overflow Etiquette and Searching
 
 ## The Big Idea
 
@@ -275,10 +275,3 @@ Learn the rules, follow them, and you'll get great answers.
 Now you understand Stack Overflow. But what makes a GREAT question?
 
 The next lesson: **Crafting a Good Question** teaches you to include a minimal reproducible example (MCVE) that makes answering easy.
-
-## Beginner-friendly resources
-
-- [Stack Overflow: How to ask a good question](https://stackoverflow.com/help/how-to-ask)
-- [YouTube: Stack Overflow for beginners](https://www.youtube.com/watch?v=oNlO3TrFHMk)
-- [Dev.to: Stack Overflow etiquette guide](https://dev.to/ben/welcome-to-stack-overflow-please-read-this-first-59kg)
-- [Medium: Getting help on Stack Overflow](https://medium.com/@davisryan6/how-to-ask-a-great-question-on-stack-overflow-d5c1fc05b37e)

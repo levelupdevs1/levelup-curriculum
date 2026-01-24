@@ -1,4 +1,4 @@
-# Lesson 2: Pseudocode and Planning Before Coding
+# Pseudocode and Planning Before Coding
 
 ## The Big Idea
 

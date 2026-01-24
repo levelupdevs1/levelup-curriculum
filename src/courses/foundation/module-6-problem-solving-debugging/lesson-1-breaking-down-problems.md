@@ -1,4 +1,4 @@
-# Lesson 1: Breaking Down Problems Into Smaller Pieces
+# Breaking Down Problems Into Smaller Pieces
 
 ## The Big Idea
 

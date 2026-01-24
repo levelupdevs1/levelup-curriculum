@@ -58,5 +58,3 @@ The good news is that the **foundation you just learned applies to ALL of these*
 ## Helpful Resources
 
 - [Roadmap.sh](https://roadmap.sh) - Visual roadmaps for almost every path mentioned above.
-- [Codecademy: Career Paths](https://www.codecademy.com/catalog/subject/all) - Browse different curriculums to see what topics they cover.
-- [freeCodeCamp](https://www.freecodecamp.org/) - Choose a path (e.g., Responsive Web Design) and start building.

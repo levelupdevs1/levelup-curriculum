@@ -1,4 +1,4 @@
-# Lesson 5: Crafting a Good Question - MCVE
+# Crafting a Good Question - MCVE
 
 ## The Big Idea
 
@@ -230,10 +230,3 @@ Master creating MCVEs and you'll never wait long for answers.
 You've learned how to ask great questions. But where should you ask them?
 
 The next lesson: **Community Forums, Discord, and Slack** shows you where different communities are.
-
-## Beginner-friendly resources
-
-- [Stack Overflow: Minimal reproducible example](https://stackoverflow.com/help/minimal-reproducible-example)
-- [YouTube: Creating good minimal examples](https://www.youtube.com/watch?v=gSvzrRz_yEs)
-- [Dev.to: The power of reproducible examples](https://dev.to/peterwitham/minimal-reproducible-example-221e)
-- [CodePen: Creating live examples](https://codepen.io/)

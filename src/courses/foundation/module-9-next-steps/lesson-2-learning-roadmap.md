@@ -37,6 +37,5 @@ Many beginners get stuck watching video after video without ever building anythi
 
 ## Helpful Resources
 
-- [The Developer Roadmap](https://roadmap.sh/frontend) - A standard industry guide.
-- [SMART Goals for Developers](https://www.freecodecamp.org/news/how-to-set-smart-goals-for-coding/) - How to apply this framework to coding.
+- [The Developer Roadmap](https://roadmap.sh) - A standard industry guide.
 - [Project Ideas](https://github.com/florinpop17/app-ideas) - A list of projects to build, sorted by difficulty.

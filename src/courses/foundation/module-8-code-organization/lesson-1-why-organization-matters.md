@@ -63,5 +63,3 @@ You can read this like a sentence. You don't need to be a decoder.
 ## Helpful Resources
 
 - [Refactoring Guru: Code Smells](https://refactoring.guru/refactoring/smells) - A great guide on how to spot "smelly" (bad) code.
-- [Clean Code by Robert C. Martin](https://www.oreilly.com/library/view/clean-code-a/9780132350884/) - A legendary book on writing professional code.
-- [The Art of Readable Code](https://www.oreilly.com/library/view/the-art-of/9781449318482/) - Practical tips for writing code that is easy to understand.

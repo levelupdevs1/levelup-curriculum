@@ -1,4 +1,4 @@
-# Module 7: How to Ask for Help
+# How to Ask for Help
 
 ## Getting Unstuck Efficiently
 

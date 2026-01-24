@@ -1,4 +1,4 @@
-# Lesson 1: Why Asking Good Questions Matters
+# Why Asking Good Questions Matters
 
 ## The Big Idea
 
@@ -160,10 +160,3 @@ A few extra seconds to write a clear question saves hours of waiting.
 Now that you understand WHY good questions matter, you're ready to learn WHERE to search first.
 
 The next lesson: **Research First: Using Google Effectively** shows you how to find answers before asking.
-
-## Beginner-friendly resources
-
-- [Stack Overflow: How to ask a good question](https://stackoverflow.com/help/how-to-ask)
-- [YouTube: Why your programming questions get ignored](https://www.youtube.com/watch?v=e6T0xN-4efo)
-- [Medium: Asking better questions in tech](https://medium.com/@jaysonroyce/how-to-ask-good-programming-questions-85fbe3b99da8)
-- [Dev.to: Respect in asking for help](https://dev.to/awesomezapster/a-guide-to-asking-questions-the-right-way-3loj)

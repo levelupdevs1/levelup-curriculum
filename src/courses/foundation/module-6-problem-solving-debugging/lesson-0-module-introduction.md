@@ -1,4 +1,4 @@
-# Module 6: Problem-Solving & Debugging
+# Problem-Solving & Debugging
 
 ## The Most Important Skill You'll Ever Learn
 

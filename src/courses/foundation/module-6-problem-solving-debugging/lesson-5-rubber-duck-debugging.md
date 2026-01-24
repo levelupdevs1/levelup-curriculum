@@ -1,4 +1,4 @@
-# Lesson 5: Rubber Duck Debugging
+# Rubber Duck Debugging
 
 ## The Big Idea
 

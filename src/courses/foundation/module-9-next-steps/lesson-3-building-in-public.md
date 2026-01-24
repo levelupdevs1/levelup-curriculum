@@ -33,6 +33,5 @@ Your portfolio is your new resume. It doesn't need to be a fancy website (yet). 
 
 ## Helpful Resources
 
-- [Show Your Work! by Austin Kleon](https://austinkleon.com/show-your-work/) - A short, life-changing book about sharing creativity.
 - [Swyx's "Learn in Public" Essay](https://www.swyx.io/learn-in-public) - The definitive guide on why this accelerates your career.
 - [How to write a kickass README](https://www.freecodecamp.org/news/how-to-write-a-good-readme-file/) - Make your projects stand out.

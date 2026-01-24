@@ -1,4 +1,4 @@
-# Lesson 3: Reading Documentation and Official Resources
+# Reading Documentation and Official Resources
 
 ## The Big Idea
 
@@ -229,10 +229,3 @@ Reading it takes practice, but it's worth mastering.
 You've now learned to search and read documentation.
 
 The next lesson: **Stack Overflow Etiquette and Searching** teaches you the rules of the largest programming Q&A site.
-
-## Beginner-friendly resources
-
-- [MDN Documentation guide for beginners](https://developer.mozilla.org/en-US/docs/Learn)
-- [YouTube: How to read technical documentation](https://www.youtube.com/watch?v=NFSJ-LpeWy4)
-- [Dev.to: Documentation reading skills](https://dev.to/eludadev/how-to-read-documentation-like-a-pro-3jl)
-- [Codecademy: Understanding API documentation](https://www.codecademy.com/resources/blog/what-is-an-api/)

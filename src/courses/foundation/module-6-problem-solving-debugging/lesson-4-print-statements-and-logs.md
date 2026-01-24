@@ -1,4 +1,4 @@
-# Lesson 4: Using Print Statements and Logs
+# Using Print Statements and Logs
 
 ## The Big Idea
 

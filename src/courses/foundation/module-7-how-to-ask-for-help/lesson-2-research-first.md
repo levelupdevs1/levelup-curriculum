@@ -1,4 +1,4 @@
-# Lesson 2: Research First - Using Google Effectively
+# Research First - Using Google Effectively
 
 ## The Big Idea
 
@@ -216,10 +216,3 @@ Master searching saves you time and shows respect for others.
 Now you know how to search. But sometimes official documentation has the answer too.
 
 The next lesson: **Reading Documentation and Official Resources** teaches you where to look when search fails.
-
-## Beginner-friendly resources
-
-- [Google search tips for developers](https://www.makeuseof.com/tag/search-like-pro-google/)
-- [YouTube: Google search operators for programmers](https://www.youtube.com/watch?v=j5mCl4MbPM4)
-- [Stack Overflow: Advanced search techniques](https://stackoverflow.com/help/searching)
-- [Dev.to: Finding answers before asking](https://dev.to/aspittel/how-to-use-google-to-solve-your-programming-questions-5ch9)

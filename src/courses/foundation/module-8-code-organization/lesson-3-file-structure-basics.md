@@ -48,6 +48,4 @@ If you are in `src/logic/math.txt` and you want to open `docs/manual.txt`, you m
 
 ## Helpful Resources
 
-- [Standard JS Project Structure](https://gist.github.com/tracker1/59f2c13044315f88ca95) - A discussion on common structures.
-- [React File Structure](https://react.dev/learn/importing-and-exporting-components) - Example of how components are organized.
-- [The Importance of File Structure](https://medium.com/@joshua.cerne/the-importance-of-file-structure-in-web-development-2e8c25575519) - An article explaining why this matters.
+- [Dealing with files](https://developer.mozilla.org/en-US/docs/Learn/Getting_started_with_the_web/Dealing_with_files) - An explanation on common structures.

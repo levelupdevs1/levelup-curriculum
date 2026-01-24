@@ -58,5 +58,4 @@ In the old days, humans had to check these rules manually. Now, we have robots.
 ## Helpful Resources
 
 - [Prettier](https://prettier.io/) - The most popular code formatter. Look at the playground to see it in action.
-- [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript) - One of the most famous style guides in the world. (Don't memorize it, just look at how detailed it is!)
-- [StandardJS](https://standardjs.com/) - A "no configuration" style guide.
+- [Airbnb JavaScript Style Guide](https://github.com/airbnb/javascript) - One of the most famous style guides in the world.

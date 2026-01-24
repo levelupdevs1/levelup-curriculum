@@ -1,4 +1,4 @@
-# Lesson 6: Community Forums, Discord, and Slack
+# Community Forums, Discord, and Slack
 
 ## The Big Idea
 
@@ -280,10 +280,3 @@ You've now learned everything about asking for help:
 6. **Where to ask** - Different communities for different needs
 
 Now you're ready for the assessment: **Write a well-formatted question.**
-
-## Beginner-friendly resources
-
-- [Finding online programming communities](https://dev.to/keyadastripe/where-to-ask-for-help-as-a-developer-3f73)
-- [YouTube: Tech communities for beginners](https://www.youtube.com/watch?v=DxF_3qN7Urc)
-- [Dev.to: Building your network](https://dev.to/aspittel/how-to-find-your-people-in-a-new-programming-community-54lj)
-- [Reddit: r/learnprogramming community](https://www.reddit.com/r/learnprogramming/)

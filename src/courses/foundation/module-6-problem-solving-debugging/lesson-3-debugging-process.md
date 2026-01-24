@@ -1,4 +1,4 @@
-# Lesson 3: The Debugging Process
+# The Debugging Process
 
 ## The Big Idea
 

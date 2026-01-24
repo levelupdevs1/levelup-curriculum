@@ -29,8 +29,8 @@ Spend **20%** of your time **reading/watching** (tutorials, news, blogs).
 
 If you spend 100% of your time reading about code, you aren't a developer; you're a tech spectator.
 
-## Helpful Resources
+## Helpful Communities
 
-- [Hacker News](https://news.ycombinator.com/) - High-level tech news (Warning: Advanced/Intense discussions).
-- [Daily.dev](https://daily.dev/) - A browser extension that collects developer news for you.
-- [Syntax Podcast](https://syntax.fm/) - Entertaining and educational web development topics.
+- [Dev.to](https://dev.to/) - A very friendly blogging community for developers.
+- [CodeNewbie](https://www.codenewbie.org/) - Dedicated to supporting people learning to code.
+- [Stack Overflow](https://stackoverflow.com/) - For finding answers (remember to search first!).
