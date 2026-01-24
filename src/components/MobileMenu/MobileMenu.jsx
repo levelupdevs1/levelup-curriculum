@@ -32,7 +32,7 @@ const MobileMenu = ({ isOpen, onClose }) => {
       ]
     : [
         { path: "/landing", label: "Home", icon: Trophy },
-        { path: "/courses", label: "Courses", icon: BookOpen },
+        // { path: "/courses", label: "Courses", icon: BookOpen },
       ];
 
   const handleLinkClick = () => {

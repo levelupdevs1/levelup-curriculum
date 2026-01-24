@@ -43,12 +43,12 @@ const Landing = () => {
                     <ArrowRight size={20} />
                   </Button>
                 </Link>
-                <Link to="/courses">
+                {/* <Link to="/courses">
                   <Button variant="outline" size="lg">
                     <Play size={20} />
                     Explore Courses
                   </Button>
-                </Link>
+                </Link> */}
               </div>
             </div>
             <div className={styles.heroVisual}>
@@ -260,9 +260,9 @@ const Landing = () => {
                   <ArrowRight size={20} />
                 </Button>
               </Link>
-              <Link to="/courses" className={styles.browseLink}>
+              {/* <Link to="/courses" className={styles.browseLink}>
                 Or browse courses first
-              </Link>
+              </Link> */}
             </div>
           </div>
         </div>

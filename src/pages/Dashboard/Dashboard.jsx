@@ -80,7 +80,7 @@ const Dashboard = () => {
       const modules = course.modules || course.structure?.modules || [];
       const totalLessons = modules.reduce(
         (sum, m) => sum + (m.lessons?.length || 0),
-        0
+        0,
       );
       return totalLessons > 0
         ? Math.round((completedCount / totalLessons) * 100)
@@ -105,10 +105,10 @@ const Dashboard = () => {
   // Calculate stats
   const totalLessonsCompleted = enrolledCourses.reduce(
     (sum, c) => sum + getCompletedLessons(c),
-    0
+    0,
   );
   const completedCoursesCount = enrolledCourses.filter(
-    (c) => getCourseProgress(c) === 100
+    (c) => getCourseProgress(c) === 100,
   ).length;
 
   // Calculate level progress - use total_experience (XP) from profile
@@ -149,7 +149,7 @@ const Dashboard = () => {
 
   return (
     <div className={styles.dashboard}>
-      {!profile && coursesLoading ? (
+      {!profile || coursesLoading ? (
         <LoadingSpinner size="lg" message="Loading your dashboard..." />
       ) : (
         <>
@@ -224,7 +224,7 @@ const Dashboard = () => {
                 <div className={styles.courseGrid}>
                   {paginatedCourses.map((course) => {
                     const isEnrolled = enrolledCourses.some(
-                      (c) => c.id === course.id
+                      (c) => c.id === course.id,
                     );
                     const progress = isEnrolled ? getCourseProgress(course) : 0;
 

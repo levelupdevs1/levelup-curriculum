@@ -148,11 +148,13 @@ export const buildFoundationCourseStructure = async () => {
 export const getFoundationCourse = async (userId) => {
   try {
     // Check if user already has the foundation course
+    console.log("Checking for foundation course");
     const { data: existingCourse, error: fetchError } = await supabase
       .from("generated_courses")
       .select("*")
       .eq("user_id", userId)
       .eq("is_foundation", true)
+      .limit(1)
       .single();
 
     if (existingCourse) {
@@ -176,6 +178,7 @@ export const getFoundationCourse = async (userId) => {
     }
 
     // Create the foundation course for this user
+    console.log("Creating foundation course");
     const courseData = {
       user_id: userId,
       title: foundationCourseData.title,
@@ -225,6 +228,7 @@ export const hasCompletedFoundation = async (userId) => {
       .select("status, progress, modules")
       .eq("user_id", userId)
       .eq("is_foundation", true)
+      .limit(1)
       .single();
 
     if (error) {

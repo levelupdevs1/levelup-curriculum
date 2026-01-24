@@ -21,7 +21,7 @@ export const CourseGenerationProvider = ({ children }) => {
   const [foundationCourse, setFoundationCourse] = useState(null);
   const [foundationCompleted, setFoundationCompleted] = useState(false);
   const [currentCourse, setCurrentCourse] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [generationStatus, setGenerationStatus] = useState({
     isGenerating: false,
     type: null,
@@ -31,50 +31,66 @@ export const CourseGenerationProvider = ({ children }) => {
 
   // Load user profile and courses from database
   useEffect(() => {
+    setLoading(true);
     const loadUserData = async () => {
-      if (!user?.id) {
+      try {
+        if (!user?.id) {
+          setLoading(false);
+          return;
+        }
+        
+        
+        let fetchedUserProfile = null;
+        // Load foundation course (creates if doesn't exist)
+        // Use Web Lock to prevent race conditions across tabs
+        await navigator.locks.request(`foundation_creation_${user.id}`, async () => {
+          const foundationResult = await getFoundationCourse(user.id);
+          if (foundationResult.success && foundationResult.data) {
+            setFoundationCourse(foundationResult.data);
+          }
+        });
+
+        // Check foundation completion status
+        const completionResult = await hasCompletedFoundation(user.id);
+        if (completionResult.success) {
+          setFoundationCompleted(completionResult.completed);
+          
+          // Only load AI user profile if foundation is completed
+          if (completionResult.completed) {
+            const profileResult = await getUserProfile(user.id);
+            if (profileResult.success && profileResult.data) {
+              fetchedUserProfile = profileResult.data;
+              setUserProfile(profileResult.data);
+            }
+          }
+        }
+
+        // Load all generated courses (both recommended and enrolled)
+        const coursesResult = await getCourses(user.id);
+        if (coursesResult.success) {
+          const allCourses = coursesResult.data || [];
+          // Filter out foundation course from regular courses (it's handled separately)
+          const nonFoundationCourses = allCourses.filter(
+            (c) => !c.is_foundation,
+          );
+          // Separate enrolled and non-enrolled courses
+          const enrolled = nonFoundationCourses.filter(
+            (c) => c.status === "enrolled",
+          );
+
+          setGeneratedCourses(nonFoundationCourses); // Show all non-foundation courses in catalog
+          setEnrolledCourses(enrolled);
+        }
         setLoading(false);
-        return;
+      } catch {
+        setLoading(false);
+      } finally {
+        setLoading(false);
       }
-
-      // Load user profile
-      const profileResult = await getUserProfile(user.id);
-      if (profileResult.success && profileResult.data) {
-        setUserProfile(profileResult.data);
-      }
-
-      // Load foundation course (creates if doesn't exist)
-      const foundationResult = await getFoundationCourse(user.id);
-      if (foundationResult.success && foundationResult.data) {
-        setFoundationCourse(foundationResult.data);
-      }
-
-      // Check foundation completion status
-      const completionResult = await hasCompletedFoundation(user.id);
-      if (completionResult.success) {
-        setFoundationCompleted(completionResult.completed);
-      }
-
-      // Load all generated courses (both recommended and enrolled)
-      const coursesResult = await getCourses(user.id);
-      if (coursesResult.success) {
-        const allCourses = coursesResult.data || [];
-        // Filter out foundation course from regular courses (it's handled separately)
-        const nonFoundationCourses = allCourses.filter((c) => !c.is_foundation);
-        // Separate enrolled and non-enrolled courses
-        const enrolled = nonFoundationCourses.filter(
-          (c) => c.status === "enrolled",
-        );
-
-        setGeneratedCourses(nonFoundationCourses); // Show all non-foundation courses in catalog
-        setEnrolledCourses(enrolled);
-      }
-
-      setLoading(false);
     };
 
     loadUserData();
-  }, [user]);
+  }, [user?.id]);
 
   const updateUserProfile = useCallback(
     async (profile) => {

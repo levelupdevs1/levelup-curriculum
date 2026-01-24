@@ -5,8 +5,10 @@ import {
   signOut as supabaseSignOut,
   getUserProfile,
   onAuthStateChange,
+  supabase,
 } from "../services/authService";
 import { getUserProfile as getAIUserProfile } from "../services/courseDataService";
+import { hasCompletedFoundation } from "../services/foundationCourseService";
 import { UserContext } from "./createUserContext";
 
 export const UserProvider = ({ children }) => {
@@ -19,21 +21,92 @@ export const UserProvider = ({ children }) => {
   const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
 
   // Listen to auth state changes on mount
+  // Listen to auth state changes on mount
   useEffect(() => {
+    let isSubscribed = true;
     // Set up auth state listener
     const unsubscribe = onAuthStateChange(async (authUser) => {
+      if (!isSubscribed) return;
+
       if (authUser) {
         setUser(authUser);
         setIsAuthenticated(true);
+
+        // Check if user profile exists in users table
+        // Check if user profile exists in users table and create if needed
+        // Use Web Lock to prevent race conditions across tabs
+        await navigator.locks.request(
+          `user_profile_creation_${authUser.id}`,
+          async () => {
+            console.log("Checking user profile for user", authUser.id);
+            const { success: profileExists, profile: existingProfile } =
+              await getUserProfile(authUser.id);
+
+            if (!isSubscribed) return;
+
+            if (!profileExists || !existingProfile) {
+              // User not in users table, insert them
+              const fullName =
+                localStorage.getItem("signup_full_name") ||
+                authUser.user_metadata?.full_name ||
+                "";
+              const username =
+                localStorage.getItem("signup_username") ||
+                authUser.email.split("@")[0] ||
+                "google_user";
+
+              const userData = {
+                id: authUser.id,
+                email: authUser.email,
+                full_name: fullName,
+                username: username,
+                current_level: 1,
+                total_points: 0,
+                created_at: new Date().toISOString(),
+              };
+
+              const { error: insertError } = await supabase
+                .from("users")
+                .upsert(userData, { onConflict: "id" });
+
+              if (insertError) {
+                console.error("Error creating user profile:", insertError);
+              } else {
+                // Clear localStorage
+                localStorage.removeItem("signup_full_name");
+                localStorage.removeItem("signup_username");
+                // Re-fetch profile to update state
+                const { success: refetchSuccess, profile: newProfile } =
+                  await getUserProfile(authUser.id);
+                if (refetchSuccess && newProfile) {
+                  setProfile(newProfile);
+                }
+              }
+            }
+          },
+        );
 
         // Fetch user profile from users table
         const { success, profile: userProfile } = await getUserProfile(
           authUser.id,
         );
 
+        if (!isSubscribed) return;
+
         // Check if user has completed onboarding and get AI profile data
-        const { success: profileSuccess, data: aiProfile } =
-          await getAIUserProfile(authUser.id);
+        // Only fetch AI profile if foundation course is completed
+        const foundationStatus = await hasCompletedFoundation(authUser.id);
+        const foundationCompleted = foundationStatus.success && foundationStatus.completed;
+        
+        let aiProfile = null;
+        let profileSuccess = false;
+
+        if (foundationCompleted) {
+          const result = await getAIUserProfile(authUser.id);
+          profileSuccess = result.success;
+          aiProfile = result.data;
+        }
+        
         setHasCompletedOnboarding(profileSuccess && aiProfile !== null);
 
         if (success) {
@@ -48,19 +121,8 @@ export const UserProvider = ({ children }) => {
           };
           setProfile(mergedProfile);
         } else {
-          const defaultProfile = {
-            id: authUser.id,
-            email: authUser.email,
-            full_name: authUser.user_metadata?.full_name || authUser.email,
-            username:
-              authUser.user_metadata?.username || authUser.email.split("@")[0],
-            current_level: aiProfile?.current_level || 1,
-            total_experience: aiProfile?.total_experience || 0,
-            total_points: 0,
-            created_at: new Date().toISOString(),
-          };
-
-          setProfile(defaultProfile);
+          // If profile fetch failed, set profile to null (insert logic above should have created it)
+          setProfile(null);
         }
       } else {
         setUser(null);
@@ -68,11 +130,15 @@ export const UserProvider = ({ children }) => {
         setIsAuthenticated(false);
         setHasCompletedOnboarding(false);
       }
-      setIsInitializing(false);
+
+      if (isSubscribed) {
+        setIsInitializing(false);
+      }
     });
 
     // Cleanup function
     return () => {
+      isSubscribed = false;
       // Only call unsubscribe if it's a function
       if (typeof unsubscribe === "function") {
         unsubscribe();
@@ -90,8 +156,19 @@ export const UserProvider = ({ children }) => {
       const { success, profile: userProfile } = await getUserProfile(user.id);
 
       // Re-check onboarding status and get AI profile data
-      const { success: profileSuccess, data: aiProfile } =
-        await getAIUserProfile(user.id);
+      // Only fetch AI profile if foundation course is completed
+      const foundationStatus = await hasCompletedFoundation(user.id);
+      const foundationCompleted = foundationStatus.success && foundationStatus.completed;
+      
+      let aiProfile = null;
+      let profileSuccess = false;
+
+      if (foundationCompleted) {
+        const result = await getAIUserProfile(user.id);
+        profileSuccess = result.success;
+        aiProfile = result.data;
+      }
+
       setHasCompletedOnboarding(profileSuccess && aiProfile !== null);
 
       if (success) {

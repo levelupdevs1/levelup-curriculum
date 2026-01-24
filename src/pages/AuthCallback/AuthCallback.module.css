@@ -1,0 +1,14 @@
+.authCallback {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.authCallback p {
+  color: #6b7280;
+  font-size: 16px;
+  margin: 0;
+}

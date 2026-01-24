@@ -53,6 +53,7 @@ export const getUserProfile = async (userId) => {
       .from("ai_user_profiles")
       .select("*")
       .eq("user_id", userId)
+      .limit(1)
       .single();
 
     if (error) {

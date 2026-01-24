@@ -39,7 +39,7 @@ export const isTrustedDomain = (url) => {
       (domain) => hostname === domain || hostname.endsWith(`.${domain}`),
     );
   } catch {
-    console.warn("Invalid URL:", url);
+    // console.warn("Invalid URL:", url);
     return false;
   }
 };
@@ -49,12 +49,10 @@ export const isTrustedDomain = (url) => {
  */
 export const validateExternalResources = (resources) => {
   if (!Array.isArray(resources)) {
-    console.warn("External resources is not an array");
     return { valid: false, issues: ["Not an array"] };
   }
 
   if (resources.length === 0) {
-    console.warn("⚠️ No external resources provided");
     return { valid: false, issues: ["Empty array"] };
   }
 
@@ -83,9 +81,6 @@ export const validateExternalResources = (resources) => {
 
     // Check if trusted domain
     if (!isTrustedDomain(resource.url)) {
-      console.warn(
-        `⚠️ Resource ${index + 1} (${resource.title}) is not from a trusted domain: ${resource.url}`,
-      );
       // Don't reject, just warn
     }
 
@@ -123,25 +118,6 @@ export const validateExternalResources = (resources) => {
  * Log validation results for debugging
  */
 export const logResourceValidation = (lessonTitle, resources) => {
-  console.group(`📚 Resource Validation: ${lessonTitle}`);
-
   const validation = validateExternalResources(resources);
-
-  if (validation.valid) {
-    console.log(
-      `✅ Valid: ${validation.validCount}/${validation.totalCount} resources`,
-    );
-  } else {
-    console.warn(`⚠️ Issues found:`, validation.issues);
-  }
-
-  validation.validResources?.forEach((resource, idx) => {
-    const trusted = isTrustedDomain(resource.url);
-    console.log(`${idx + 1}. ${resource.title} ${trusted ? "✓" : "⚠️"}`);
-    console.log(`   ${resource.url}`);
-  });
-
-  console.groupEnd();
-
   return validation;
 };

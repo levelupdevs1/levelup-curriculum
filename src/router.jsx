@@ -7,6 +7,7 @@ import OnboardingRoute from "./components/OnboardingRoute/OnboardingRoute";
 import Landing from "./pages/Landing/Landing";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
+import AuthCallback from "./pages/AuthCallback/AuthCallback";
 import ConfirmEmail from "./pages/ConfirmEmail/ConfirmEmail";
 import Onboarding from "./pages/Onboarding/Onboarding";
 import Dashboard from "./pages/Dashboard/Dashboard";
@@ -53,6 +54,10 @@ export const router = createBrowserRouter([
             <Register />
           </AuthRoute>
         ),
+      },
+      {
+        path: "auth/callback",
+        Component: AuthCallback,
       },
       {
         path: "confirm-email",

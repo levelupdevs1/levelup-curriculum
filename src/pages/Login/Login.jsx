@@ -2,10 +2,14 @@ import React, { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, Trophy } from "lucide-react";
 import { useUser } from "../../hooks/useUser";
-import { isSupabaseConfigured } from "../../services/authService";
+import {
+  isSupabaseConfigured,
+  signInWithGoogle,
+} from "../../services/authService";
 import Button from "../../components/Button/Button";
 import Input from "../../components/Input/Input";
 import Card from "../../components/Card/Card";
+import googleIcon from "../../assets/google-icon.svg";
 import styles from "./Login.module.css";
 
 const Login = () => {
@@ -127,6 +131,33 @@ const Login = () => {
               {errors.general && (
                 <div className={styles.errorMessage}>{errors.general}</div>
               )}
+
+              <div className={styles.socialLogin}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  className={styles.googleButton}
+                  icon={
+                    <img
+                      src={googleIcon}
+                      alt="Google"
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  }
+                  onClick={async () => {
+                    const result = await signInWithGoogle();
+                    if (!result.success) {
+                      setErrors({ general: result.error });
+                    }
+                  }}
+                >
+                  Continue with Google
+                </Button>
+                <div className={styles.divider}>
+                  <span>or</span>
+                </div>
+              </div>
 
               <div className={styles.inputGroup}>
                 <Input
