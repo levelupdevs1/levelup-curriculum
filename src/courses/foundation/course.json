@@ -267,6 +267,130 @@
           "isChooseYourPath": true
         }
       ]
+    },
+    {
+      "id": "module-6-problem-solving-debugging",
+      "title": "Module 6: Problem-Solving & Debugging",
+      "lessons": [
+        {
+          "id": "lesson-0-module-introduction",
+          "title": "Module Introduction",
+          "type": "lesson",
+          "filePath": "module-6-problem-solving-debugging/lesson-0-module-introduction.md",
+          "points": 0
+        },
+        {
+          "id": "lesson-1-breaking-down-problems",
+          "title": "Breaking down problems into smaller pieces",
+          "type": "lesson",
+          "filePath": "module-6-problem-solving-debugging/lesson-1-breaking-down-problems.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-2-pseudocode-and-planning",
+          "title": "Pseudocode and planning before coding",
+          "type": "lesson",
+          "filePath": "module-6-problem-solving-debugging/lesson-2-pseudocode-and-planning.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-3-debugging-process",
+          "title": "The debugging process",
+          "type": "lesson",
+          "filePath": "module-6-problem-solving-debugging/lesson-3-debugging-process.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-4-print-statements-and-logs",
+          "title": "Using print statements and logs",
+          "type": "lesson",
+          "filePath": "module-6-problem-solving-debugging/lesson-4-print-statements-and-logs.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-5-rubber-duck-debugging",
+          "title": "Rubber duck debugging",
+          "type": "lesson",
+          "filePath": "module-6-problem-solving-debugging/lesson-5-rubber-duck-debugging.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-6-when-to-ask-for-help",
+          "title": "When to ask for help vs. when to keep trying",
+          "type": "lesson",
+          "filePath": "module-6-problem-solving-debugging/lesson-6-when-to-ask-for-help.md",
+          "points": 10
+        },
+        {
+          "id": "assignment-6-logic-puzzles",
+          "title": "Assessment: Logic Puzzles with Pseudocode",
+          "type": "assignment",
+          "filePath": "module-6-problem-solving-debugging/assignment-6-logic-puzzles.md",
+          "points": 20
+        }
+      ]
+    },
+    {
+      "id": "module-7-how-to-ask-for-help",
+      "title": "Module 7: How to Ask for Help",
+      "lessons": [
+        {
+          "id": "lesson-0-module-introduction",
+          "title": "Module Introduction",
+          "type": "lesson",
+          "filePath": "module-7-how-to-ask-for-help/lesson-0-module-introduction.md",
+          "points": 0
+        },
+        {
+          "id": "lesson-1-why-asking-matters",
+          "title": "Why asking good questions matters",
+          "type": "lesson",
+          "filePath": "module-7-how-to-ask-for-help/lesson-1-why-asking-matters.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-2-research-first",
+          "title": "Research first: using Google effectively",
+          "type": "lesson",
+          "filePath": "module-7-how-to-ask-for-help/lesson-2-research-first.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-3-reading-documentation",
+          "title": "Reading documentation and official resources",
+          "type": "lesson",
+          "filePath": "module-7-how-to-ask-for-help/lesson-3-reading-documentation.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-4-stack-overflow",
+          "title": "Stack Overflow etiquette and searching",
+          "type": "lesson",
+          "filePath": "module-7-how-to-ask-for-help/lesson-4-stack-overflow.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-5-crafting-questions",
+          "title": "Crafting a good question - MCVE",
+          "type": "lesson",
+          "filePath": "module-7-how-to-ask-for-help/lesson-5-crafting-questions.md",
+          "points": 10
+        },
+        {
+          "id": "lesson-6-communities",
+          "title": "Community forums, Discord, and Slack",
+          "type": "lesson",
+          "filePath": "module-7-how-to-ask-for-help/lesson-6-communities.md",
+          "points": 10
+        },
+        {
+          "id": "assignment-7-write-question",
+          "title": "Assessment: Writing a well-formatted question",
+          "type": "assignment",
+          "filePath": "module-7-how-to-ask-for-help/assignment-7-write-question.md",
+          "points": 20
+        }
+      ]
     }
   ]
 }
