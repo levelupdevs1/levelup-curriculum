@@ -50,6 +50,7 @@ const AILessonViewer = () => {
   const [review, setReview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [isNext, setIsNext] = useState(false);
+  const [isChoosing, setIsChoosing] = useState(false);
   const [isChooseYourPath, setIsChooseYourPath] = useState(false);
   const hasGeneratedRef = useRef(false);
 
@@ -511,6 +512,7 @@ const AILessonViewer = () => {
               <Button
                 variant="primary"
                 onClick={async () => {
+                  setIsChoosing(true);
                   // Mark lesson as complete first
                   const completedLessons =
                     course.progress?.completedLessons || [];
@@ -540,12 +542,17 @@ const AILessonViewer = () => {
                       }
                     } catch {
                       // Error saving progress
+                    } finally {
+                      setIsChoosing(false);
                     }
+                    // Navigate to onboarding
+                    navigate("/onboarding", { state: { fromFoundation: true } });
+                  } else{
+                    navigate('/dashboard')
                   }
 
-                  // Navigate to onboarding
-                  navigate("/onboarding", { state: { fromFoundation: true } });
                 }}
+                disabled={isChoosing}
                 className={styles.choosePathButton}
               >
                 Choose Your Learning Path

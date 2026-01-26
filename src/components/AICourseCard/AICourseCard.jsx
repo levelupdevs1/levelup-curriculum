@@ -3,6 +3,7 @@ import Button from "../Button/Button";
 import { CheckCircle2 } from "lucide-react";
 import courseDefaultImage from "../../assets/course-default.svg";
 import styles from "./AICourseCard.module.css";
+import { useState } from "react";
 
 const AICourseCard = ({
   course,
@@ -12,10 +13,13 @@ const AICourseCard = ({
   showProgress = false,
   progress = 0,
 }) => {
+  const [loading, setLoading] = useState(false);
   const handleClick = () => {
     if (onAction) {
+      setLoading(true);
       onAction(course.id);
     }
+    setLoading(false);
   };
 
   // Calculate progress if not provided
@@ -125,13 +129,14 @@ const AICourseCard = ({
           handleClick();
         }}
         className={styles.actionButton}
+        disabled={loading}
       >
         {actionLabel ||
           (isCompleted
             ? "Review Course"
             : isEnrolled
               ? "Continue Learning"
-              : "Enroll Now")}
+              : loading ? "Loading..." : "Enroll Now")}
       </Button>
     </Card>
   );
