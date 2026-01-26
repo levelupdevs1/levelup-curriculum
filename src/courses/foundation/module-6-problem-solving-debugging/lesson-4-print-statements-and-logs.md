@@ -79,7 +79,7 @@ Total after adding: 438
 Final total: 438
 Average: 87.6
 
-```
+<!-- ``` -->
 
 Now you can see exactly what happens in each step.
 
@@ -130,6 +130,7 @@ This helps you see if the function is receiving the right input or producing the
 **Problem:** A program that calculates age is giving wrong results.
 
 **Your checks might show:**
+
 - Birth year: 1990
 - Current year: 2024
 - Calculated age: 34
@@ -137,6 +138,7 @@ This helps you see if the function is receiving the right input or producing the
 **But you expected 33.**
 
 **Adding more checks:**
+
 - Birth year: 1990
 - Current year: 2024
 - (Wait, is the current year really 2024? Let me check again...)
@@ -187,4 +189,3 @@ The next lesson: **Rubber Duck Debugging** teaches you a technique that doesn't 
 - [YouTube: Using print statements to debug Python](https://www.youtube.com/watch?v=ePLfPKI-rIs)
 - [Real Python: Debugging with print()](https://realpython.com/python-debugging-pdb/)
 - [Codecademy: Debugging with logs](https://www.codecademy.com/resources/blog/debugging-with-javascript-console/)
-```

@@ -203,15 +203,6 @@ Why this is excellent:
 
 ---
 
-## Beginner-friendly resources
-
-- [Stack Overflow: How to ask a good question](https://stackoverflow.com/help/how-to-ask)
-- [YouTube: Writing better Stack Overflow questions](https://www.youtube.com/watch?v=QV6r1TFqFm4)
-- [Dev.to: The anatomy of a good tech question](https://dev.to/ben/the-anatomy-of-a-good-coding-question-1d5l)
-- [Medium: Asking better questions as a developer](https://medium.com/swlh/how-to-ask-good-questions-in-tech-5db2f15b5ee)
-
----
-
 ## Final Tips
 
 ### Before You Submit
