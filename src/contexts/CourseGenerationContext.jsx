@@ -175,6 +175,22 @@ export const CourseGenerationProvider = ({ children }) => {
     [generatedCourses, user],
   );
 
+  const updateCourseData = useCallback(
+  (courseId, updates) => {
+    const isFoundation = foundationCourse && foundationCourse.id === courseId;
+    if (isFoundation) {
+      setFoundationCourse((prev) => (prev ? { ...prev, ...updates } : prev));
+    } else {
+      setEnrolledCourses((prev) =>
+        prev.map((course) =>
+          course.id === courseId ? { ...course, ...updates } : course
+        )
+      );
+    }
+  },
+  [foundationCourse]
+);
+
   const updateCourseProgress = useCallback(
     (courseId, progress) => {
       // Check if this is the foundation course
@@ -264,6 +280,7 @@ export const CourseGenerationProvider = ({ children }) => {
     addGeneratedCourses,
     enrollInCourse,
     loading,
+    updateCourseData,
     updateCourseProgress,
     setCurrentCourse,
     setGenerating,
