@@ -30,7 +30,7 @@ const AILessonViewer = () => {
   const { courseId, lessonId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { getCourseById, updateCourseProgress } = useCourseGeneration();
+  const { getCourseById, updateCourseProgress, updateCourseData } = useCourseGeneration();
   const { consumeTokens } = useAIToken();
   const { user, refreshProfile } = useUser();
   const loadingBar = useLoadingBar();
@@ -312,6 +312,8 @@ const AILessonViewer = () => {
           await updateCourse(courseId, {
             modules: updatedModules,
           });
+
+          updateCourseData(courseId, { modules: updatedModules });
         } catch {
           // Failed to save review
         }
