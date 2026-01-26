@@ -157,7 +157,37 @@ export const getFoundationCourse = async (userId) => {
       .limit(1)
       .single();
 
+    const localVersion = foundationCourseData.version || 1;
+    const versionString = `static-v${localVersion}`;
+
     if (existingCourse) {
+      // Check if version matches
+      if (existingCourse.ai_model !== versionString) {
+        console.log(`Foundation course version mismatch: ${existingCourse.ai_model} vs ${versionString}. Syncing...`);
+        
+        // Re-build modules from local files
+        const modules = await buildFoundationCourseStructure();
+        
+        // Update the database record with new modules and version string
+        const { data: updatedCourse, error: updateError } = await supabase
+          .from("generated_courses")
+          .update({
+            modules: modules,
+            modules_count: modules.length,
+            ai_model: versionString,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", existingCourse.id)
+          .select()
+          .single();
+
+        if (updateError) {
+          console.error("Failed to sync foundation course:", updateError);
+          return { success: true, data: existingCourse, isNew: false };
+        }
+        
+        return { success: true, data: updatedCourse, isNew: false, synced: true };
+      }
       return { success: true, data: existingCourse, isNew: false };
     }
 
@@ -192,7 +222,7 @@ export const getFoundationCourse = async (userId) => {
       status: "enrolled", // Auto-enrolled
       enrolled_at: new Date().toISOString(),
       is_foundation: true,
-      ai_model: "static", // Indicates not AI-generated
+      ai_model: versionString, // Indicates versioned static course
       generation_cost: 0,
       progress: {
         completedLessons: [],
