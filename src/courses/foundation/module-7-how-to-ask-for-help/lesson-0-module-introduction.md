@@ -19,7 +19,7 @@ In this module, you'll learn:
 
 ## Why This Matters
 
-Asking for help is not a weakness—it's a **professional skill**.
+Asking for help is not a weakness, it's a **professional skill**.
 
 The best developers know how to:
 

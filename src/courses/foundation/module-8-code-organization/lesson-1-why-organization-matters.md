@@ -9,7 +9,7 @@ As a beginner, you might write all your code in one file. This works fine for 50
 
 ## The "Messy Room" Analogy
 
-Imagine a bedroom where you throw everything on the floor—clothes, books, food, and tools.
+Imagine a bedroom where you throw everything on the floor: clothes, books, food, and tools.
 
 - If you need to find a specific book, it takes a long time.
 - If you walk around, you might trip over something.
@@ -25,7 +25,7 @@ Unorganized code is exactly like that messy room.
 
 ### The Messy Approach
 
-Imagine a program where everything is mixed together—variable names are single letters, logic is scattered, and there is no structure.
+Imagine a program where everything is mixed together: variable names are single letters, logic is scattered, and there is no structure.
 
 ```text
 SET x = 50

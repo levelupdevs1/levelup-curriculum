@@ -79,8 +79,6 @@ Total after adding: 438
 Final total: 438
 Average: 87.6
 
-<!-- ``` -->
-
 Now you can see exactly what happens in each step.
 
 ## Examples of Good vs Bad Display Checks
@@ -173,7 +171,7 @@ But for now, **simple display checks are enough.**
 
 Display checks are your best friend when debugging.
 
-**Don't be shy—display everything!**
+**Don't be shy, display everything!**
 
 When you can't figure out what's happening, display the values and you'll see what's going on.
 
@@ -181,7 +179,7 @@ When you can't figure out what's happening, display the values and you'll see wh
 
 Display checks work well, but sometimes you need a different approach.
 
-The next lesson: **Rubber Duck Debugging** teaches you a technique that doesn't require any tools—just you and your code.
+The next lesson: **Rubber Duck Debugging** teaches you a technique that doesn't require any tools, just you and your code.
 
 ## Beginner-friendly resources
 

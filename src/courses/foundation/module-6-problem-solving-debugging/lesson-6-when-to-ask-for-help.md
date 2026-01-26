@@ -259,7 +259,7 @@ When you're **suffering**, ask for help.
 
 **Asking for help is not failure. Knowing when to ask is a sign of maturity and wisdom.**
 
-The best developers don't try to know everything—they know when and how to ask.
+The best developers don't try to know everything, they know when and how to ask.
 
 ## Common Fears About Asking for Help
 
@@ -269,7 +269,7 @@ No. Everyone gets stuck. Professional developers ask for help all the time.
 
 ### Fear 2: "I should figure this out myself"
 
-You will figure things out—but you also need to know when to get help.
+You will figure things out, but you also need to know when to get help.
 
 ### Fear 3: "I'm wasting someone's time"
 

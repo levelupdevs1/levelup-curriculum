@@ -14,7 +14,7 @@ You now have the essential knowledge every developer needs:
 
 Now it is time to choose your learning path. Based on your goals, interests, and available time, we will generate personalized courses just for you.
 
-The AI will create custom learning paths tailored to:
+Your custom learning paths will be tailored to:
 
 - Your current skill level
 - What you want to build (websites, apps, games, etc.)

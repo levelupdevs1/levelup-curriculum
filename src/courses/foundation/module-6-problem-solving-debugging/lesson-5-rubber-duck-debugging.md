@@ -193,7 +193,7 @@ The slower you go, the more likely you are to catch the mistake.
 
 ## Real-World Use
 
-Many professional developers keep a rubber duck (or figurine) on their desk. It's not a joke—it actually works.
+Many professional developers keep a rubber duck (or figurine) on their desk. It's not a joke, it actually works.
 
 Some companies even have an office "debugging duck" that developers use.
 

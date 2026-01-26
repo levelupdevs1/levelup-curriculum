@@ -4,7 +4,7 @@
 
 Debugging is **finding and fixing errors in your code**.
 
-Even the best programmers write bugs. Debugging is not a sign of failure—it's a normal part of programming.
+Even the best programmers write bugs. Debugging is not a sign of failure, it's a normal part of programming.
 
 ## What is a Bug?
 

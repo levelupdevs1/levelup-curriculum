@@ -10,7 +10,7 @@
 
 ## 📖 About
 
-**Level Up** is a revolutionary learn-to-earn platform that rewards developers for learning and contributing to the community. Complete courses, earn platform tokens, mint NFT certificates, and engage in peer discussions—all powered by blockchain technology.
+**Level Up** is a revolutionary learn-to-earn platform that rewards developers for learning and contributing to the community. Complete courses, earn platform tokens, mint NFT certificates, and engage in peer discussions:all powered by blockchain technology.
 
 ### ✨ Key Features
 
@@ -152,7 +152,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 - **Level Up Rewards**: 10, 50, 70, 100, 150, 200 tokens per level
 - **Tips**: Earn tokens from community members for helpful contributions
-- **Full Ownership**: Tokens sent to your Hedera wallet—you own them
+- **Full Ownership**: Tokens sent to your Hedera wallet:you own them
 
 ### Using Tokens
 
