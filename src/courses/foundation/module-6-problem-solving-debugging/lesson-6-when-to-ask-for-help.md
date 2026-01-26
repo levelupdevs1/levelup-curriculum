@@ -294,7 +294,3 @@ This is how professionals work.
 - [YouTube: Asking for help as a programmer](https://www.youtube.com/watch?v=F1PZVLDEqr8)
 - [Dev.to: The art of asking for help](https://dev.to/codebubb/the-art-of-asking-for-help-as-a-junior-developer-2d4d)
 - [Codecademy: Communication in programming](https://www.codecademy.com/resources/blog/communication-skills-developers/)
-
-```
-
-```

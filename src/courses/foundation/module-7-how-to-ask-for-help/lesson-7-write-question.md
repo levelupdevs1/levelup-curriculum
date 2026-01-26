@@ -219,6 +219,8 @@ Why this is excellent:
 
 You're learning one of the most valuable skills in any field: **asking clearly for help**.
 
+**Submit your answers to the following scenarios in the community Channel**
+
 Good luck!
 
 ## Beginner-friendly resources

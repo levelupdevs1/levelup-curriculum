@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import logoImage from "../../assets/logo.jpeg";
 import { useUser } from "../../hooks/useUser";
-import { useAIToken } from "../../hooks/useAIToken";
+// import { useAIToken } from "../../hooks/useAIToken";
 import Button from "../Button/Button";
 import Input from "../Input/Input";
 import MobileMenu from "../MobileMenu/MobileMenu";
@@ -24,7 +24,7 @@ const Header = () => {
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const { isAuthenticated, logout } = useUser();
-  const { tokensRemaining } = useAIToken();
+  // const { tokensRemaining } = useAIToken();
 
   const handleProfileClick = () => {
     setShowProfileDropdown(!showProfileDropdown);
@@ -164,10 +164,10 @@ const Header = () => {
         <div className={styles.rightSection}>
           {isAuthenticated ? (
             <>
-              <div className={styles.tokenDisplay}>
+              {/* <div className={styles.tokenDisplay}>
                 <Coins size={18} className={styles.tokenIcon} />
                 <span className={styles.tokenValue}>{tokensRemaining}</span>
-              </div>
+              </div> */}
               {/* Desktop Profile Dropdown */}
               <div className={styles.profileDropdown} ref={dropdownRef}>
                 <Button

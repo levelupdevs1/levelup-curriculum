@@ -157,26 +157,6 @@ Write pseudocode for a program that:
 
 ---
 
-## Submission Checklist
-
-Before you submit, check that you:
-
-- [ ] **Broke down each problem** into clear steps
-- [ ] **Wrote pseudocode** in simple English (not actual code)
-- [ ] **Tested your logic** by hand with the examples
-- [ ] **Used proper indentation** for loops and if statements
-- [ ] **Used clear variable names** (not just `x` and `y`)
-- [ ] **Explained your thinking** if you caught an error
-- [ ] **Are proud of your work** - these are complex problems!
-
-## Evaluation Criteria
-
-Your solutions will be evaluated on:
-
-1. **Clarity (25%):** Can someone else understand your pseudocode?
-2. **Correctness (50%):** Does your logic actually solve the problem?
-3. **Completeness (25%):** Does your solution handle all requirements?
-
 ## Hints If You Get Stuck
 
 **Hint 1:** Use pseudocode that looks like English. Don't write actual code.
@@ -188,6 +168,18 @@ Your solutions will be evaluated on:
 **Hint 4:** Test your logic by hand before submitting.
 
 **Hint 5:** If your pseudocode doesn't work, use rubber duck debugging—explain it line by line and you'll find the error.
+
+## Checklist
+
+Check that you:
+
+- [ ] **Broke down each problem** into clear steps
+- [ ] **Wrote pseudocode** in simple English (not actual code)
+- [ ] **Tested your logic** by hand with the examples
+- [ ] **Used proper indentation** for loops and if statements
+- [ ] **Used clear variable names** (not just `x` and `y`)
+- [ ] **Explained your thinking** if you caught an error
+- [ ] **Are proud of your work** - these are complex problems!
 
 ---
 

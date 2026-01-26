@@ -376,11 +376,11 @@
           "points": 10
         },
         {
-          "id": "assignment-7-write-question",
-          "title": "Assessment: Writing a well-formatted question",
-          "type": "assignment",
-          "filePath": "module-7-how-to-ask-for-help/assignment-7-write-question.md",
-          "points": 20
+          "id": "lesson-7-write-question",
+          "title": "Writing a well-formatted question",
+          "type": "lesson",
+          "filePath": "module-7-how-to-ask-for-help/lesson-7-write-question.md",
+          "points": 10
         }
       ]
     },
