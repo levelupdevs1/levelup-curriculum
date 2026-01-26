@@ -4,22 +4,22 @@ The terminal, also called the command line, lets you control your computer using
 
 ## Why developers use the terminal
 
-- It can be faster than using a mouse  
-- Many tools and frameworks are designed to run from the command line  
-- It allows you to automate repetitive tasks  
-- It gives more control over your environment  
-- It is required for Git, Node.js, and most modern development workflows  
+- It can be faster than using a mouse
+- Many tools and frameworks are designed to run from the command line
+- It allows you to automate repetitive tasks
+- It gives more control over your environment
+- It is required for Git, Node.js, and most modern development workflows
 
 ## Opening the terminal in VS Code
 
 To open the integrated terminal in VS Code:
 
-- On Windows, press **Ctrl** and the **backtick (`)** key  
-- On macOS, press **Command** and the **backtick (`)** key  
+- On Windows, press **Ctrl** and the **backtick (`)** key
+- On macOS, press **Command** and the **backtick (`)** key
 
 You can also open it from the menu by selecting:
 
-- **View → Terminal**  
+- **View → Terminal**
 
 ## Basic commands to learn first
 
@@ -31,7 +31,7 @@ Shows your current folder.
 
 ```bash
 pwd
-````
+```
 
 Example output:
 
@@ -41,8 +41,8 @@ Example output:
 
 ### 2. `ls` or `dir` — List files and directories
 
-* `ls` works on macOS/Linux
-* `dir` works on Windows
+- `ls` works on macOS/Linux
+- `dir` works on Windows
 
 ```bash
 ls
@@ -66,8 +66,8 @@ cd ..
 cd /Users/john/Desktop
 ```
 
-* `cd my-project` moves into the folder
-* `cd ..` goes up one level
+- `cd my-project` moves into the folder
+- `cd ..` goes up one level
 
 ### 4. `mkdir` — Make Directory
 
@@ -113,18 +113,16 @@ mv oldname.txt newname.txt
 
 ## Helpful tips for beginners
 
-* Use the **up arrow** to repeat the last command
-* Use **Tab** to auto-complete file/folder names
-* Start with safe commands like `pwd`, `ls`, and `cd` before using `rm`
+- Use the **up arrow** to repeat the last command
+- Use **Tab** to auto-complete file/folder names
+- Start with safe commands like `pwd`, `ls`, and `cd` before using `rm`
 
 ## Helpful resources
 
-* [VS Code terminal basics](https://code.visualstudio.com/docs/terminal/basics)
-* [W3Schools command line introduction](https://www.w3schools.com/whatis/whatis_cli.asp)
-* [YouTube: Command line tutorial for beginners](https://www.youtube.com/watch?v=yz7nYlnXLfE)
+- [VS Code terminal basics](https://code.visualstudio.com/docs/terminal/basics)
+- [W3Schools command line introduction](https://www.w3schools.com/whatis/whatis_cli.asp)
+- [YouTube: Command line tutorial for beginners](https://www.youtube.com/watch?v=yz7nYlnXLfE)
 
 ## Summary
 
 The terminal is a powerful tool for developers. Once you get comfortable with a few basic commands, you will be able to navigate projects, run tools, and manage files more efficiently.
-
-```

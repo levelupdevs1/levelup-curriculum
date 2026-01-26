@@ -265,8 +265,8 @@
       "title": "Module 6: Problem-Solving & Debugging",
       "lessons": [
         {
-          "id": "lesson-0-module-introduction",
-          "title": "Module Introduction",
+          "id": "lesson-0-module-6-introduction",
+          "title": "Module 6 Introduction",
           "type": "lesson",
           "filePath": "module-6-problem-solving-debugging/lesson-0-module-introduction.md",
           "points": 0
@@ -327,8 +327,8 @@
       "title": "Module 7: How to Ask for Help",
       "lessons": [
         {
-          "id": "lesson-0-module-introduction",
-          "title": "Module Introduction",
+          "id": "lesson-0-module-7-introduction",
+          "title": "Module 7 Introduction",
           "type": "lesson",
           "filePath": "module-7-how-to-ask-for-help/lesson-0-module-introduction.md",
           "points": 0
