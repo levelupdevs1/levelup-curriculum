@@ -42,13 +42,11 @@ GitHub will show you instructions. Look for the section **"…or push an existin
 1. Refresh your GitHub page.
 2. You should see your `README.md` file there.
 
-## Submission
-
-Copy the URL of your new GitHub repository and submit it.
-
 ## Checklist
 
 - [ ] Repo exists locally
 - [ ] Has at least one commit
 - [ ] Repo exists on GitHub
 - [ ] Code is pushed from local to remote
+
+If you are able to checklist everything, you are good to go.
