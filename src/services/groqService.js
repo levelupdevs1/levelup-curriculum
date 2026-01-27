@@ -748,28 +748,69 @@ Use the exact delimiter format specified, but write natural content within each 
 };
 
 /**
- * Generate assessment (kept same, but token limit increased)
+ * FIXED: Generate assessment with full context of what student knows
+ *
+ * @param {string} lessonTitle - Title of the lesson being assessed
+ * @param {object|string} lessonContent - Content of the current lesson
+ * @param {string} assessmentType - Type of assessment (quiz, project, coding_challenge)
+ * @param {array} previousLessons - Array of previous lesson contents for context (optional)
  */
 export const generateAssessmentGroq = async (
   lessonTitle,
   lessonContent,
   assessmentType = "coding_challenge",
+  previousLessons = [],
 ) => {
+  // Extract full content text if it's an object
+  let fullLessonText = "";
+  if (typeof lessonContent === "object" && lessonContent.content) {
+    fullLessonText = lessonContent.content;
+  } else if (typeof lessonContent === "string") {
+    fullLessonText = lessonContent;
+  }
+
+  // Current lesson content (main focus of assessment)
+  const currentLessonSummary = fullLessonText.substring(0, 2000);
+
+  // Previous lessons context (what they already know)
+  let previousContext = "";
+  if (previousLessons && previousLessons.length > 0) {
+    previousContext =
+      "\n\n=== PREREQUISITE KNOWLEDGE (from previous lessons) ===\n";
+    previousContext += "The student has already learned:\n";
+    previousLessons.forEach((prevLesson, idx) => {
+      const prevContent =
+        typeof prevLesson === "object" ? prevLesson.content : prevLesson;
+      const summary = prevContent ? prevContent.substring(0, 300) : "N/A";
+      previousContext += `\nPrevious Lesson ${idx + 1}: ${summary.split("\n")[0]}...\n`;
+    });
+    previousContext +=
+      "\nYou CAN assume they know concepts from these previous lessons.\n";
+  }
+
   let prompt = "";
 
   if (assessmentType === "quiz") {
-    prompt = `Create a QUIZ assessment for this lesson:
+    prompt = `Create a QUIZ assessment for this lesson.
 
 Lesson: ${lessonTitle}
-Content Summary: ${typeof lessonContent === "string" ? lessonContent.substring(0, 500) : JSON.stringify(lessonContent).substring(0, 500)}
 
-Create 5-7 multiple choice questions that test conceptual understanding:
-- Each question should test a key concept from the lesson
+=== CURRENT LESSON CONTENT (primary focus of assessment) ===
+${currentLessonSummary}
+${previousContext}
+
+CRITICAL ASSESSMENT RULES:
+1. PRIMARY FOCUS: Test concepts from the current lesson content above
+2. You CAN use/reference concepts from previous lessons (if provided)
+3. DO NOT test concepts not yet taught (from future lessons)
+4. Match the complexity level shown in the current lesson
+
+Requirements:
+- 5-7 multiple choice questions
+- Focus on concepts from the CURRENT lesson
+- Can build on previous lesson knowledge when relevant
 - 4 options per question (one correct, three plausible distractors)
-- Include brief explanations for learning
-- Progress from easier to harder questions
-
-Use ONLY concepts actually covered in the lesson.
+- Progress from easier to harder
 
 === RESPONSE FORMAT (USE EXACT DELIMITERS) ===
 
@@ -777,7 +818,7 @@ Use ONLY concepts actually covered in the lesson.
 <<<TYPE>>>
 multiple_choice
 <<<TEXT>>>
-[Clear, specific question about a concept from the lesson]
+[Question about current lesson concept]
 <<<OPTIONS>>>
 - Option 1
 - Option 2
@@ -790,16 +831,25 @@ multiple_choice
 
 Repeat for 5-7 questions.`;
   } else if (assessmentType === "project") {
-    prompt = `Create PROJECT requirements for this lesson:
+    prompt = `Create PROJECT requirements for this lesson.
 
 Lesson: ${lessonTitle}
-Content Summary: ${typeof lessonContent === "string" ? lessonContent.substring(0, 500) : JSON.stringify(lessonContent).substring(0, 500)}
 
-Design a project that demonstrates mastery of concepts from this lesson:
-- Clear must-have features (minimum viable project)
+=== CURRENT LESSON CONTENT (primary focus) ===
+${currentLessonSummary}
+${previousContext}
+
+CRITICAL PROJECT RULES:
+1. PRIMARY FOCUS: Apply concepts from the current lesson
+2. You CAN use techniques from previous lessons (if provided)
+3. DO NOT require knowledge not yet taught
+4. Project should feel achievable with current knowledge
+
+Requirements:
+- Project demonstrates mastery of current lesson concepts
+- Can integrate previous lesson knowledge naturally
+- Clear must-have features (achievable with what they know)
 - Optional stretch goals for extra practice
-- Realistic tech stack based on lesson content
-- Clear evaluation criteria
 
 === RESPONSE FORMAT (USE EXACT DELIMITERS) ===
 
@@ -807,32 +857,41 @@ Design a project that demonstrates mastery of concepts from this lesson:
 <<<TYPE>>>
 project
 <<<TEXT>>>
-Build a [specific project] that demonstrates [key concepts from lesson]
+Build a [specific project] that demonstrates [concepts from current lesson]
 <<<HINTS>>>
-- Must-have feature 1
-- Must-have feature 2
-- Must-have feature 3
+- Must-have feature 1 (using current lesson concept)
+- Must-have feature 2 (using current lesson concept)
+- Must-have feature 3 (can combine with previous knowledge)
 <<<TEST_CASES>>>
-Stretch goal 1
-Stretch goal 2
+Stretch goal 1 (extends current concepts)
+Stretch goal 2 (combines current + previous concepts)
 <<<STARTER_CODE>>>
 Submission format: GitHub repository URL required. Live deployment URL optional but recommended.
 <<<POINTS>>>
 100`;
   } else {
     // Default: coding_challenge
-    prompt = `Create CODING CHALLENGE assessment for this lesson:
+    prompt = `Create CODING CHALLENGE assessment for this lesson.
 
 Lesson: ${lessonTitle}
-Content Summary: ${typeof lessonContent === "string" ? lessonContent.substring(0, 500) : JSON.stringify(lessonContent).substring(0, 500)}
 
-Create 3-5 coding challenges that test practical application:
-- Each challenge should require using concepts from the lesson
+=== CURRENT LESSON CONTENT (primary focus) ===
+${currentLessonSummary}
+${previousContext}
+
+CRITICAL CHALLENGE RULES:
+1. PRIMARY FOCUS: Test current lesson concepts
+2. You CAN use techniques from previous lessons (if provided)
+3. DO NOT require knowledge not yet taught
+4. Match complexity of current lesson examples
+
+Requirements:
+- 3-5 coding challenges
+- Focus on applying concepts from current lesson
+- Can naturally use previous lesson knowledge
 - Include clear requirements and expected behavior
-- Provide starter code or template when helpful
+- Provide starter code when helpful
 - Progress from simpler to more complex
-
-Use ONLY techniques actually taught in the lesson.
 
 === RESPONSE FORMAT (USE EXACT DELIMITERS) ===
 
@@ -840,15 +899,15 @@ Use ONLY techniques actually taught in the lesson.
 <<<TYPE>>>
 code_challenge
 <<<TEXT>>>
-[Clear description of what to build/solve]
+[Description focusing on current lesson concepts]
 <<<STARTER_CODE>>>
-[Optional starter code or template]
+[Optional starter code using appropriate syntax]
 <<<TEST_CASES>>>
 input1 -> expected output1
 input2 -> expected output2
 <<<HINTS>>>
-- Hint about approach
-- Consider edge cases
+- Use [technique from current lesson]
+- Consider [concept from current lesson]
 <<<POINTS>>>
 20
 
@@ -858,8 +917,24 @@ Repeat for 3-5 challenges.`;
   const messages = [
     {
       role: "system",
-      content:
-        "You are an expert educator creating practical assessments. Design challenges that test real understanding and skill, not just memorization. Use the exact delimiter format specified.",
+      content: `You are an expert educator creating assessments that are PERFECTLY ALIGNED with lesson progression.
+
+CRITICAL RULES:
+1. PRIMARY FOCUS: Assess concepts from the current lesson being tested
+2. FOUNDATION: Assume knowledge from previous lessons (if provided)
+3. NO FUTURE KNOWLEDGE: Don't test concepts not yet taught
+4. NATURAL INTEGRATION: Combine current + previous knowledge naturally
+
+Examples:
+- Current lesson: Arrays | Previous: Variables, Functions
+  ✅ "Create an array and write a function to find the maximum value"
+  ❌ "Create an array and sort it using a custom comparator class" (classes not taught yet)
+
+- Current lesson: Functions | Previous: Variables
+  ✅ "Write a function that takes two variables and returns their sum"
+  ❌ "Write a function that uses arrays" (arrays not taught yet)
+
+Use the exact delimiter format specified.`,
     },
     {
       role: "user",
@@ -869,7 +944,7 @@ Repeat for 3-5 challenges.`;
 
   const result = await callGroq(messages, {
     temperature: 0.5,
-    maxTokens: 3000, // INCREASED from 2000
+    maxTokens: 3000,
   });
 
   if (!result.success) {
