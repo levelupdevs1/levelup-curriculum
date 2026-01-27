@@ -1,8 +1,8 @@
 /**
- * Groq Service - Fallback AI Provider
+ * Groq Service - Fallback AI Provider (UPDATED)
  * Provider: Groq (Free tier, unlimited beta)
  * Models: Mixtral 8x7b, LLaMA 3.3 70b, LLaMA 3.1 70b
- * Anti-hallucination: Strict prompt engineering, fact-based only
+ * IMPROVEMENTS: Better prompts, skill-level adaptation, comprehensive content
  */
 
 import { validateProjectSubmission } from "./projectValidationService";
@@ -86,82 +86,201 @@ const callGroq = async (messages, options = {}) => {
 };
 
 /**
- * Generate course catalog with Groq (matching Gemini prompt exactly)
- * AI determines optimal course count based on learning goal complexity
+ * UPDATED: Generate course catalog with skill-level adaptation
  */
 export const generateCourseCatalogGroq = async (userProfile) => {
-  const prompt = `You are an expert educational content designer creating a PERSONALIZED learning path.
+  // Skill-level specific guidance
+  const skillGuidance = {
+    "Complete Beginner": {
+      approach:
+        "Start with absolute fundamentals. Assume ZERO prior knowledge. Build confidence through achievable milestones.",
+      courseCount: "4-6 courses for solid foundation",
+      pacing: "Slower, thorough progression with lots of practice",
+    },
+    "Some Experience": {
+      approach:
+        "Build on existing knowledge. Fill gaps and introduce industry best practices.",
+      courseCount: "4-5 courses focusing on depth and real-world application",
+      pacing: "Moderate progression with practical projects",
+    },
+    Experienced: {
+      approach:
+        "Advanced patterns, architecture, optimization, and system design.",
+      courseCount: "3-4 focused courses on mastery and specialization",
+      pacing: "Fast progression, emphasis on nuance and trade-offs",
+    },
+  };
 
-=== ANTI-HALLUCINATION PROTOCOL (MANDATORY) ===
-YOU MUST NEVER:
-- Invent frameworks, libraries, or tools that don't exist
-- Create fictional concepts or terminology
-- Reference non-existent documentation or resources
-- Make up technologies or version numbers
-- Suggest courses for technologies the user didn't express interest in
+  const guidance =
+    skillGuidance[userProfile.skill_level] || skillGuidance["Some Experience"];
 
-YOU MUST ONLY:
-- Use well-established, documented technologies (React, Node.js, Python, etc.)
-- Reference real, verifiable frameworks and tools
-- Create courses that directly address the user's stated learning goal
-- Base content on real-world industry requirements
+  const prompt = `You are designing a COMPLETE learning path for a real student who wants to get job-ready.
 
-=== LEARNER PROFILE ===
+=== STUDENT PROFILE ===
 Learning Goal: ${userProfile.learning_goal}
 Skill Level: ${userProfile.skill_level}
 Career Goal: ${userProfile.goal}
-Time Commitment: ${userProfile.time_commitment}
+Time Commitment: ${userProfile.time_commitment} per week
 Learning Style: ${userProfile.learning_style}
 
-=== TASK ===
-Generate a comprehensive learning path with the courses needed to achieve the learner's goal.
-Minimum 3 courses, but generate as many as needed to properly cover the learning goal.
-For complex goals like "full-stack development", generate 5-8 courses.
-For focused goals, 3-4 courses may suffice.
+=== YOUR APPROACH ===
+${guidance.approach}
+Expected Course Count: ${guidance.courseCount}
+Pacing: ${guidance.pacing}
 
-COURSE REQUIREMENTS:
-1. Title: 40-60 characters, specific and actionable (e.g., "Build REST APIs with Node.js & Express")
-2. Description: 150-250 characters, 2-3 sentences, mention REAL technologies only
-3. Difficulty: EXACTLY one of "Beginner", "Intermediate", or "Advanced"
-4. Estimated hours: Number between 10-100 (realistic for the content)
-5. Modules count: Number between 4-8 (based on topic complexity)
-6. Potential tokens: Number between 300-800
-7. Tags: 3-5 relevant tags (10-20 characters each)
+=== QUALITY STANDARDS ===
+Use only REAL, widely-adopted technologies:
+✅ Programming languages: JavaScript, Python, Java, C++, C#, Go, Rust, etc.
+✅ Web frameworks: React, Vue, Angular, Django, Flask, Spring Boot, Express, etc.
+✅ Databases: PostgreSQL, MongoDB, MySQL, Redis, SQLite, etc.
+✅ Tools & platforms: Git, Docker, AWS, Heroku, VS Code, etc.
+✅ Libraries with official documentation and active maintenance
+✅ Technologies currently used in production by real companies
 
-LEARNING PATH LOGIC:
-- Course 1: Foundation skills for the stated learning goal
-- Course 2-N: Progressive complexity building toward career goal
-- Each course should logically follow the previous
-- Final course should be project-focused for portfolio building
+❌ Experimental/beta libraries without stable releases
+❌ Obscure frameworks with poor documentation
+❌ Deprecated technologies
+❌ Made-up tools or fictional frameworks
 
-=== RESPONSE FORMAT (USE THESE EXACT DELIMITERS) ===
-For each course, use these delimiters:
+${
+  userProfile.skill_level === "Complete Beginner"
+    ? `
+=== SPECIAL GUIDANCE FOR COMPLETE BEGINNERS ===
+Your first course MUST start with:
+- What is programming?
+- How does code actually work?
+- Setting up the development environment
+- Writing and running your first program
+
+Each course should:
+- Build confidence through small, achievable wins
+- Introduce ONE major concept at a time
+- Include lots of hands-on practice
+- Use analogies and real-world examples
+- Assume they know NOTHING about coding
+
+Example progression:
+1. Programming Fundamentals with JavaScript
+2. Building Interactive Web Pages with HTML/CSS/JS
+3. JavaScript Projects and Problem Solving
+4. Modern Web Development with React
+5. Building Full Applications with Backend
+6. Portfolio Project and Job Prep
+`
+    : userProfile.skill_level === "Experienced"
+      ? `
+=== SPECIAL GUIDANCE FOR EXPERIENCED DEVELOPERS ===
+Skip the basics. Focus on:
+- Advanced design patterns and architecture
+- Performance optimization and scalability
+- System design and trade-offs
+- Production-ready code practices
+- Industry-standard tooling and workflows
+
+Each course should challenge them to level up to senior/lead roles.
+`
+      : `
+=== GUIDANCE FOR DEVELOPERS WITH SOME EXPERIENCE ===
+Build on what they know while filling critical gaps:
+- Reinforce fundamentals that may be shaky
+- Introduce professional development practices
+- Cover testing, deployment, and production concerns
+- Bridge tutorial knowledge to real-world application
+`
+}
+
+=== COURSE STRUCTURE REQUIREMENTS ===
+Each course must include:
+
+1. **Title** (40-60 characters)
+   - Action-oriented and specific
+   - Mention key technology
+   - ✅ "Build REST APIs with Node.js & Express"
+   - ✅ "Master React Hooks and State Management"
+   - ❌ "Learn Backend" (too vague)
+   - ❌ "Introduction to Programming" (too generic)
+
+2. **Description** (150-250 characters)
+   - What they'll BUILD (concrete projects)
+   - What they'll UNDERSTAND (key concepts)
+   - Technologies they'll use
+   - Should excite them about what they'll create
+
+3. **Difficulty**
+   - Beginner | Intermediate | Advanced
+   - First course should match their current level or slightly below
+   - Each subsequent course increases difficulty appropriately
+
+4. **Estimated Hours** (realistic for deep learning)
+   - Complete Beginner: 30-60 hours per course
+   - Some Experience: 25-45 hours per course
+   - Experienced: 20-40 hours per course
+
+5. **Modules Count**: 5-8 modules
+   - Each module = 1 major concept/skill cluster
+   - Enough to thoroughly cover the topic
+
+6. **Potential Tokens**: 400-700
+   - Higher for foundational courses
+   - Moderate for specialized courses
+
+7. **Tags**: 4-6 relevant tags
+   - Include technologies, concepts, project types
+   - Help with searchability
+
+=== LEARNING PATH LOGIC ===
+Design a clear progression:
+
+Course 1: Foundation for their learning goal
+- If beginner: Start with basics of the main technology
+- If experienced: Start with advanced concepts in their focus area
+
+Course 2-N: Build complexity toward career goal
+- Each course introduces new concepts while reinforcing previous learning
+- Include increasingly complex projects
+- Cover professional practices (testing, deployment, etc.)
+
+Final Course: Portfolio-worthy capstone project
+- Demonstrates job-ready skills
+- Uses technologies from entire learning path
+- Can be shown to potential employers
+
+=== RESPONSE FORMAT (USE EXACT DELIMITERS) ===
 
 <<<COURSE>>>
 <<<TITLE>>>
-Course title here (40-60 characters)
+[Action-oriented title, 40-60 characters]
 <<<DESCRIPTION>>>
-Course description here (150-250 characters)
+[What they'll build and learn, 150-250 characters, mention specific technologies]
 <<<DIFFICULTY>>>
 Beginner | Intermediate | Advanced
 <<<HOURS>>>
-Number between 10-100
+[15-80 hours, realistic for comprehensive learning]
 <<<MODULES_COUNT>>>
-Number between 4-8
+[5-8 modules]
 <<<TOKENS>>>
-Number between 300-800
+[400-700]
 <<<TAGS>>>
 - tag1
 - tag2
 - tag3
+- tag4
 
-Generate at least 3 courses. Include more if the learning goal requires comprehensive coverage.`;
+Generate ${guidance.courseCount} that will take them from their current level to job-ready.
+Each course should feel substantial and valuable.`;
 
   const messages = [
     {
       role: "system",
-      content:
-        "You are an AI learning path designer following The Odin Project standards: practical, hands-on, project-based learning. Use the exact delimiter format specified.",
+      content: `You are an expert curriculum designer creating learning paths for real students seeking employment.
+
+Your courses should be:
+1. Comprehensive and substantial (not superficial)
+2. Based only on real, well-documented technologies
+3. Appropriate for the learner's skill level
+4. Designed to make them job-ready
+
+Use the exact delimiter format specified. Be creative with course design while staying grounded in real technologies.`,
     },
     {
       role: "user",
@@ -170,8 +289,8 @@ Generate at least 3 courses. Include more if the learning goal requires comprehe
   ];
 
   const result = await callGroq(messages, {
-    temperature: 0.8,
-    maxTokens: 2500,
+    temperature: 0.7,
+    maxTokens: 4000, // INCREASED from 2500
   });
 
   if (!result.success) {
@@ -198,90 +317,107 @@ Generate at least 3 courses. Include more if the learning goal requires comprehe
 };
 
 /**
- * Generate course structure (modules and lessons) with Groq (matching Gemini prompt exactly)
+ * UPDATED: Generate course structure with better guidance
  */
 export const generateCourseStructureGroq = async (
   courseTitle,
   courseDescription,
   modulesCount,
 ) => {
-  const prompt = `You are creating curriculum for a SERIOUS developer learning platform following The Odin Project methodology.
+  const prompt = `You are creating a detailed curriculum for a serious developer education platform.
 
 Course: "${courseTitle}"
 Description: ${courseDescription}
+Required Modules: EXACTLY ${modulesCount} modules
 
-=== ANTI-HALLUCINATION PROTOCOL (MANDATORY) ===
-YOU MUST NEVER:
-- Invent frameworks, libraries, or tools that don't exist
-- Create fictional concepts or terminology
-- Reference non-existent documentation or resources
-- Make up version numbers or release dates
-- Fabricate best practices that aren't widely recognized
+=== QUALITY STANDARDS ===
+Use ONLY real, documented technologies and concepts:
+✅ Standard language features from official documentation
+✅ Well-known frameworks and libraries (React, Django, Spring, etc.)
+✅ Official APIs and standard libraries for the language being taught
+✅ Industry-standard patterns and practices
+✅ Tools and packages with official documentation
 
-YOU MUST ONLY:
-- Use well-established, documented technologies
-- Reference real, verifiable concepts from official documentation
-- Follow industry-standard practices with proven track records
-- Base content on MDN, official docs, and recognized educational sources
+❌ Made-up APIs or methods that don't exist
+❌ Fictional frameworks or libraries
+❌ Invented terminology or non-standard patterns
+❌ Deprecated or obsolete features
 
-=== STRICT STRUCTURE REQUIREMENTS ===
-1. Generate EXACTLY ${modulesCount} modules - NO MORE, NO LESS
-2. Each module: 5-7 lessons (realistic, comprehensive progression)
-3. Lesson types MUST follow The Odin Project pattern:
-   - "reading": Theory, concepts, documentation study (30-45min)
-   - "practice": Hands-on coding exercises (45-60min)
-   - "project": Build real applications (2-4 hours)
-4. Module structure MUST be:
-   - Lesson 1-2: "reading" (foundation)
-   - Lesson 3-5: "practice" (application)
-   - Lesson 6-7: "project" (synthesis)
+=== MODULE & LESSON STRUCTURE ===
 
-=== COMPREHENSIVE LEARNING PATH ===
-- Each topic must be covered deeply enough for real-world application
+**You MUST generate EXACTLY ${modulesCount} modules.**
+
+Each module should:
+- Focus on ONE major concept/skill
+- Include 5-7 lessons
+- Progress from theory to practice to project
+- Build on previous modules
+
+Lesson Type Distribution (The Odin Project style):
+- **reading** (30-45 min): Theory, concepts, documentation study
+- **practice** (45-60 min): Hands-on coding exercises
+- **project** (2-4 hours): Build real applications
+
+Typical module structure:
+- Lesson 1-2: **reading** (establish foundation)
+- Lesson 3-5: **practice** (apply concepts)
+- Lesson 6-7: **project** (synthesize learning)
+
+=== ASSESSMENT PHILOSOPHY ===
+Only 30-40% of lessons need assessments:
+- **reading** lessons: Usually NO assessment (learning happens in practice)
+- **practice** lessons: coding_challenge (for key practice lessons)
+- **project** lessons: ALWAYS include project assessment
+- Intro/overview lessons: NO assessment
+
+=== COMPREHENSIVE COVERAGE ===
+This is NOT a surface-level overview. Each topic should be:
+- Explained thoroughly enough for real-world use
 - Include prerequisite concepts explicitly
-- Build complexity gradually with clear progression
-- Focus on UNDERSTANDING over memorization
-- Connect concepts to practical use cases
+- Build complexity gradually
+- Connect to practical applications
+- Prepare students for professional work
 
-=== ASSESSMENT PHILOSOPHY (STRICT) ===
-ONLY 30-40% of lessons should have assessments:
-- "reading" lessons: NO assessment (comprehension comes from practice)
-- "practice" lessons: coding_challenge (every 2nd practice lesson)
-- "project" lessons: ALWAYS project assessment
-- Module intro/overview: NEVER assessed
-
-=== RESPONSE FORMAT (USE THESE EXACT DELIMITERS) ===
-For each module and lesson, use these delimiters:
+=== RESPONSE FORMAT (USE EXACT DELIMITERS) ===
 
 <<<MODULE>>>
 <<<MODULE_TITLE>>>
-Module title here
+[Clear, descriptive module title]
 <<<MODULE_DESCRIPTION>>>
-What students will BUILD and UNDERSTAND (under 120 chars)
+[What students will BUILD and UNDERSTAND - under 120 characters]
+
 <<<LESSON>>>
 <<<LESSON_TITLE>>>
-Lesson title here
+[Specific, actionable lesson title]
 <<<LESSON_TYPE>>>
 reading | practice | project
 <<<LESSON_MINUTES>>>
-30-240
+[30-240 minutes, realistic for content depth]
 <<<LESSON_DESCRIPTION>>>
-Concrete learning outcome (under 100 chars)
+[Concrete learning outcome - under 100 characters]
 <<<REQUIRES_ASSESSMENT>>>
 true | false
 <<<ASSESSMENT_TYPE>>>
 coding_challenge | project | null
 
-Repeat <<<LESSON>>> block for each lesson in the module.
-Repeat <<<MODULE>>> block for each module.
+[Repeat <<<LESSON>>> block 5-7 times per module]
 
-FINAL CHECK: Count your modules. Must be EXACTLY ${modulesCount}.`;
+[Repeat <<<MODULE>>> block EXACTLY ${modulesCount} times]
+
+**CRITICAL**: Count your modules before submitting. You MUST have EXACTLY ${modulesCount} modules.`;
 
   const messages = [
     {
       role: "system",
-      content:
-        "You are an expert curriculum designer for a serious developer education platform. Follow The Odin Project standards: practical, hands-on, NO fluff. Use the exact delimiter format specified.",
+      content: `You are an expert curriculum designer following The Odin Project methodology: practical, hands-on, project-based learning.
+
+Create comprehensive course structures that:
+1. Cover topics thoroughly (not superficially)
+2. Use only real, documented technologies
+3. Build skills progressively
+4. Prepare students for real-world development
+
+Use the exact delimiter format specified.`,
     },
     {
       role: "user",
@@ -291,7 +427,7 @@ FINAL CHECK: Count your modules. Must be EXACTLY ${modulesCount}.`;
 
   const result = await callGroq(messages, {
     temperature: 0.7,
-    maxTokens: 8000,
+    maxTokens: 10000, // INCREASED from 8000
   });
 
   if (!result.success) {
@@ -303,6 +439,9 @@ FINAL CHECK: Count your modules. Must be EXACTLY ${modulesCount}.`;
 
     // VALIDATION: Ensure module count matches specification
     if (!structure.modules || structure.modules.length !== modulesCount) {
+      console.warn(
+        `Expected ${modulesCount} modules, got ${structure.modules?.length || 0}`,
+      );
     }
 
     // VALIDATION: Ensure each module has lessons
@@ -352,12 +491,606 @@ FINAL CHECK: Count your modules. Must be EXACTLY ${modulesCount}.`;
 };
 
 /**
- * Parse delimiter-based lesson content into structured object
+ * FIXED: Generate lesson content that adapts to actual lesson needs (no forced templates)
  */
+export const generateLessonContentGroq = async (
+  courseTitle,
+  moduleTitle,
+  lessonTitle,
+  lessonType = "reading",
+  skillLevel = "Some Experience",
+) => {
+  // Skill-level specific teaching approaches
+  const teachingApproach = {
+    "Complete Beginner": {
+      wordCount: "2000-3000 words",
+      examples: "4-6 clear code examples",
+      depth:
+        "Explain concepts from first principles. Define technical terms. Use simple language.",
+    },
+    "Some Experience": {
+      wordCount: "1500-2500 words",
+      examples: "3-5 practical examples",
+      depth:
+        "Build on existing knowledge. Focus on real-world application and best practices.",
+    },
+    Experienced: {
+      wordCount: "1200-2000 words",
+      examples: "2-4 production examples",
+      depth:
+        "Advanced patterns, architecture, optimization. Assume strong fundamentals.",
+    },
+  };
+
+  const approach =
+    teachingApproach[skillLevel] || teachingApproach["Some Experience"];
+
+  // Detect primary language/technology from all available titles
+  const detectLanguage = (courseTitle, moduleTitle, lessonTitle) => {
+    const combined =
+      `${courseTitle} ${moduleTitle} ${lessonTitle}`.toLowerCase();
+
+    // Check for specific languages (order matters - check specific before general)
+    if (combined.match(/\btypescript\b|\b\.ts\b/)) return "TypeScript";
+    if (combined.match(/\bjava\b/) && !combined.match(/javascript/))
+      return "Java";
+    if (
+      combined.match(/\b(javascript|js|react|vue|angular|node\.js|express)\b/)
+    )
+      return "JavaScript";
+    if (combined.match(/\b(python|django|flask|pandas|numpy)\b/))
+      return "Python";
+    if (combined.match(/\b(c\+\+|cpp)\b/)) return "C++";
+    if (combined.match(/\b(c#|csharp|\.net|dotnet)\b/)) return "C#";
+    if (combined.match(/\b(ruby|rails)\b/)) return "Ruby";
+    if (combined.match(/\b(go|golang)\b/)) return "Go";
+    if (combined.match(/\b(rust)\b/)) return "Rust";
+    if (combined.match(/\b(php|laravel|symfony)\b/)) return "PHP";
+    if (combined.match(/\b(swift|ios)\b/)) return "Swift";
+    if (combined.match(/\b(kotlin|android)\b/)) return "Kotlin";
+    if (combined.match(/\b(sql|mysql|postgresql|database)\b/)) return "SQL";
+
+    return null; // Will use generic examples
+  };
+
+  const language = detectLanguage(courseTitle, moduleTitle, lessonTitle);
+
+  const prompt = `Create comprehensive lesson content for: "${lessonTitle}"
+
+Context:
+- Course: ${courseTitle}
+- Module: ${moduleTitle}
+- Lesson Type: ${lessonType}
+- Student Level: ${skillLevel}
+${language ? `- Primary Language/Technology: ${language}` : ""}
+
+=== TEACHING GUIDELINES ===
+${approach.depth}
+
+Expected content: ${approach.wordCount}
+Code examples: ${approach.examples}
+${language ? `\nIMPORTANT: Use ${language} syntax and conventions in ALL code examples. Reference ${language}-specific documentation.` : "\nIMPORTANT: Use appropriate syntax for the technology being taught. Reference official documentation."}
+
+=== CONTENT REQUIREMENTS ===
+
+**Adapt your lesson structure to what THIS SPECIFIC LESSON needs:**
+
+${
+  lessonType === "reading"
+    ? `
+This is a READING lesson - focus on explanation and understanding:
+- Explain concepts clearly with appropriate depth for ${skillLevel}
+- Use code examples to illustrate concepts (when relevant)
+- Include diagrams or visualizations if helpful (using markdown)
+- NO hands-on exercises (this is reading/learning, not practice)
+`
+    : lessonType === "practice"
+      ? `
+This is a PRACTICE lesson - focus on doing:
+- Brief concept review
+- Multiple practical coding exercises
+- Clear instructions for each exercise
+- Expected outcomes
+`
+      : `
+This is a PROJECT lesson - focus on building:
+- Project requirements and goals
+- Technical specifications
+- Step-by-step guidance
+- Testing/validation criteria
+`
+}
+
+**Content Structure Guidelines (adapt as needed):**
+
+${
+  skillLevel === "Complete Beginner"
+    ? `
+For Complete Beginners:
+- Explain WHAT the topic is before diving into HOW
+- Use analogies or real-world comparisons when helpful (but don't force them)
+- Define technical terms when first used
+- Show simple examples before complex ones
+- Point out common mistakes when relevant
+
+Structure your lesson naturally:
+- Some lessons need analogies (abstract concepts like variables, OOP, memory management)
+- Some lessons DON'T need analogies (concrete tools like IDE setup, package installation)
+- Adapt based on whether the lesson is conceptual, practical, or instructional
+`
+    : skillLevel === "Experienced"
+      ? `
+For Experienced Developers:
+- Skip basics, dive into technical depth
+- Focus on design decisions and trade-offs
+- Cover performance and scalability implications
+- Discuss when to use different approaches
+- Include production considerations
+`
+      : `
+For Intermediate Learners:
+- Balance theory with practical application
+- Show professional patterns and practices
+- Cover common pitfalls and how to avoid them
+- Connect concepts to real-world usage
+`
+}
+
+**Quality Standards:**
+- Use ONLY real, documented technologies, libraries, and APIs
+- All code examples must use correct, working syntax for the language being taught
+- Reference official documentation (language docs, framework docs, etc.)
+- NO emojis or special characters (no ❌ ✅ 🚀 - use plain text)
+- Write in clear, professional markdown
+- Adapt examples to the course's technology stack (JavaScript, Python, Java, etc.)
+
+**DO NOT:**
+- Force every lesson into the same template
+- Include "Hands-On Practice" sections in reading lessons
+- Use repetitive phrases like "Let's build something you can actually use!"
+- Add exercises when the lesson is purely conceptual or instructional
+- Use placeholder text like "[Topic]" or "[Explain here]"
+- Start every lesson with "What is [Topic]? (Starting from Scratch)"
+
+**DO:**
+- Structure the lesson based on what it's actually teaching
+- Make code examples realistic and relevant
+- Explain WHY things work, not just HOW
+- Keep tone professional and clear
+- Adapt depth to skill level
+- Vary your opening based on lesson type (setup lessons, concept lessons, etc.)
+
+=== RESPONSE FORMAT ===
+
+<<<OBJECTIVES>>>
+- [3-5 clear learning objectives specific to THIS lesson]
+- [What students will understand or be able to do]
+- [Written naturally, not as a template]
+
+<<<CONTENT>>>
+[Write your lesson content here using natural markdown structure]
+
+[Organize with appropriate headers based on the lesson topic]
+
+[Include code examples where they help explain concepts]
+
+[NO forced templates - adapt to lesson needs]
+
+<<<KEY_TAKEAWAYS>>>
+- [Main points from this lesson]
+- [Skills or knowledge gained]
+- [2-4 concise takeaways]
+
+<<<RESOURCES>>>
+- [Source Name]: [Topic] | [Real URL] | [Brief description]
+- [Only include verified sources: MDN, official docs, JavaScript.info, Web.dev]
+- [2-4 relevant resources]
+
+Write comprehensive content (${approach.wordCount}) that teaches this lesson effectively.`;
+
+  const messages = [
+    {
+      role: "system",
+      content: `You are an expert technical educator creating lesson content.
+
+Key principles:
+- Adapt content structure to what each lesson actually needs
+- Don't force every lesson into the same template
+- Use clear, professional language (NO emojis)
+- Make code examples realistic and working
+- Vary your approach based on lesson type and topic
+
+Reading lessons: Focus on explanation and understanding
+Practice lessons: Focus on exercises and application  
+Project lessons: Focus on building something complete
+
+Use the exact delimiter format specified, but write natural content within each section.`,
+    },
+    {
+      role: "user",
+      content: prompt,
+    },
+  ];
+
+  const result = await callGroq(messages, {
+    temperature: 0.6,
+    maxTokens: 8000,
+  });
+
+  if (!result.success) {
+    return result;
+  }
+
+  try {
+    const lessonData = parseLessonContent(result.content);
+
+    // Validate content length based on skill level
+    const minLength = skillLevel === "Complete Beginner" ? 1500 : 1000;
+    if (!lessonData.content || lessonData.content.length < minLength) {
+      return {
+        success: false,
+        error: `Content too short for ${skillLevel} level. Got ${lessonData.content?.length || 0} characters, expected at least ${minLength}.`,
+      };
+    }
+
+    return {
+      success: true,
+      content: lessonData,
+      tokensUsed: result.usage.totalTokens,
+      model: result.model,
+    };
+  } catch (parseError) {
+    return {
+      success: false,
+      error: `Failed to parse lesson content: ${parseError.message}`,
+    };
+  }
+};
+
+/**
+ * Generate assessment (kept same, but token limit increased)
+ */
+export const generateAssessmentGroq = async (
+  lessonTitle,
+  lessonContent,
+  assessmentType = "coding_challenge",
+) => {
+  let prompt = "";
+
+  if (assessmentType === "quiz") {
+    prompt = `Create a QUIZ assessment for this lesson:
+
+Lesson: ${lessonTitle}
+Content Summary: ${typeof lessonContent === "string" ? lessonContent.substring(0, 500) : JSON.stringify(lessonContent).substring(0, 500)}
+
+Create 5-7 multiple choice questions that test conceptual understanding:
+- Each question should test a key concept from the lesson
+- 4 options per question (one correct, three plausible distractors)
+- Include brief explanations for learning
+- Progress from easier to harder questions
+
+Use ONLY concepts actually covered in the lesson.
+
+=== RESPONSE FORMAT (USE EXACT DELIMITERS) ===
+
+<<<QUESTION>>>
+<<<TYPE>>>
+multiple_choice
+<<<TEXT>>>
+[Clear, specific question about a concept from the lesson]
+<<<OPTIONS>>>
+- Option 1
+- Option 2
+- Option 3
+- Option 4
+<<<CORRECT>>>
+[The correct option text or index 0-3]
+<<<POINTS>>>
+10
+
+Repeat for 5-7 questions.`;
+  } else if (assessmentType === "project") {
+    prompt = `Create PROJECT requirements for this lesson:
+
+Lesson: ${lessonTitle}
+Content Summary: ${typeof lessonContent === "string" ? lessonContent.substring(0, 500) : JSON.stringify(lessonContent).substring(0, 500)}
+
+Design a project that demonstrates mastery of concepts from this lesson:
+- Clear must-have features (minimum viable project)
+- Optional stretch goals for extra practice
+- Realistic tech stack based on lesson content
+- Clear evaluation criteria
+
+=== RESPONSE FORMAT (USE EXACT DELIMITERS) ===
+
+<<<QUESTION>>>
+<<<TYPE>>>
+project
+<<<TEXT>>>
+Build a [specific project] that demonstrates [key concepts from lesson]
+<<<HINTS>>>
+- Must-have feature 1
+- Must-have feature 2
+- Must-have feature 3
+<<<TEST_CASES>>>
+Stretch goal 1
+Stretch goal 2
+<<<STARTER_CODE>>>
+Submission format: GitHub repository URL required. Live deployment URL optional but recommended.
+<<<POINTS>>>
+100`;
+  } else {
+    // Default: coding_challenge
+    prompt = `Create CODING CHALLENGE assessment for this lesson:
+
+Lesson: ${lessonTitle}
+Content Summary: ${typeof lessonContent === "string" ? lessonContent.substring(0, 500) : JSON.stringify(lessonContent).substring(0, 500)}
+
+Create 3-5 coding challenges that test practical application:
+- Each challenge should require using concepts from the lesson
+- Include clear requirements and expected behavior
+- Provide starter code or template when helpful
+- Progress from simpler to more complex
+
+Use ONLY techniques actually taught in the lesson.
+
+=== RESPONSE FORMAT (USE EXACT DELIMITERS) ===
+
+<<<QUESTION>>>
+<<<TYPE>>>
+code_challenge
+<<<TEXT>>>
+[Clear description of what to build/solve]
+<<<STARTER_CODE>>>
+[Optional starter code or template]
+<<<TEST_CASES>>>
+input1 -> expected output1
+input2 -> expected output2
+<<<HINTS>>>
+- Hint about approach
+- Consider edge cases
+<<<POINTS>>>
+20
+
+Repeat for 3-5 challenges.`;
+  }
+
+  const messages = [
+    {
+      role: "system",
+      content:
+        "You are an expert educator creating practical assessments. Design challenges that test real understanding and skill, not just memorization. Use the exact delimiter format specified.",
+    },
+    {
+      role: "user",
+      content: prompt,
+    },
+  ];
+
+  const result = await callGroq(messages, {
+    temperature: 0.5,
+    maxTokens: 3000, // INCREASED from 2000
+  });
+
+  if (!result.success) {
+    return result;
+  }
+
+  try {
+    const assessment = parseAssessment(result.content);
+    if (!assessment.questions || assessment.questions.length === 0) {
+      throw new Error("No questions parsed from response");
+    }
+    return {
+      success: true,
+      assessment,
+      tokensUsed: result.usage.totalTokens,
+      model: result.model,
+    };
+  } catch (parseError) {
+    return {
+      success: false,
+      error: `Failed to parse assessment: ${parseError.message}`,
+    };
+  }
+};
+
+/**
+ * Review entire assessment submission (unchanged)
+ */
+export const reviewSubmissionBatchGroq = async (
+  questions,
+  submissionAnswers,
+) => {
+  // Check for project-type questions and validate them
+  const projectQuestions = questions.filter((q) => q.type === "project");
+  const projectValidations = {};
+
+  for (const pq of projectQuestions) {
+    const submission = submissionAnswers[pq.id];
+    if (submission && typeof submission === "object") {
+      const validation = await validateProjectSubmission(
+        submission,
+        pq.question,
+      );
+      projectValidations[pq.id] = validation;
+    }
+  }
+
+  // Build structured format with all Q&A pairs
+  const questionsData = questions
+    .map((q, idx) => {
+      let answerText = submissionAnswers[q.id];
+
+      // For multiple choice, map index to actual option text
+      if (q.type === "multiple_choice" && answerText !== undefined) {
+        const answerIndex = parseInt(answerText);
+        if (!isNaN(answerIndex) && q.options && q.options[answerIndex]) {
+          answerText = q.options[answerIndex];
+        }
+      }
+
+      // For project submissions, use validated content
+      if (
+        q.type === "project" &&
+        typeof answerText === "object" &&
+        answerText !== null
+      ) {
+        const validation = projectValidations[q.id];
+        if (validation && validation.formattedContent) {
+          answerText = validation.formattedContent;
+        } else {
+          const projectParts = [];
+          if (answerText.repoUrl)
+            projectParts.push(`GitHub Repository: ${answerText.repoUrl}`);
+          if (answerText.liveUrl)
+            projectParts.push(`Live Demo: ${answerText.liveUrl}`);
+          answerText =
+            projectParts.length > 0
+              ? projectParts.join("\n") +
+                "\n\nWARNING: Project content could not be validated. Review URLs manually."
+              : "[NO PROJECT LINKS PROVIDED]";
+        }
+      }
+
+      // Handle unanswered questions
+      if (answerText === undefined || answerText === "") {
+        answerText = "[NO ANSWER PROVIDED]";
+      }
+
+      return `
+Question ${idx + 1} (${q.type}): ${q.question}
+${q.options ? `Options: ${q.options.map((opt, i) => `${i + 1}. ${opt}`).join(" | ")}` : ""}
+Student Answer: ${answerText}
+---`;
+    })
+    .join("\n");
+
+  const hasProjectQuestions = questions.some((q) => q.type === "project");
+  const projectMeta = hasProjectQuestions
+    ? Object.values(projectValidations)[0]?.validationSummary
+    : null;
+
+  const prompt = `Review this student's assessment submission. For EACH question, provide personalized feedback.
+
+ASSESSMENT QUESTIONS AND ANSWERS:
+${questionsData}
+
+PASSING SCORE: 70% (Student must score >= 70 to pass)
+
+${
+  hasProjectQuestions
+    ? `
+=== PROJECT REVIEW MODE ===
+${
+  projectMeta
+    ? `Validation: ${projectMeta.filesAvailable || 0} files reviewed, ${projectMeta.coverage || 0}% coverage`
+    : ""
+}
+
+CRITICAL RULES:
+1. ONLY cite evidence from the ACTUAL CODE provided
+2. NEVER assume features exist without code proof
+3. Quote specific file paths and line numbers
+4. Mark requirements as NOT MET if no code evidence
+5. If validation failed, score MUST be 0
+===
+`
+    : ""
+}
+
+For each question, provide:
+1. Is it correct, partially correct, or incorrect?
+2. Brief, specific feedback (1-2 sentences max)
+3. What to improve (if applicable)
+4. Brief encouragement
+
+IMPORTANT:
+- Use "You" and "Your" (personalized tone)
+- Be CONCISE - no long explanations
+- Calculate overallScore as percentage
+- Set passed=true ONLY if score >= 70%
+
+=== RESPONSE FORMAT (USE EXACT DELIMITERS) ===
+
+<<<PASSED>>>
+true | false
+<<<OVERALL_SCORE>>>
+0-100
+<<<OVERALL_FEEDBACK>>>
+[Brief summary: Your score is X%. You got Y out of Z correct.]
+
+For each question:
+
+<<<QUESTION_REVIEW>>>
+<<<QUESTION_ID>>>
+[question id]
+<<<QUESTION_TEXT>>>
+[question text]
+<<<QUESTION_TYPE>>>
+[question type]
+<<<SCORE>>>
+0-100
+<<<IS_CORRECT>>>
+true | false
+<<<FEEDBACK>>>
+[Brief, personalized feedback using "You" and "Your"]
+<<<SUGGESTIONS>>>
+- [Specific improvement]
+<<<ENCOURAGEMENT>>>
+[Brief encouragement]`;
+
+  const systemPrompt = hasProjectQuestions
+    ? "You are a strict code reviewer. For projects: ONLY cite code evidence. Quote file paths and lines. If no proof, mark NOT MET. Be concise and personalized. Use exact delimiter format."
+    : "You are a concise educator providing personalized feedback. Use 'You' and 'Your'. Be brief and helpful. Use exact delimiter format.";
+
+  const messages = [
+    {
+      role: "system",
+      content: systemPrompt,
+    },
+    {
+      role: "user",
+      content: prompt,
+    },
+  ];
+
+  const result = await callGroq(messages, {
+    temperature: 0.3,
+    maxTokens: 4000, // INCREASED from 3000
+  });
+
+  if (!result.success) {
+    return result;
+  }
+
+  try {
+    const review = parseReview(result.content);
+    if (!review.reviewedQuestions || review.reviewedQuestions.length === 0) {
+      if (review.overallScore === undefined) {
+        throw new Error("No review data parsed from response");
+      }
+    }
+    return {
+      success: true,
+      review,
+      tokensUsed: result.usage.totalTokens,
+      model: result.model,
+    };
+  } catch (parseError) {
+    return {
+      success: false,
+      error: `Failed to parse batch review: ${parseError.message}`,
+    };
+  }
+};
+
+// ============================================================================
+// PARSING FUNCTIONS (Unchanged from original)
+// ============================================================================
+
 const parseLessonContent = (rawContent) => {
   const sections = {};
-
-  // Split by section delimiters
   const sectionRegex = /<<<(OBJECTIVES|CONTENT|KEY_TAKEAWAYS|RESOURCES)>>>/g;
   const parts = rawContent.split(sectionRegex);
 
@@ -373,7 +1106,6 @@ const parseLessonContent = (rawContent) => {
     }
   }
 
-  // Parse objectives (bullet points)
   const objectives = [];
   if (sections.OBJECTIVES) {
     const lines = sections.OBJECTIVES.split("\n");
@@ -383,10 +1115,8 @@ const parseLessonContent = (rawContent) => {
     }
   }
 
-  // Content is already markdown
   const content = sections.CONTENT || "";
 
-  // Parse key takeaways (bullet points)
   const keyTakeaways = [];
   if (sections.KEY_TAKEAWAYS) {
     const lines = sections.KEY_TAKEAWAYS.split("\n");
@@ -396,7 +1126,6 @@ const parseLessonContent = (rawContent) => {
     }
   }
 
-  // Parse external resources (simple format: Title | URL | Description)
   const externalResources = [];
   if (sections.RESOURCES) {
     const lines = sections.RESOURCES.split("\n");
@@ -419,9 +1148,6 @@ const parseLessonContent = (rawContent) => {
   return { objectives, content, keyTakeaways, externalResources };
 };
 
-/**
- * Parse delimiter-based course catalog into array of courses
- */
 const parseCourseCatalog = (rawContent) => {
   const courses = [];
   const courseBlocks = rawContent
@@ -461,9 +1187,6 @@ const parseCourseCatalog = (rawContent) => {
   return courses;
 };
 
-/**
- * Parse delimiter-based course structure into modules array
- */
 const parseCourseStructure = (rawContent) => {
   const modules = [];
   const moduleBlocks = rawContent
@@ -545,9 +1268,6 @@ const parseCourseStructure = (rawContent) => {
   return { modules };
 };
 
-/**
- * Parse delimiter-based assessment into questions array
- */
 const parseAssessment = (rawContent) => {
   const questions = [];
   const questionBlocks = rawContent
@@ -605,9 +1325,6 @@ const parseAssessment = (rawContent) => {
   return { questions };
 };
 
-/**
- * Parse delimiter-based review into structured feedback
- */
 const parseReview = (rawContent) => {
   const review = { reviewedQuestions: [] };
 
@@ -667,513 +1384,4 @@ const parseReview = (rawContent) => {
   }
 
   return review;
-};
-
-/**
- * Generate lesson content with Groq (matching Gemini prompt exactly)
- */
-export const generateLessonContentGroq = async (
-  courseTitle,
-  moduleTitle,
-  lessonTitle,
-) => {
-  const prompt = `Create comprehensive, REALISTIC lesson content following The Odin Project methodology.
-
-Course: ${courseTitle}
-Module: ${moduleTitle}
-Lesson: ${lessonTitle}
-
-=== ANTI-HALLUCINATION PROTOCOL (MANDATORY) ===
-YOU MUST NEVER:
-- Invent APIs, methods, or functions that don't exist
-- Create fictional code examples that won't work
-- Reference non-existent npm packages or libraries
-- Make up syntax or language features
-- Cite fake documentation or resources
-
-YOU MUST ONLY:
-- Use actual, documented JavaScript/Web APIs
-- Provide working code examples from real-world use
-- Reference official documentation (MDN, Node.js docs, React docs)
-- Use standard, widely-adopted patterns and practices
-
-=== THE ODIN PROJECT TEACHING STYLE ===
-- TEXT-BASED learning (NO VIDEOS - link to written docs only)
-- Deep understanding over surface-level knowledge
-- Comprehensive explanations with "why" not just "how"
-- Real-world context for every concept
-- Progressive complexity with clear prerequisites
-
-=== RESPONSE FORMAT (USE THESE EXACT DELIMITERS) ===
-
-<<<OBJECTIVES>>>
-- Understand [specific concept] and when to use it in real projects
-- Build [concrete thing] using [specific techniques]
-- Debug and solve [common real-world problems]
-
-<<<CONTENT>>>
-## Introduction
-
-[Why this topic matters in professional development - 2-3 paragraphs]
-
-## Prerequisites
-
-[What you need to know first]
-
-## Core Concepts
-
-[Detailed, comprehensive explanations]
-
-### Concept 1: [Name]
-
-[Deep dive with examples]
-
-\`\`\`javascript
-// Working, tested code that actually runs
-\`\`\`
-
-## Practical Examples
-
-[Real-world use cases with code]
-
-## Common Pitfalls
-
-[What to watch out for]
-
-## Best Practices
-
-[Industry-standard approaches]
-
-## Assignment
-
-### Task
-[Build something useful]
-
-### Requirements
-- Requirement 1
-- Requirement 2
-
-### Getting Started
-[Hints and guidance]
-
-<<<KEY_TAKEAWAYS>>>
-- Specific, actionable understanding gained
-- Concrete skill acquired with real application
-- Common problem you can now solve
-
-<<<RESOURCES>>>
-- MDN: Document Object Model | https://developer.mozilla.org/en-US/docs/Web/API/Document_Object_Model | Core reference for DOM manipulation
-- JavaScript.info: DOM Navigation | https://javascript.info/dom-navigation | Detailed guide on traversing DOM
-
-=== EXTERNAL RESOURCES (STRICT VERIFICATION) ===
-ONLY include resources from these VERIFIED sources:
-- MDN Web Docs (developer.mozilla.org)
-- Official framework docs (reactjs.org, nodejs.org, etc.)
-- JavaScript.info
-- Web.dev (by Google)
-- CSS-Tricks (css-tricks.com)
-
-NEVER include:
-- YouTube videos or any video content
-- Medium articles
-- Personal blogs
-- Paid resources
-- Made-up URLs
-
-CRITICAL VALIDATION:
-- Every code example MUST use real, documented syntax
-- Every URL MUST be from verified sources above
-- Content MUST be comprehensive enough for real-world use
-- Minimum 1000 words of substantial educational content`;
-
-  const messages = [
-    {
-      role: "system",
-      content:
-        "You are an expert technical educator. Use the exact delimiter format specified. Write natural markdown content between delimiters.",
-    },
-    {
-      role: "user",
-      content: prompt,
-    },
-  ];
-
-  const result = await callGroq(messages, {
-    temperature: 0.6,
-    maxTokens: 4000,
-  });
-
-  if (!result.success) {
-    return result;
-  }
-
-  try {
-    const lessonData = parseLessonContent(result.content);
-
-    // Validate we got content
-    if (!lessonData.content || lessonData.content.length < 100) {
-      return {
-        success: false,
-        error: "Generated lesson content was too short or empty",
-      };
-    }
-
-    return {
-      success: true,
-      content: lessonData,
-      tokensUsed: result.usage.totalTokens,
-      model: result.model,
-    };
-  } catch (parseError) {
-    return {
-      success: false,
-      error: `Failed to parse lesson content: ${parseError.message}`,
-    };
-  }
-};
-
-/**
- * Generate assessment with Groq (matching Gemini prompt exactly)
- */
-export const generateAssessmentGroq = async (
-  lessonTitle,
-  lessonContent,
-  assessmentType = "coding_challenge",
-) => {
-  let prompt = "";
-
-  if (assessmentType === "quiz") {
-    prompt = `Create a QUIZ assessment for this lesson:
-
-Lesson: ${lessonTitle}
-Content Summary: ${typeof lessonContent === "string" ? lessonContent.substring(0, 500) : JSON.stringify(lessonContent).substring(0, 500)}
-
-Create 5-7 multiple choice questions:
-- Test conceptual understanding
-- 4 options per question
-- Include explanations
-- Progressive difficulty
-
-=== RESPONSE FORMAT (USE THESE EXACT DELIMITERS) ===
-For each question, use these delimiters:
-
-<<<QUESTION>>>
-<<<TYPE>>>
-multiple_choice
-<<<TEXT>>>
-The question text here
-<<<OPTIONS>>>
-- Option 1
-- Option 2
-- Option 3
-- Option 4
-<<<CORRECT>>>
-The correct option text or index (0-3)
-<<<POINTS>>>
-10`;
-  } else if (assessmentType === "project") {
-    prompt = `Create PROJECT requirements for this lesson:
-
-Lesson: ${lessonTitle}
-Content Summary: ${typeof lessonContent === "string" ? lessonContent.substring(0, 500) : JSON.stringify(lessonContent).substring(0, 500)}
-
-Create project specifications:
-- Clear must-have features
-- Optional stretch goals
-- Tech stack suggestions
-- Evaluation criteria
-
-=== RESPONSE FORMAT (USE THESE EXACT DELIMITERS) ===
-
-<<<QUESTION>>>
-<<<TYPE>>>
-project
-<<<TEXT>>>
-Build a project that demonstrates the concepts from this lesson
-<<<HINTS>>>
-- requirement 1
-- requirement 2
-- requirement 3
-<<<TEST_CASES>>>
-stretch goal 1
-stretch goal 2
-<<<STARTER_CODE>>>
-Submission format: GitHub repository URL required. Live deployment optional.
-<<<POINTS>>>
-100`;
-  } else {
-    // Default: coding_challenge
-    prompt = `Create CODING CHALLENGE assessment for this lesson:
-
-Lesson: ${lessonTitle}
-Content Summary: ${typeof lessonContent === "string" ? lessonContent.substring(0, 500) : JSON.stringify(lessonContent).substring(0, 500)}
-
-Create 3-5 coding challenges:
-- Test practical application
-- Include starter code or template
-- Provide clear requirements
-- Each worth points
-
-=== RESPONSE FORMAT (USE THESE EXACT DELIMITERS) ===
-For each question, use these delimiters:
-
-<<<QUESTION>>>
-<<<TYPE>>>
-code_challenge
-<<<TEXT>>>
-Write a function that...
-<<<STARTER_CODE>>>
-function solution() {
-  // Your code here
-}
-<<<TEST_CASES>>>
-input1 -> expected output1
-input2 -> expected output2
-<<<HINTS>>>
-- Consider edge cases
-- Think about efficiency
-<<<POINTS>>>
-20`;
-  }
-
-  const messages = [
-    {
-      role: "system",
-      content:
-        "You are an expert technical educator. Create practical, real-world assessments. Use the exact delimiter format specified.",
-    },
-    {
-      role: "user",
-      content: prompt,
-    },
-  ];
-
-  const result = await callGroq(messages, {
-    temperature: 0.5,
-    maxTokens: 2000,
-  });
-
-  if (!result.success) {
-    return result;
-  }
-
-  try {
-    const assessment = parseAssessment(result.content);
-    if (!assessment.questions || assessment.questions.length === 0) {
-      throw new Error("No questions parsed from response");
-    }
-    return {
-      success: true,
-      assessment,
-      tokensUsed: result.usage.totalTokens,
-      model: result.model,
-    };
-  } catch (parseError) {
-    return {
-      success: false,
-      error: `Failed to parse assessment: ${parseError.message}`,
-    };
-  }
-};
-
-/**
- * Review entire assessment submission in a single batch call (matching Gemini prompt exactly)
- */
-export const reviewSubmissionBatchGroq = async (
-  questions,
-  submissionAnswers,
-) => {
-  // Check for project-type questions and validate them
-  const projectQuestions = questions.filter((q) => q.type === "project");
-  const projectValidations = {};
-
-  for (const pq of projectQuestions) {
-    const submission = submissionAnswers[pq.id];
-    if (submission && typeof submission === "object") {
-      const validation = await validateProjectSubmission(
-        submission,
-        pq.question,
-      );
-      projectValidations[pq.id] = validation;
-    }
-  }
-
-  // Build structured format with all Q&A pairs, mapping indices to actual answers
-  const questionsData = questions
-    .map((q, idx) => {
-      let answerText = submissionAnswers[q.id];
-
-      // For multiple choice, map index to the actual option text
-      if (q.type === "multiple_choice" && answerText !== undefined) {
-        const answerIndex = parseInt(answerText);
-        if (!isNaN(answerIndex) && q.options && q.options[answerIndex]) {
-          answerText = q.options[answerIndex];
-        }
-      }
-
-      // For project submissions, use validated content with actual code
-      if (
-        q.type === "project" &&
-        typeof answerText === "object" &&
-        answerText !== null
-      ) {
-        const validation = projectValidations[q.id];
-        if (validation && validation.formattedContent) {
-          // Use the validated content with actual code
-          answerText = validation.formattedContent;
-        } else {
-          // Fallback to basic URL display if validation not available
-          const projectParts = [];
-          if (answerText.repoUrl)
-            projectParts.push(`GitHub Repository: ${answerText.repoUrl}`);
-          if (answerText.liveUrl)
-            projectParts.push(`Live Demo: ${answerText.liveUrl}`);
-          answerText =
-            projectParts.length > 0
-              ? projectParts.join("\n") +
-                "\n\nWARNING: Project content could not be validated. Review URLs manually."
-              : "[NO PROJECT LINKS PROVIDED]";
-        }
-      }
-
-      // Handle unanswered questions
-      if (answerText === undefined || answerText === "") {
-        answerText = "[NO ANSWER PROVIDED]";
-      }
-
-      return `
-Question ${idx + 1} (${q.type}): ${q.question}
-${q.options ? `Options: ${q.options.map((opt, i) => `${i + 1}. ${opt}`).join(" | ")}` : ""}
-Student Answer: ${answerText}
----`;
-    })
-    .join("\n");
-
-  // Check if there are project questions for stricter review
-  const hasProjectQuestions = questions.some((q) => q.type === "project");
-
-  // Get validation metadata for project questions
-  const projectMeta = hasProjectQuestions
-    ? Object.values(projectValidations)[0]?.validationSummary
-    : null;
-
-  const prompt = `Review this student's assessment submission. For EACH question, provide feedback.
-
-ASSESSMENT QUESTIONS AND ANSWERS:
-${questionsData}
-
-PASSING SCORE REQUIREMENT: 70% (Student must score >= 70 to pass)
-
-${
-  hasProjectQuestions
-    ? `
-=== STRICT ANTI-HALLUCINATION REVIEW MODE ===
-${
-  projectMeta
-    ? `Validation ID: ${projectMeta.validationId || "N/A"}
-Files Reviewed: ${projectMeta.filesAvailable || 0}
-Code Coverage: ${projectMeta.coverage || 0}%
-Repository Accessible: ${projectMeta.repoAccessible ? "YES" : "NO"}
-Live URL Accessible: ${projectMeta.liveUrlAccessible ? "YES" : "NO"}
-`
-    : ""
-}
-MANDATORY RULES FOR PROJECT REVIEW:
-1. ONLY use evidence from the ACTUAL CODE provided
-2. NEVER assume features exist without code proof
-3. CITE specific file paths and line numbers
-4. Mark requirements as NOT MET if no code evidence found
-5. If "VALIDATION FAILED" appears, score MUST be 0
-6. Partial implementations = NOT MET
-7. No hallucinations - evidence only
-===
-`
-    : ""
-}
-
-For each question:
-1. Is the answer correct, partially correct, or incorrect?
-2. Key strengths (cite specific evidence from their answer/code)
-3. What to improve
-4. Next steps
-
-IMPORTANT: 
-- Use "You" and "Your" (personalized)
-- Be CONCISE. Max 1-2 sentences per field.
-- Calculate overallScore as percentage of correct answers
-- Set "passed" to true ONLY if overallScore >= 70
-- For projects: verify EACH requirement against actual code
-
-=== RESPONSE FORMAT (USE THESE EXACT DELIMITERS) ===
-<<<PASSED>>>
-true | false (MUST be true if overallScore >= 70)
-<<<OVERALL_SCORE>>>
-0-100
-<<<OVERALL_FEEDBACK>>>
-Your overall score is X%. You got Y right.
-
-For each question reviewed:
-<<<QUESTION_REVIEW>>>
-<<<QUESTION_ID>>>
-the question id
-<<<QUESTION_TEXT>>>
-the question text
-<<<QUESTION_TYPE>>>
-the question type
-<<<SCORE>>>
-0-100
-<<<IS_CORRECT>>>
-true | false
-<<<FEEDBACK>>>
-You [did/didn't] understand X because Y. Your answer was clear.
-<<<SUGGESTIONS>>>
-- Fix this
-- Try that
-<<<ENCOURAGEMENT>>>
-Keep going`;
-
-  // Use stricter system prompt for project reviews
-  const systemPrompt = hasProjectQuestions
-    ? "You are a strict code reviewer with anti-hallucination training. For project submissions: ONLY cite evidence from the provided code. NEVER assume features exist. Quote exact file paths and line numbers. If no code evidence, mark as NOT MET. Provide brief, personalized feedback using 'You' and 'Your'. Use the exact delimiter format specified."
-    : "You are a concise technical educator. Provide brief, personalized feedback using 'You' and 'Your'. Be direct and avoid long explanations. Use the exact delimiter format specified.";
-
-  const messages = [
-    {
-      role: "system",
-      content: systemPrompt,
-    },
-    {
-      role: "user",
-      content: prompt,
-    },
-  ];
-
-  const result = await callGroq(messages, {
-    temperature: 0.3,
-    maxTokens: 3000,
-  });
-
-  if (!result.success) {
-    return result;
-  }
-
-  try {
-    const review = parseReview(result.content);
-    if (!review.reviewedQuestions || review.reviewedQuestions.length === 0) {
-      if (review.overallScore === undefined) {
-        throw new Error("No review data parsed from response");
-      }
-    }
-    return {
-      success: true,
-      review,
-      tokensUsed: result.usage.totalTokens,
-      model: result.model,
-    };
-  } catch (parseError) {
-    return {
-      success: false,
-      error: `Failed to parse batch review: ${parseError.message}`,
-    };
-  }
 };

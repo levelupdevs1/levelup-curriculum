@@ -59,6 +59,7 @@ export const generateCourseStructure = async (
   const result = await generateCourseStructureGroq(
     courseTitle,
     courseDescription,
+    modulesCount,
   );
   if (!result.success) {
     console.warn("⚠️ Groq failed, trying Gemini as fallback...");
@@ -78,12 +79,15 @@ export const generateLessonContent = async (
   courseTitle,
   moduleTitle,
   lessonTitle,
+  lessonType = "reading",
+  skillLevel = "Some Experience",
 ) => {
   const result = await generateLessonContentGroq(
-    lessonTitle,
+    courseTitle, // correct order
     moduleTitle,
-    courseTitle,
-    30,
+    lessonTitle,
+    lessonType,
+    skillLevel,
   );
   if (!result.success) {
     console.warn("⚠️ Groq failed, trying Gemini as fallback...");

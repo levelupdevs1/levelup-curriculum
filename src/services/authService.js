@@ -15,9 +15,10 @@ export const supabase = isSupabaseConfigured
 // Log mode on initialization
 if (import.meta.env.DEV) {
   if (!isSupabaseConfigured) {
-    // Read-only mode
+    console.log("📖 READ-ONLY MODE: Supabase not configured");
   } else {
-    // Dev mode connected
+    console.log("🔧 DEV MODE: Connected to Supabase");
+    console.log("   - Full features enabled");
   }
 }
 
@@ -193,12 +194,12 @@ export const getUserProfile = async (userId) => {
       .from("users")
       .select("*")
       .eq("id", userId)
-      .limit(1)
       .single();
 
     if (error) {
       return { success: false, error: error.message };
     }
+    console.log("user profile");
 
     return { success: true, profile: data };
   } catch (error) {
