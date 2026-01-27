@@ -4,8 +4,6 @@ import Card from "../Card/Card";
 import styles from "./LessonContent.module.css";
 
 const LessonContent = ({ lesson }) => {
-  console.log(lesson);
-
   return (
     <Card className={styles.lessonCard}>
       <h1>{lesson.title}</h1>

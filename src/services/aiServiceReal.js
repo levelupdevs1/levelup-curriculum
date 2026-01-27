@@ -107,11 +107,13 @@ export const generateAssessment = async (
   lessonTitle,
   lessonContent,
   assessmentType = "coding_challenge",
+  previousLessons = [],
 ) => {
   const result = await generateAssessmentGroq(
     lessonTitle,
     lessonContent,
     assessmentType,
+    previousLessons,
   );
   if (!result.success) {
     console.warn("⚠️ Groq failed, trying Gemini as fallback...");

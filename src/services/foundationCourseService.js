@@ -148,7 +148,6 @@ export const buildFoundationCourseStructure = async () => {
 export const getFoundationCourse = async (userId) => {
   try {
     // Check if user already has the foundation course
-    console.log("Checking for foundation course");
     const { data: existingCourse, error: fetchError } = await supabase
       .from("generated_courses")
       .select("*")
@@ -163,11 +162,9 @@ export const getFoundationCourse = async (userId) => {
     if (existingCourse) {
       // Check if version matches
       if (existingCourse.ai_model !== versionString) {
-        console.log(`Foundation course version mismatch: ${existingCourse.ai_model} vs ${versionString}. Syncing...`);
-        
         // Re-build modules from local files
         const modules = await buildFoundationCourseStructure();
-        
+
         // Update the database record with new modules and version string
         const { data: updatedCourse, error: updateError } = await supabase
           .from("generated_courses")
@@ -175,7 +172,7 @@ export const getFoundationCourse = async (userId) => {
             modules: modules,
             modules_count: modules.length,
             ai_model: versionString,
-            updated_at: new Date().toISOString()
+            updated_at: new Date().toISOString(),
           })
           .eq("id", existingCourse.id)
           .select()
@@ -185,8 +182,13 @@ export const getFoundationCourse = async (userId) => {
           console.error("Failed to sync foundation course:", updateError);
           return { success: true, data: existingCourse, isNew: false };
         }
-        
-        return { success: true, data: updatedCourse, isNew: false, synced: true };
+
+        return {
+          success: true,
+          data: updatedCourse,
+          isNew: false,
+          synced: true,
+        };
       }
       return { success: true, data: existingCourse, isNew: false };
     }
@@ -208,7 +210,6 @@ export const getFoundationCourse = async (userId) => {
     }
 
     // Create the foundation course for this user
-    console.log("Creating foundation course");
     const courseData = {
       user_id: userId,
       title: foundationCourseData.title,
