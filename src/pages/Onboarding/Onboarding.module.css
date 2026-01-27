@@ -144,6 +144,17 @@
   max-width: 200px;
 }
 
+.modalActions {
+  display: flex;
+  gap: 10px;
+}
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 /* Tablet */
 @media (max-width: 1024px) {
   .content {
@@ -257,6 +268,8 @@
   }
 
   .modalContent {
+    display: flex;
+    flex-direction: column;
     gap: 12px;
   }
 
@@ -265,6 +278,7 @@
   }
 
   .modalActions {
+    display: flex;
     flex-direction: column;
     gap: 10px;
   }
