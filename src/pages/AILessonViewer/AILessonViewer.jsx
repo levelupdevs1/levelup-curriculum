@@ -183,10 +183,23 @@ const AILessonViewer = () => {
       const assessmentType = lessonData.assessmentType || "coding_challenge";
 
       if (requiresAssessment) {
+        const previousLessons = [];
+        // Only collect lessons from the current module before the current lesson
+        if (modules[moduleIndex]?.lessons) {
+          for (let l = 0; l < lessonIndex; l++) {
+            const les = modules[moduleIndex].lessons[l];
+            if (les.content) {
+              previousLessons.push(les.content);
+            }
+          }
+        }
+        previousLessons.push(contentResult.content);
+
         assessmentResult = await generateAssessment(
           lessonTitle,
           contentResult.content,
           assessmentType,
+          previousLessons,
         );
 
         if (!assessmentResult.success) {

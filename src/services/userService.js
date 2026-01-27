@@ -8,8 +8,6 @@ export const getUserStats = async () => {
       .from("users")
       .select("*");
 
-    console.log("Getting users:", totalUsers);
-
     // Count active users (users who logged in recently)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);

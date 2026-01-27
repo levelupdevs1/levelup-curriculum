@@ -7,7 +7,12 @@
 
 import { validateProjectSubmission } from "./projectValidationService";
 
-const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
+const GROQ_API_KEYS = [
+  import.meta.env.VITE_GROQ_API_KEY_1,
+  import.meta.env.VITE_GROQ_API_KEY_2,
+  import.meta.env.VITE_GROQ_API_KEY_3,
+  // Add more as needed
+].filter((key) => key && key !== "gsk_YOUR_GROQ_API_KEY_HERE"); // Filter out invalid ones
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 // Model rotation priority (for resilience)
@@ -22,7 +27,7 @@ const GROQ_MODELS = [
  * Check if Groq is configured
  */
 export const isGroqConfigured = () => {
-  return !!GROQ_API_KEY && GROQ_API_KEY !== "gsk_YOUR_GROQ_API_KEY_HERE";
+  return GROQ_API_KEYS.length > 0;
 };
 
 /**
@@ -32,56 +37,61 @@ const callGroq = async (messages, options = {}) => {
   if (!isGroqConfigured()) {
     return {
       success: false,
-      error: "Groq API key not configured",
+      error: "No valid Groq API keys configured",
     };
   }
 
   const { temperature = 0.3, maxTokens = 1000 } = options;
 
-  for (let i = 0; i < GROQ_MODELS.length; i++) {
-    const model = GROQ_MODELS[i];
+  for (let modelIndex = 0; modelIndex < GROQ_MODELS.length; modelIndex++) {
+    const model = GROQ_MODELS[modelIndex];
 
-    try {
-      const response = await fetch(GROQ_API_URL, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${GROQ_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+    for (let keyIndex = 0; keyIndex < GROQ_API_KEYS.length; keyIndex++) {
+      const apiKey = GROQ_API_KEYS[keyIndex];
+
+      try {
+        const response = await fetch(GROQ_API_URL, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model,
+            messages,
+            temperature,
+            max_tokens: maxTokens,
+            top_p: 0.9,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          continue; // Try next key
+        }
+
+        const data = await response.json();
+
+        return {
+          success: true,
+          content: data.choices[0]?.message?.content || "",
+          usage: {
+            totalTokens:
+              (data.usage?.prompt_tokens || 0) +
+              (data.usage?.completion_tokens || 0),
+          },
           model,
-          messages,
-          temperature,
-          max_tokens: maxTokens,
-          top_p: 0.9,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        continue;
+        };
+      } catch (error) {
+        continue; // Try next key
       }
-
-      const data = await response.json();
-
-      return {
-        success: true,
-        content: data.choices[0]?.message?.content || "",
-        usage: {
-          totalTokens:
-            (data.usage?.prompt_tokens || 0) +
-            (data.usage?.completion_tokens || 0),
-        },
-        model,
-      };
-    } catch (error) {
-      continue;
     }
+    // If all keys failed for this model, continue to next model
   }
 
   return {
     success: false,
-    error: "All Groq models failed",
+    error: "All Groq models and API keys failed",
   };
 };
 
