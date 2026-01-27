@@ -14,12 +14,15 @@ const AICourseCard = ({
   progress = 0,
 }) => {
   const [loading, setLoading] = useState(false);
-  const handleClick = () => {
+  const handleClick = async () => {
     if (onAction) {
       setLoading(true);
-      onAction(course.id);
+      try {
+        await onAction(course.id);
+      } finally {
+        setLoading(false);
+      }
     }
-    setLoading(false);
   };
 
   // Calculate progress if not provided
@@ -136,7 +139,9 @@ const AICourseCard = ({
             ? "Review Course"
             : isEnrolled
               ? "Continue Learning"
-              : loading ? "Loading..." : "Enroll Now")}
+              : loading
+                ? "Loading..."
+                : "Enroll Now")}
       </Button>
     </Card>
   );

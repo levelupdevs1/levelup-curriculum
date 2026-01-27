@@ -30,9 +30,10 @@ const AILessonViewer = () => {
   const { courseId, lessonId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { getCourseById, updateCourseProgress, updateCourseData } = useCourseGeneration();
+  const { getCourseById, updateCourseProgress, updateCourseData } =
+    useCourseGeneration();
   const { consumeTokens } = useAIToken();
-  const { user, refreshProfile } = useUser();
+  const { user, profile, refreshProfile } = useUser();
   const loadingBar = useLoadingBar();
 
   const { moduleIndex, lessonIndex } = location.state || {
@@ -117,6 +118,7 @@ const AILessonViewer = () => {
     }
 
     const lessonData = module.lessons?.[lessonIndex];
+
     if (!lessonData) {
       setError("Lesson not found");
       return;
@@ -128,7 +130,7 @@ const AILessonViewer = () => {
 
     // Check if lesson content already exists in database
     if (lessonData.content) {
-      setLesson(lessonData.content);
+      setLesson({ title: lessonData.title, ...lessonData.content });
 
       // Load assessment if it exists (some lessons don't have assessments)
       if (lessonData.assessment) {
@@ -145,7 +147,6 @@ const AILessonViewer = () => {
     }
 
     const lessonTitle = lessonData.title;
-    const lessonDescription = lessonData.description || "";
 
     // Token check disabled for development
     // const contentCost = AI_TOKEN_COSTS.GENERATE_LESSON_CONTENT;
@@ -162,10 +163,11 @@ const AILessonViewer = () => {
     try {
       // Generate lesson content with real AI
       const contentResult = await generateLessonContent(
-        lessonTitle,
-        lessonDescription,
         enrolledCourse.title,
-        lessonData.estimatedMinutes || 30,
+        module.title,
+        lessonTitle,
+        lessonData.type || "reading",
+        profile?.skill_level || "beginner",
       );
 
       if (!contentResult.success) {
@@ -212,7 +214,7 @@ const AILessonViewer = () => {
         modules: updatedModules,
       });
 
-      setLesson(contentResult.content);
+      setLesson({ title: lessonData.title, ...contentResult.content });
       setAssessment(assessmentResult?.assessment || null);
 
       // Validate external resources
@@ -546,11 +548,12 @@ const AILessonViewer = () => {
                       setIsChoosing(false);
                     }
                     // Navigate to onboarding
-                    navigate("/onboarding", { state: { fromFoundation: true } });
-                  } else{
-                    navigate('/dashboard')
+                    navigate("/onboarding", {
+                      state: { fromFoundation: true },
+                    });
+                  } else {
+                    navigate("/dashboard");
                   }
-
                 }}
                 disabled={isChoosing}
                 className={styles.choosePathButton}

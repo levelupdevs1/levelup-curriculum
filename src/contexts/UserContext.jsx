@@ -96,8 +96,9 @@ export const UserProvider = ({ children }) => {
         // Check if user has completed onboarding and get AI profile data
         // Only fetch AI profile if foundation course is completed
         const foundationStatus = await hasCompletedFoundation(authUser.id);
-        const foundationCompleted = foundationStatus.success && foundationStatus.completed;
-        
+        const foundationCompleted =
+          foundationStatus.success && foundationStatus.completed;
+
         let aiProfile = null;
         let profileSuccess = false;
 
@@ -106,7 +107,7 @@ export const UserProvider = ({ children }) => {
           profileSuccess = result.success;
           aiProfile = result.data;
         }
-        
+
         setHasCompletedOnboarding(profileSuccess && aiProfile !== null);
 
         if (success) {
@@ -118,6 +119,7 @@ export const UserProvider = ({ children }) => {
             current_level:
               aiProfile?.current_level || userProfile?.current_level || 1,
             platform_tokens_balance: aiProfile?.platform_tokens_balance || 0,
+            skill_level: aiProfile?.skill_level || "beginner",
           };
           setProfile(mergedProfile);
         } else {
@@ -158,8 +160,9 @@ export const UserProvider = ({ children }) => {
       // Re-check onboarding status and get AI profile data
       // Only fetch AI profile if foundation course is completed
       const foundationStatus = await hasCompletedFoundation(user.id);
-      const foundationCompleted = foundationStatus.success && foundationStatus.completed;
-      
+      const foundationCompleted =
+        foundationStatus.success && foundationStatus.completed;
+
       let aiProfile = null;
       let profileSuccess = false;
 
@@ -180,6 +183,7 @@ export const UserProvider = ({ children }) => {
           current_level:
             aiProfile?.current_level || userProfile?.current_level || 1,
           platform_tokens_balance: aiProfile?.platform_tokens_balance || 0,
+          skill_level: aiProfile?.skill_level || "beginner",
         };
         setProfile(mergedProfile);
       }
