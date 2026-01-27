@@ -25,7 +25,7 @@ You can also open it from the menu by selecting:
 
 These commands work on macOS and Linux. On Windows, PowerShell has similar behavior, although some commands like `ls` and `pwd` are also supported.
 
-### 1. `pwd` — Print Working Directory
+### 1. `pwd` : Print Working Directory
 
 Shows your current folder.
 
@@ -39,7 +39,7 @@ Example output:
 /Users/john/projects
 ```
 
-### 2. `ls` or `dir` — List files and directories
+### 2. `ls` or `dir` : List files and directories
 
 - `ls` works on macOS/Linux
 - `dir` works on Windows
@@ -56,7 +56,7 @@ notes.txt
 images
 ```
 
-### 3. `cd` — Change Directory
+### 3. `cd` : Change Directory
 
 Used to move between folders.
 
@@ -69,7 +69,7 @@ cd /Users/john/Desktop
 - `cd my-project` moves into the folder
 - `cd ..` goes up one level
 
-### 4. `mkdir` — Make Directory
+### 4. `mkdir` : Make Directory
 
 Creates a new folder.
 
@@ -91,7 +91,7 @@ On Windows:
 type nul > index.html
 ```
 
-### 6. `rm` — Remove file
+### 6. `rm` : Remove file
 
 ```bash
 rm old.txt
@@ -99,13 +99,13 @@ rm old.txt
 
 ⚠️ Be careful: this deletes permanently without sending to Recycle Bin.
 
-### 7. `cp` — Copy a file
+### 7. `cp` : Copy a file
 
 ```bash
 cp file1.txt file2.txt
 ```
 
-### 8. `mv` — Move or rename a file
+### 8. `mv` : Move or rename a file
 
 ```bash
 mv oldname.txt newname.txt

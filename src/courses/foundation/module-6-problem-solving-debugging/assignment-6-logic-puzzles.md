@@ -15,9 +15,7 @@ For each puzzle:
 3. **Test your logic** by hand with an example
 4. **Show your debugging thinking** if you find an error
 
-Submit your answers clearly labeled for each puzzle.
-
----
+Submit your answers clearly labeled for each puzzle (in the community channel).
 
 ## Puzzle 1: The Restaurant Bill Splitter
 
@@ -30,10 +28,6 @@ Write pseudocode for a program that:
 2. Gets the number of people
 3. Calculates how much each person owes (including tip)
 
-**Your Solution:**
-
----
-
 **Example to test your logic:**
 
 - Total bill: $100
@@ -43,8 +37,6 @@ Write pseudocode for a program that:
 - Per person: $118 ÷ 4 = $29.50
 
 Does your pseudocode produce this result? If not, debug it.
-
----
 
 ## Puzzle 2: The Age Guesser
 
@@ -57,19 +49,11 @@ Write pseudocode for a game that:
 4. Celebrates if the program guesses correctly
 5. Tells the user they won if the program runs out of guesses
 
-**Your Solution:**
-
----
-
 **Logic to test:**
 
 - If my guess is 50 and the user says "too high," my next guess should be lower
 - If my guess is 25 and the user says "too low," my next guess should be higher
 - I should count my guesses and stop after 7
-
-Does your pseudocode do this correctly?
-
----
 
 ## Puzzle 3: The Password Validator
 
@@ -90,18 +74,12 @@ The program should:
 3. Tell the user which requirements are NOT met
 4. Keep asking until the password is strong enough
 
-**Your Solution:**
-
----
-
 **Example:**
 
 - User enters: "hello123"
 - Missing: Uppercase letter
 - Program says: "Password is not strong. You need at least one uppercase letter."
 - Ask again
-
----
 
 ## Puzzle 4: The Shopping List Manager
 
@@ -118,10 +96,6 @@ The program should:
 2. Keep running until the user chooses to quit
 3. Let the user add and remove items multiple times
 
-**Your Solution:**
-
----
-
 **Logic to test:**
 
 - If the user adds "milk" then "bread" then "eggs," the list should show all three
@@ -129,8 +103,6 @@ The program should:
 - The menu keeps showing until they choose quit
 
 Does your pseudocode handle this?
-
----
 
 ## Puzzle 5: The Grade Calculator
 
@@ -143,10 +115,6 @@ Write pseudocode for a program that:
 4. Shows all students with their grades
 5. Shows which student had the highest score
 
-**Your Solution:**
-
----
-
 **Example:**
 
 - Student 1: Alice, 95 → Grade: A
@@ -154,8 +122,6 @@ Write pseudocode for a program that:
 - Student 3: Charlie, 72 → Grade: C
 - Highest: Alice with 95
 - Lowest: Charlie with 72
-
----
 
 ## Hints If You Get Stuck
 
@@ -167,7 +133,7 @@ Write pseudocode for a program that:
 
 **Hint 4:** Test your logic by hand before submitting.
 
-**Hint 5:** If your pseudocode doesn't work, use rubber duck debugging—explain it line by line and you'll find the error.
+**Hint 5:** If your pseudocode doesn't work, use rubber duck debugging: explain it line by line and you'll find the error.
 
 ## Checklist
 
@@ -180,8 +146,6 @@ Check that you:
 - [ ] **Used clear variable names** (not just `x` and `y`)
 - [ ] **Explained your thinking** if you caught an error
 - [ ] **Are proud of your work** - these are complex problems!
-
----
 
 ## Summary
 

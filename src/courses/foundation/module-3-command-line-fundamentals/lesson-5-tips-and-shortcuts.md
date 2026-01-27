@@ -12,7 +12,7 @@ Press the **Up Arrow** key to scroll through your previous commands.
 Never type a full filename again.
 If you have a file named `really-long-file-name.txt`, just type:
 `real` and hit **TAB**.
-The terminal will type the rest for you. If it stops, there might be multiple files starting with that name—press TAB twice to see options.
+The terminal will type the rest for you. If it stops, there might be multiple files starting with that name, press TAB twice to see options.
 
 ## 3. Clear the screen
 

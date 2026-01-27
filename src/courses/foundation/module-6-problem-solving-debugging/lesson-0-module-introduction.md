@@ -2,7 +2,7 @@
 
 ## The Most Important Skill You'll Ever Learn
 
-Welcome to the most crucial module of this course. Problem-solving and debugging are not special skills reserved for advanced programmers—they are the **foundation of programming itself**.
+Welcome to the most crucial module of this course. Problem-solving and debugging are not special skills reserved for advanced programmers, they are the **foundation of programming itself**.
 
 Every experienced developer spends more time debugging and problem-solving than actually writing new code. If you master these skills now, you'll save yourself years of frustration.
 
@@ -19,7 +19,7 @@ In this module, you'll learn:
 
 ## Why This Matters
 
-Debugging is not a failure—it's part of programming. Even the best developers encounter bugs daily. The difference between a struggling developer and a skilled one is not that skilled developers write perfect code; it's that they **know how to find and fix problems quickly**.
+Debugging is not a failure, it's part of programming. Even the best developers encounter bugs daily. The difference between a struggling developer and a skilled one is not that skilled developers write perfect code; it's that they **know how to find and fix problems quickly**.
 
 ## Real-World Example
 

@@ -169,10 +169,6 @@ Write pseudocode for this problem:
 
 **Problem:** "Create a program that lets a user make a reservation at a restaurant. The program should ask for their name, party size, and preferred time. Then save this information."
 
-**Your pseudocode here:**
-
----
-
 **Sample solution:**
 
 ```
