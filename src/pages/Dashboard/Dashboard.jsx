@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../hooks/useUser";
 import { useCourseGeneration } from "../../hooks/useCourseGeneration";
@@ -20,14 +20,13 @@ const Dashboard = () => {
   const {
     enrolledCourses: contextEnrolledCourses,
     generatedCourses,
-    foundationCourse,
     loading: coursesLoading,
   } = useCourseGeneration();
   const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState(1);
 
   // Refresh profile on mount to get latest XP
-  React.useEffect(() => {
+  useEffect(() => {
     if (user && refreshProfile) {
       refreshProfile();
     }
@@ -35,30 +34,18 @@ const Dashboard = () => {
   }, [user]);
 
   // Show all personalized courses on dashboard (not just enrolled)
-  // Include foundation course if it exists and is not completed
   const allCourses = useMemo(() => {
     const aiCourses = generatedCourses || [];
-    // Add foundation course at the beginning if not completed
-    if (foundationCourse) {
-      return [foundationCourse, ...aiCourses];
-    }
     return aiCourses;
-  }, [generatedCourses, foundationCourse]);
+  }, [generatedCourses]);
 
   const enrolledCourses = useMemo(() => {
     const enrolled =
       contextEnrolledCourses?.length > 0
         ? contextEnrolledCourses
         : allCourses.filter((c) => c.status === "enrolled");
-    // Include foundation course in enrolled if exists
-    if (
-      foundationCourse &&
-      !enrolled.find((c) => c.id === foundationCourse.id)
-    ) {
-      return [foundationCourse, ...enrolled];
-    }
     return enrolled;
-  }, [contextEnrolledCourses, allCourses, foundationCourse]);
+  }, [contextEnrolledCourses, allCourses]);
 
   // Pagination
   const totalPages = Math.ceil(allCourses.length / COURSES_PER_PAGE);
@@ -70,15 +57,19 @@ const Dashboard = () => {
   // Helper to calculate course progress percentage
   const getCourseProgress = (course) => {
     if (!course) return 0;
-
     // If progress is a number, use it directly
     if (typeof course.progress === "number") return course.progress;
 
     // If progress is an object with completedLessons
     if (course.progress?.completedLessons) {
       const completedCount = course.progress.completedLessons.length;
-      const modules = course.modules || course.structure?.modules || [];
-      const totalLessons = modules.reduce(
+      const modules =
+        course.modules.modules ||
+        course.modules ||
+        course.structure?.modules ||
+        [];
+
+      const totalLessons = modules?.reduce(
         (sum, m) => sum + (m.lessons?.length || 0),
         0,
       );

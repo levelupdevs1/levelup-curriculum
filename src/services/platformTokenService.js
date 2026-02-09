@@ -241,7 +241,7 @@ export const awardXP = async (userId, xpAmount, reason, tier = "free") => {
         progress: getLevelProgress(newXP),
       };
     } else {
-      // Foundation user - update users table
+      // User without AI profile - update users table as fallback
       const { data: userProfile } = await supabase
         .from("users")
         .select("total_points, current_level")

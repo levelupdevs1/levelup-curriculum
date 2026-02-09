@@ -91,8 +91,6 @@ const Register = () => {
           replace: true,
           state: { email: formData.email },
         });
-        // New users go straight to dashboard (onboarding happens after foundation course)
-        // navigate("/dashboard", { replace: true });
       } else {
         setErrors({
           general: result.error || "Registration failed. Please try again.",

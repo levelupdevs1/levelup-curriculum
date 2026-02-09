@@ -10,7 +10,6 @@ import { aiService, AI_TOKEN_COSTS } from "../../services/aiServiceReal";
 import { updateCourse } from "../../services/courseDataService";
 import { TOKEN_REWARDS } from "../../services/platformTokenService";
 import { logResourceValidation } from "../../utils/resourceValidation";
-import { isChooseYourPathLesson } from "../../services/foundationCourseService";
 import { ChevronLeft, ChevronRight, Eye } from "lucide-react";
 import Button from "../../components/Button/Button";
 import Card from "../../components/Card/Card";
@@ -46,8 +45,6 @@ const AILessonViewer = () => {
   const [review, setReview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [isNext, setIsNext] = useState(false);
-  const [isChoosing, setIsChoosing] = useState(false);
-  const [isChooseYourPath, setIsChooseYourPath] = useState(false);
   const hasGeneratedRef = useRef(false);
 
   const { handleAwardXP, levelUpNotification, setLevelUpNotification } =
@@ -96,7 +93,10 @@ const AILessonViewer = () => {
     }
 
     // Use structure from modules field or structure field
-    const modules = enrolledCourse.modules || enrolledCourse.structure?.modules;
+    const modules =
+      enrolledCourse.modules?.modules ||
+      enrolledCourse.modules ||
+      enrolledCourse.structure?.modules;
 
     if (!modules || !Array.isArray(modules) || modules.length === 0) {
       setError(
@@ -118,10 +118,6 @@ const AILessonViewer = () => {
       setError("Lesson not found");
       return;
     }
-
-    // Check if this is the "Choose Your Path" lesson
-    const isPathLesson = isChooseYourPathLesson(lessonData);
-    setIsChooseYourPath(isPathLesson);
 
     // Check if lesson content already exists in database
     if (lessonData.content) {
@@ -188,11 +184,11 @@ const AILessonViewer = () => {
             }
           }
         }
-        previousLessons.push(contentResult.content);
+        previousLessons.push(contentResult.content || contentResult.data || "");
 
         assessmentResult = await aiService.generateAssessment(
           lessonTitle,
-          contentResult.content,
+          contentResult.content || contentResult.data || "",
           assessmentType,
           previousLessons,
         );
@@ -214,7 +210,7 @@ const AILessonViewer = () => {
       const updatedModules = [...modules];
       updatedModules[moduleIndex].lessons[lessonIndex] = {
         ...lessonData,
-        content: contentResult.content,
+        content: contentResult.content || contentResult.data || "",
         assessment: assessmentResult?.assessment || null,
       };
 
@@ -222,7 +218,10 @@ const AILessonViewer = () => {
         modules: updatedModules,
       });
 
-      setLesson({ title: lessonData.title, ...contentResult.content });
+      setLesson({
+        title: lessonData.title,
+        ...(contentResult.content || contentResult.data || ""),
+      });
       setAssessment(assessmentResult?.assessment || null);
 
       // Validate external resources
@@ -395,7 +394,8 @@ const AILessonViewer = () => {
   };
 
   const handleNextLesson = async () => {
-    const modules = course.structure?.modules || course.modules;
+    const modules =
+      course.modules.modules || course.structure?.modules || course.modules;
     const completedLessons = course.progress?.completedLessons || [];
     if (!completedLessons.includes(lessonId)) {
       const updatedCompletedLessons = [...completedLessons, lessonId];
@@ -517,58 +517,7 @@ const AILessonViewer = () => {
           <LessonContent lesson={lesson} />
 
           <div className={styles.lessonActions}>
-            {isChooseYourPath ? (
-              // Choose Your Path lesson - mark complete then proceed to onboarding
-              <Button
-                variant="primary"
-                onClick={async () => {
-                  setIsChoosing(true);
-                  // Mark lesson as complete first
-                  const completedLessons =
-                    course.progress?.completedLessons || [];
-
-                  if (!completedLessons.includes(lessonId)) {
-                    const updatedCompletedLessons = [
-                      ...completedLessons,
-                      lessonId,
-                    ];
-                    const progressUpdate = {
-                      ...course.progress,
-                      completedLessons: updatedCompletedLessons,
-                      currentModuleIndex: moduleIndex,
-                      currentLessonIndex: lessonIndex,
-                    };
-
-                    try {
-                      const result = await updateCourse(courseId, {
-                        progress: progressUpdate,
-                      });
-                      if (result.success) {
-                        updateCourseProgress(courseId, progressUpdate);
-                        await handleAwardXP(
-                          TOKEN_REWARDS.COMPLETE_LESSON * 10,
-                          `Completed lesson: ${lesson?.title || "Lesson"}`,
-                        );
-                      }
-                    } catch {
-                      // Error saving progress
-                    } finally {
-                      setIsChoosing(false);
-                    }
-                    // Navigate to onboarding
-                    navigate("/onboarding", {
-                      state: { fromFoundation: true },
-                    });
-                  } else {
-                    navigate("/dashboard");
-                  }
-                }}
-                disabled={isChoosing}
-                className={styles.choosePathButton}
-              >
-                Choose Your Learning Path
-              </Button>
-            ) : !assessment ? (
+            {!assessment ? (
               // No assessment required - show navigation buttons
               <div className={styles.completedActions}>
                 {canGoBack() && (

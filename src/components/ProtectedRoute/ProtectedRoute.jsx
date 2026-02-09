@@ -1,4 +1,3 @@
-import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useUser } from "../../hooks/useUser";
 import { isSupabaseConfigured } from "../../services/authService";
@@ -24,8 +23,12 @@ const ProtectedRoute = ({ children }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // No forced redirects - users can navigate freely
-  // Foundation completion is only checked when generating AI courses
+  // Check if user has completed onboarding
+  // Skip this check for the onboarding page itself
+  if (!hasCompletedOnboarding && location.pathname !== "/onboarding") {
+    return <Navigate to="/onboarding" state={{ from: location }} replace />;
+  }
+
   return children;
 };
 

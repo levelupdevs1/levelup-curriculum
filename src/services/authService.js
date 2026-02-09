@@ -199,7 +199,6 @@ export const getUserProfile = async (userId) => {
     if (error) {
       return { success: false, error: error.message };
     }
-    console.log("user profile");
 
     return { success: true, profile: data };
   } catch (error) {

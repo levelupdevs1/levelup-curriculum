@@ -1,32 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { useUser } from "../../hooks/useUser";
-import { hasCompletedFoundation } from "../../services/foundationCourseService";
 import { isSupabaseConfigured } from "../../services/authService";
 
 const OnboardingRoute = ({ children }) => {
-  const { isAuthenticated, user, isInitializing } = useUser();
+  const { isAuthenticated, hasCompletedOnboarding, isInitializing } = useUser();
   const location = useLocation();
-  const [foundationStatus, setFoundationStatus] = useState(null);
-  const [checking, setChecking] = useState(true);
-
-  useEffect(() => {
-    const checkFoundation = async () => {
-      if (!user?.id) {
-        setChecking(false);
-        return;
-      }
-
-      const result = await hasCompletedFoundation(user.id);
-      setFoundationStatus(result);
-      setChecking(false);
-    };
-
-    checkFoundation();
-  }, [user?.id]);
 
   // Wait for initialization
-  if (isInitializing || checking) {
+  if (isInitializing) {
     return (
       <div style={{ padding: "2rem", textAlign: "center" }}>Loading...</div>
     );
@@ -42,8 +24,8 @@ const OnboardingRoute = ({ children }) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Check foundation completion
-  if (!foundationStatus?.completed) {
+  // Check if user has already completed onboarding
+  if (hasCompletedOnboarding) {
     return <Navigate to="/dashboard" replace />;
   }
 

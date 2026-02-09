@@ -8,18 +8,12 @@ import {
   saveGeneratedCourses,
   enrollInCourse as enrollInCourseDB,
 } from "../services/courseDataService";
-import {
-  getFoundationCourse,
-  hasCompletedFoundation,
-} from "../services/foundationCourseService";
 
 export const CourseGenerationProvider = ({ children }) => {
   const { user } = useUser();
   const [userProfile, setUserProfile] = useState(null);
   const [generatedCourses, setGeneratedCourses] = useState([]);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
-  const [foundationCourse, setFoundationCourse] = useState(null);
-  const [foundationCompleted, setFoundationCompleted] = useState(false);
   const [currentCourse, setCurrentCourse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [generationStatus, setGenerationStatus] = useState({
@@ -38,47 +32,22 @@ export const CourseGenerationProvider = ({ children }) => {
           setLoading(false);
           return;
         }
-        
-        
-        let fetchedUserProfile = null;
-        // Load foundation course (creates if doesn't exist)
-        // Use Web Lock to prevent race conditions across tabs
-        await navigator.locks.request(`foundation_creation_${user.id}`, async () => {
-          const foundationResult = await getFoundationCourse(user.id);
-          if (foundationResult.success && foundationResult.data) {
-            setFoundationCourse(foundationResult.data);
-          }
-        });
 
-        // Check foundation completion status
-        const completionResult = await hasCompletedFoundation(user.id);
-        if (completionResult.success) {
-          setFoundationCompleted(completionResult.completed);
-          
-          // Only load AI user profile if foundation is completed
-          if (completionResult.completed) {
-            const profileResult = await getUserProfile(user.id);
-            if (profileResult.success && profileResult.data) {
-              fetchedUserProfile = profileResult.data;
-              setUserProfile(profileResult.data);
-            }
-          }
+        // Load AI user profile
+        const profileResult = await getUserProfile(user.id);
+        if (profileResult.success && profileResult.data) {
+          setUserProfile(profileResult.data);
         }
 
         // Load all generated courses (both recommended and enrolled)
         const coursesResult = await getCourses(user.id);
         if (coursesResult.success) {
           const allCourses = coursesResult.data || [];
-          // Filter out foundation course from regular courses (it's handled separately)
-          const nonFoundationCourses = allCourses.filter(
-            (c) => !c.is_foundation,
-          );
-          // Separate enrolled and non-enrolled courses
-          const enrolled = nonFoundationCourses.filter(
-            (c) => c.status === "enrolled",
-          );
 
-          setGeneratedCourses(nonFoundationCourses); // Show all non-foundation courses in catalog
+          // Separate enrolled and non-enrolled courses
+          const enrolled = allCourses.filter((c) => c.status === "enrolled");
+
+          setGeneratedCourses(allCourses);
           setEnrolledCourses(enrolled);
         }
         setLoading(false);
@@ -175,56 +144,38 @@ export const CourseGenerationProvider = ({ children }) => {
     [generatedCourses, user],
   );
 
-  const updateCourseData = useCallback(
-  (courseId, updates) => {
-    const isFoundation = foundationCourse && foundationCourse.id === courseId;
-    if (isFoundation) {
-      setFoundationCourse((prev) => (prev ? { ...prev, ...updates } : prev));
-    } else {
-      setEnrolledCourses((prev) =>
-        prev.map((course) =>
-          course.id === courseId ? { ...course, ...updates } : course
-        )
+  const updateCourseData = useCallback((courseId, updates) => {
+    setEnrolledCourses((prev) =>
+      prev.map((course) =>
+        course.id === courseId ? { ...course, ...updates } : course,
+      ),
+    );
+    setGeneratedCourses((prev) =>
+      prev.map((course) =>
+        course.id === courseId ? { ...course, ...updates } : course,
+      ),
+    );
+  }, []);
+
+  const updateCourseProgress = useCallback((courseId, progress) => {
+    // Update progress in local state
+    setEnrolledCourses((prev) => {
+      return prev.map((course) =>
+        course.id === courseId ? { ...course, progress } : course,
       );
-    }
-  },
-  [foundationCourse]
-);
+    });
 
-  const updateCourseProgress = useCallback(
-    (courseId, progress) => {
-      // Check if this is the foundation course
-      const isFoundation = foundationCourse && foundationCourse.id === courseId;
+    setGeneratedCourses((prev) => {
+      return prev.map((course) =>
+        course.id === courseId ? { ...course, progress } : course,
+      );
+    });
 
-      if (isFoundation) {
-        // Update foundation course progress
-        setFoundationCourse((prev) => (prev ? { ...prev, progress } : prev));
-
-        // Check if foundation is now complete
-        const completedLessons = progress?.completedLessons || [];
-        let totalLessons = 0;
-        for (const module of foundationCourse.modules || []) {
-          totalLessons += module.lessons?.length || 0;
-        }
-        if (totalLessons > 0 && completedLessons.length >= totalLessons) {
-          setFoundationCompleted(true);
-        }
-      } else {
-        // Update progress in local state for AI courses
-        setEnrolledCourses((prev) => {
-          return prev.map((course) =>
-            course.id === courseId ? { ...course, progress } : course,
-          );
-        });
-      }
-
-      // Save progress to database
-      import("../services/courseDataService").then(({ updateCourse }) => {
-        updateCourse(courseId, { progress });
-      });
-    },
-    [foundationCourse],
-  );
+    // Save progress to database
+    import("../services/courseDataService").then(({ updateCourse }) => {
+      updateCourse(courseId, { progress });
+    });
+  }, []);
 
   const setGenerating = useCallback(
     (isGenerating, type = null, progress = 0) => {
@@ -255,13 +206,9 @@ export const CourseGenerationProvider = ({ children }) => {
 
   const getCourseById = useCallback(
     (courseId) => {
-      // Check foundation course first
-      if (foundationCourse && foundationCourse.id === courseId) {
-        return foundationCourse;
-      }
       return enrolledCourses.find((c) => c.id === courseId) || null;
     },
-    [enrolledCourses, foundationCourse],
+    [enrolledCourses],
   );
 
   const hasCompletedOnboarding = useCallback(() => {
@@ -272,8 +219,6 @@ export const CourseGenerationProvider = ({ children }) => {
     userProfile,
     generatedCourses,
     enrolledCourses,
-    foundationCourse,
-    foundationCompleted,
     currentCourse,
     generationStatus,
     updateUserProfile,

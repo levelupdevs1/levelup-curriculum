@@ -295,14 +295,13 @@ const Profile = () => {
                   <div className={styles.emptyState}>
                     <Target size={48} className={styles.emptyIcon} />
                     <p className={styles.emptyText}>
-                      Complete the Foundation course and choose your learning
-                      path to set your preferences
+                      Complete onboarding to set your learning preferences
                     </p>
                     <Button
                       variant="primary"
-                      onClick={() => navigate("/dashboard")}
+                      onClick={() => navigate("/onboarding")}
                     >
-                      Go to Dashboard
+                      Complete Onboarding
                     </Button>
                   </div>
                 )}

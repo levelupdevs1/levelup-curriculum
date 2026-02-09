@@ -1,3 +1,5 @@
+import { supabase } from "./authService";
+
 const API_BASE_URL =
   import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
@@ -12,21 +14,17 @@ export const AI_TOKEN_COSTS = {
 const isGeminiConfigured = () => !!import.meta.env.VITE_GEMINI_API_KEY;
 
 // Helper function to get auth token
-const getAuthToken = () => {
-  // This will be populated by Supabase auth
-  const session = JSON.parse(
-    localStorage.getItem("sb-emrcbgdeujmvlfvcaxbf-auth-token") || "{}",
-  );
+const getAuthToken = async () => {
+  // Get current session from Supabase (handles token refresh automatically)
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
   return session?.access_token || "";
 };
 
 // Helper function to make authenticated API calls
 const apiCall = async (endpoint, body) => {
-  console.log("body", body);
-
-  const token = getAuthToken();
-
-  console.log("token", token);
+  const token = await getAuthToken();
 
   const response = await fetch(`${API_BASE_URL}/api/ai/${endpoint}`, {
     method: "POST",
@@ -39,14 +37,10 @@ const apiCall = async (endpoint, body) => {
 
   const result = await response.json();
 
-  console.log("result", result);
-
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.error || "API request failed");
   }
-
-  console.log("result", result);
 
   return result;
 };
@@ -55,26 +49,24 @@ export const aiService = {
   async generateCourseCatalog(userProfile) {
     try {
       const result = await apiCall("generate-course-catalog", {
-        ...userProfile,
+        userProfile,
       });
-
-      return result.data;
+      return result;
     } catch (error) {
       console.error("Error generating course catalog:", error);
       throw error;
     }
   },
 
-  async generateCourseStructure(title, description, modulesCount, userId) {
+  async generateCourseStructure(title, description, modulesCount) {
     try {
       const result = await apiCall("generate-course-structure", {
         title,
         description,
         modulesCount,
-        userId,
       });
 
-      return result.data;
+      return result;
     } catch (error) {
       console.error("Error generating course structure:", error);
       throw error;
@@ -82,38 +74,37 @@ export const aiService = {
   },
 
   async generateLessonContent(
-    title,
-    description,
     courseTitle,
-    estimatedMinutes,
-    userId,
+    moduleTitle,
+    lessonTitle,
+    type,
+    skillLevel,
   ) {
     try {
       const result = await apiCall("generate-lesson-content", {
-        title,
-        description,
         courseTitle,
-        estimatedMinutes,
-        userId,
+        moduleTitle,
+        lessonTitle,
+        type,
+        skillLevel,
       });
 
-      return result.data;
+      return result;
     } catch (error) {
       console.error("Error generating lesson content:", error);
       throw error;
     }
   },
 
-  async generateAssessment(lessonTitle, lessonContent, assessmentType, userId) {
+  async generateAssessment(lessonTitle, lessonContent, assessmentType) {
     try {
       const result = await apiCall("generate-assessment", {
         lessonTitle,
         lessonContent,
         assessmentType,
-        userId,
       });
 
-      return result.data;
+      return result;
     } catch (error) {
       console.error("Error generating assessment:", error);
       throw error;
@@ -128,7 +119,7 @@ export const aiService = {
         userId,
       });
 
-      return result.data;
+      return result;
     } catch (error) {
       console.error("Error reviewing submission:", error);
       throw error;
@@ -142,7 +133,7 @@ export const aiService = {
         submissionAnswers,
       });
 
-      return result.data;
+      return result;
     } catch (error) {
       console.error("Error reviewing submission batch:", error);
       throw error;

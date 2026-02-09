@@ -8,7 +8,6 @@ import {
   supabase,
 } from "../services/authService";
 import { getUserProfile as getAIUserProfile } from "../services/courseDataService";
-import { hasCompletedFoundation } from "../services/foundationCourseService";
 import { UserContext } from "./createUserContext";
 
 export const UserProvider = ({ children }) => {
@@ -93,21 +92,12 @@ export const UserProvider = ({ children }) => {
 
         if (!isSubscribed) return;
 
-        // Check if user has completed onboarding and get AI profile data
-        // Only fetch AI profile if foundation course is completed
-        const foundationStatus = await hasCompletedFoundation(authUser.id);
-        const foundationCompleted =
-          foundationStatus.success && foundationStatus.completed;
+        // Check if user has completed onboarding by fetching AI profile data
+        const result = await getAIUserProfile(authUser.id);
+        const profileSuccess = result.success;
+        const aiProfile = result.data;
 
-        let aiProfile = null;
-        let profileSuccess = false;
-
-        if (foundationCompleted) {
-          const result = await getAIUserProfile(authUser.id);
-          profileSuccess = result.success;
-          aiProfile = result.data;
-        }
-
+        // User has completed onboarding if they have an AI profile
         setHasCompletedOnboarding(profileSuccess && aiProfile !== null);
 
         if (success) {
@@ -157,21 +147,12 @@ export const UserProvider = ({ children }) => {
     try {
       const { success, profile: userProfile } = await getUserProfile(user.id);
 
-      // Re-check onboarding status and get AI profile data
-      // Only fetch AI profile if foundation course is completed
-      const foundationStatus = await hasCompletedFoundation(user.id);
-      const foundationCompleted =
-        foundationStatus.success && foundationStatus.completed;
+      // Re-check onboarding status by fetching AI profile data
+      const result = await getAIUserProfile(user.id);
+      const profileSuccess = result.success;
+      const aiProfile = result.data;
 
-      let aiProfile = null;
-      let profileSuccess = false;
-
-      if (foundationCompleted) {
-        const result = await getAIUserProfile(user.id);
-        profileSuccess = result.success;
-        aiProfile = result.data;
-      }
-
+      // User has completed onboarding if they have an AI profile
       setHasCompletedOnboarding(profileSuccess && aiProfile !== null);
 
       if (success) {

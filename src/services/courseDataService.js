@@ -6,7 +6,7 @@ import { aiService } from "./aiServiceReal";
  */
 export const saveUserProfile = async (userId, profileData) => {
   try {
-    // Get user's current XP from users table (foundation progress)
+    // Get user's current XP from users table as fallback
     const { data: userData } = await supabase
       .from("users")
       .select("total_points, current_level")
@@ -31,7 +31,7 @@ export const saveUserProfile = async (userId, profileData) => {
         },
         {
           onConflict: "user_id",
-        }
+        },
       )
       .select()
       .single();
@@ -185,23 +185,23 @@ export const enrollInCourse = async (courseId, userId) => {
       const structureResult = await aiService.generateCourseStructure(
         course.title,
         course.description,
-        course.modules_count || 6
+        course.modules_count || 6,
       );
 
       if (!structureResult.success) {
         throw new Error(
-          structureResult.error || "Failed to generate course structure"
+          structureResult.error || "Failed to generate course structure",
         );
       }
 
       // AI returns modules directly at structureResult.modules, NOT structureResult.structure.modules
-      const modules = structureResult.modules || [];
+      const modules = structureResult.modules || structureResult.data || [];
 
       if (modules.length === 0) {
         console.error("❌ AI returned 0 modules - this is a critical error");
         console.error(
           "Structure result:",
-          JSON.stringify(structureResult, null, 2)
+          JSON.stringify(structureResult, null, 2),
         );
         throw new Error("AI failed to generate course modules");
       }

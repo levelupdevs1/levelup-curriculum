@@ -27,10 +27,8 @@ const AICatalog = () => {
     enrolledCourses,
     addGeneratedCourses,
     enrollInCourse,
-    foundationCompleted,
-    foundationCourse,
   } = useCourseGeneration();
-  const { useTokens: consumeTokens } = useAIToken();
+  const { useTokens: _consumeTokens } = useAIToken();
   const loadingBar = useLoadingBar();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -45,21 +43,13 @@ const AICatalog = () => {
 
   // Filter courses based on active tab, search, and difficulty
   const filteredCourses = useMemo(() => {
-    // Include foundation course with AI courses
     let allCourses = [...(generatedCourses || [])];
-    if (
-      foundationCourse &&
-      !allCourses.find((c) => c.id === foundationCourse.id)
-    ) {
-      allCourses = [foundationCourse, ...allCourses];
-    }
 
     let courses =
       activeTab === "enrolled"
         ? allCourses.filter(
             (c) =>
               c.status === "enrolled" ||
-              c.is_foundation ||
               enrolledCourses.some((e) => e.id === c.id),
           )
         : allCourses;
@@ -86,7 +76,6 @@ const AICatalog = () => {
   }, [
     generatedCourses,
     enrolledCourses,
-    foundationCourse,
     activeTab,
     searchQuery,
     difficultyFilter,
@@ -105,14 +94,6 @@ const AICatalog = () => {
   }, [searchQuery, difficultyFilter, activeTab]);
 
   const generateCourses = async () => {
-    // Check if foundation course is completed first
-    if (!foundationCompleted) {
-      setError(
-        "Please complete the Foundation Software Development Course first before generating personalized courses.",
-      );
-      return;
-    }
-
     if (!isAIConfigured()) {
       setError(
         "Gemini API not configured. Please add VITE_GEMINI_API_KEY to .env.local (free tier available at ai.google.dev)",
@@ -132,7 +113,11 @@ const AICatalog = () => {
     loadingBar.start();
 
     try {
-      const result = await aiService.generateCourseCatalog(userProfile);
+      const response = await aiService.generateCourseCatalog(userProfile);
+      const result = {
+        courses: response.data,
+        ...response,
+      };
 
       if (result.success) {
         // const tokenResult = await consumeTokens(
@@ -161,11 +146,6 @@ const AICatalog = () => {
   };
 
   useEffect(() => {
-    // Don't auto-generate if foundation not completed
-    if (!foundationCompleted) {
-      return;
-    }
-
     // Don't auto-generate if no user profile yet (hasn't done onboarding)
     if (!userProfile) {
       return;
@@ -190,13 +170,6 @@ const AICatalog = () => {
   }, [shouldGenerate]);
 
   const handleEnroll = async (courseId) => {
-    // Check if it's the foundation course (always enrolled)
-    const isFoundation = foundationCourse && courseId === foundationCourse.id;
-    if (isFoundation) {
-      navigate(`/courses/${courseId}`);
-      return;
-    }
-
     const isEnrolled = enrolledCourses.some((c) => c.id === courseId);
     if (isEnrolled) {
       navigate(`/courses/${courseId}`);
@@ -239,8 +212,7 @@ const AICatalog = () => {
           }`}
           onClick={() => setActiveTab("all")}
         >
-          All Courses (
-          {(generatedCourses?.length || 0) + (foundationCourse ? 1 : 0)})
+          All Courses ({generatedCourses?.length || 0})
         </button>
         <button
           className={`${styles.tab} ${
@@ -248,11 +220,9 @@ const AICatalog = () => {
           }`}
           onClick={() => setActiveTab("enrolled")}
         >
-          Enrolled (
-          {(enrolledCourses?.length || 0) + (foundationCourse ? 1 : 0)})
+          Enrolled ({enrolledCourses?.length || 0})
         </button>
       </div>
-
       {/* Search and Filters */}
       <SearchFilter
         searchQuery={searchQuery}
@@ -285,21 +255,12 @@ const AICatalog = () => {
 
       {filteredCourses.length === 0 && !loading && (
         <div className={styles.empty}>
-          {!foundationCompleted ? (
-            <>
-              <p>
-                No courses generated yet. Complete the Foundation course to
-                unlock personalized courses.
-              </p>
-            </>
-          ) : (
-            <>
-              <p>No courses generated yet</p>
-              <Button variant="primary" onClick={generateCourses}>
-                Generate Courses
-              </Button>
-            </>
-          )}
+          <>
+            <p>No courses generated yet</p>
+            <Button variant="primary" onClick={generateCourses}>
+              Generate Courses
+            </Button>
+          </>
         </div>
       )}
 
@@ -332,41 +293,29 @@ const AICatalog = () => {
 
       <div className={styles.coursesGrid}>
         {paginatedCourses.map((course) => {
-          // Foundation course is always enrolled
-          const isFoundation =
-            course.is_foundation ||
-            (foundationCourse && course.id === foundationCourse.id);
-          const isEnrolled =
-            isFoundation || enrolledCourses.some((c) => c.id === course.id);
+          const modules =
+            course.modules?.modules ||
+            course.modules ||
+            course.structure?.modules ||
+            [];
+          const isEnrolled = enrolledCourses.some((c) => c.id === course.id);
 
           // Calculate progress for enrolled courses
           let progress = 0;
           if (isEnrolled) {
-            if (isFoundation && foundationCourse?.progress?.completedLessons) {
-              // Calculate progress for foundation course
+            // Calculate progress for regular enrolled courses
+            const enrolledCourse = enrolledCourses.find(
+              (c) => c.id === course.id,
+            );
+            if (enrolledCourse?.progress?.completedLessons) {
               const completedCount =
-                foundationCourse.progress.completedLessons.length;
+                enrolledCourse.progress.completedLessons.length;
               const totalLessons =
-                course.modules?.reduce(
+                modules?.reduce(
                   (acc, mod) => acc + (mod.lessons?.length || 0),
                   0,
                 ) || 1;
               progress = Math.round((completedCount / totalLessons) * 100);
-            } else {
-              // Calculate progress for regular enrolled courses
-              const enrolledCourse = enrolledCourses.find(
-                (c) => c.id === course.id,
-              );
-              if (enrolledCourse?.progress?.completedLessons) {
-                const completedCount =
-                  enrolledCourse.progress.completedLessons.length;
-                const totalLessons =
-                  course.modules?.reduce(
-                    (acc, mod) => acc + (mod.lessons?.length || 0),
-                    0,
-                  ) || 1;
-                progress = Math.round((completedCount / totalLessons) * 100);
-              }
             }
           }
 

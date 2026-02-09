@@ -1,11 +1,13 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { trackGemini } from "opik-gemini";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 // Initialize Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+});
 
 // Wrap with Opik tracking for observability
 export const trackedGenAI = trackGemini(genAI, {
@@ -15,6 +17,19 @@ export const trackedGenAI = trackGemini(genAI, {
 });
 
 // Get model with tracking
-export const getModel = (modelName = "gemini-2.5-flash") => {
-  return trackedGenAI.getGenerativeModel({ model: modelName });
+export const generateContent = async ({
+  modelName = "gemini-2.5-flash",
+  contents,
+  systemInstruction,
+}) => {
+  const request = {
+    model: modelName,
+    contents: contents,
+  };
+
+  if (systemInstruction) {
+    request.systemInstruction = systemInstruction;
+  }
+
+  return await trackedGenAI.models.generateContent(request);
 };

@@ -24,13 +24,17 @@ const AICourseDetail = () => {
     // Structure should already exist from enrollment - just load it
     const hasValidStructure =
       enrolledCourse.modules &&
-      Array.isArray(enrolledCourse.modules) &&
-      enrolledCourse.modules.length > 0;
+      Array.isArray(
+        enrolledCourse.modules?.modules || enrolledCourse.modules,
+      ) &&
+      (enrolledCourse.modules?.modules || enrolledCourse.modules).length > 0;
 
     if (hasValidStructure) {
       setCourse({
         ...enrolledCourse,
-        structure: { modules: enrolledCourse.modules },
+        structure: {
+          modules: enrolledCourse.modules?.modules || enrolledCourse.modules,
+        },
       });
       setCurrentCourse(enrolledCourse);
     } else {
@@ -60,7 +64,11 @@ const AICourseDetail = () => {
   };
 
   const getCompletionPercentage = () => {
-    const modules = course?.structure?.modules || course?.modules || [];
+    const modules =
+      course?.modules?.modules ||
+      course?.modules ||
+      course?.structure?.modules ||
+      [];
     if (modules.length === 0) return 0;
 
     // Calculate total lessons from all modules
