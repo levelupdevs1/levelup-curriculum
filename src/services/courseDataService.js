@@ -1,5 +1,5 @@
 import { supabase } from "./authService";
-import { generateCourseStructure } from "./aiServiceReal";
+import { aiService } from "./aiServiceReal";
 
 /**
  * Save user profile from onboarding (creates or updates)
@@ -31,7 +31,7 @@ export const saveUserProfile = async (userId, profileData) => {
         },
         {
           onConflict: "user_id",
-        },
+        }
       )
       .select()
       .single();
@@ -182,15 +182,15 @@ export const enrollInCourse = async (courseId, userId) => {
 
     if (needsStructure) {
       // Generate course structure with AI
-      const structureResult = await generateCourseStructure(
+      const structureResult = await aiService.generateCourseStructure(
         course.title,
         course.description,
-        course.modules_count || 6,
+        course.modules_count || 6
       );
 
       if (!structureResult.success) {
         throw new Error(
-          structureResult.error || "Failed to generate course structure",
+          structureResult.error || "Failed to generate course structure"
         );
       }
 
@@ -201,7 +201,7 @@ export const enrollInCourse = async (courseId, userId) => {
         console.error("❌ AI returned 0 modules - this is a critical error");
         console.error(
           "Structure result:",
-          JSON.stringify(structureResult, null, 2),
+          JSON.stringify(structureResult, null, 2)
         );
         throw new Error("AI failed to generate course modules");
       }

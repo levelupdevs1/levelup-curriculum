@@ -4,7 +4,7 @@ import { useCourseGeneration } from "../../hooks/useCourseGeneration";
 import { useAIToken } from "../../hooks/useAIToken";
 import { useLoadingBar } from "../../components/TopLoadingBar";
 import {
-  generateCourseCatalog,
+  aiService,
   AI_TOKEN_COSTS,
   isAIConfigured,
 } from "../../services/aiServiceReal";
@@ -60,7 +60,7 @@ const AICatalog = () => {
             (c) =>
               c.status === "enrolled" ||
               c.is_foundation ||
-              enrolledCourses.some((e) => e.id === c.id)
+              enrolledCourses.some((e) => e.id === c.id),
           )
         : allCourses;
 
@@ -70,7 +70,7 @@ const AICatalog = () => {
       courses = courses.filter(
         (course) =>
           course.title?.toLowerCase().includes(query) ||
-          course.description?.toLowerCase().includes(query)
+          course.description?.toLowerCase().includes(query),
       );
     }
 
@@ -78,7 +78,7 @@ const AICatalog = () => {
     if (difficultyFilter !== "All") {
       courses = courses.filter(
         (course) =>
-          course.difficulty?.toLowerCase() === difficultyFilter.toLowerCase()
+          course.difficulty?.toLowerCase() === difficultyFilter.toLowerCase(),
       );
     }
 
@@ -108,14 +108,14 @@ const AICatalog = () => {
     // Check if foundation course is completed first
     if (!foundationCompleted) {
       setError(
-        "Please complete the Foundation Software Development Course first before generating personalized courses."
+        "Please complete the Foundation Software Development Course first before generating personalized courses.",
       );
       return;
     }
 
     if (!isAIConfigured()) {
       setError(
-        "Gemini API not configured. Please add VITE_GEMINI_API_KEY to .env.local (free tier available at ai.google.dev)"
+        "Gemini API not configured. Please add VITE_GEMINI_API_KEY to .env.local (free tier available at ai.google.dev)",
       );
       return;
     }
@@ -132,7 +132,7 @@ const AICatalog = () => {
     loadingBar.start();
 
     try {
-      const result = await generateCourseCatalog(userProfile);
+      const result = await aiService.generateCourseCatalog(userProfile);
 
       if (result.success) {
         // const tokenResult = await consumeTokens(
@@ -349,13 +349,13 @@ const AICatalog = () => {
               const totalLessons =
                 course.modules?.reduce(
                   (acc, mod) => acc + (mod.lessons?.length || 0),
-                  0
+                  0,
                 ) || 1;
               progress = Math.round((completedCount / totalLessons) * 100);
             } else {
               // Calculate progress for regular enrolled courses
               const enrolledCourse = enrolledCourses.find(
-                (c) => c.id === course.id
+                (c) => c.id === course.id,
               );
               if (enrolledCourse?.progress?.completedLessons) {
                 const completedCount =
@@ -363,7 +363,7 @@ const AICatalog = () => {
                 const totalLessons =
                   course.modules?.reduce(
                     (acc, mod) => acc + (mod.lessons?.length || 0),
-                    0
+                    0,
                   ) || 1;
                 progress = Math.round((completedCount / totalLessons) * 100);
               }

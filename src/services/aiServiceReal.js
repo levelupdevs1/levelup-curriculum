@@ -1,31 +1,6 @@
-/**
- * AI Service - Dual Provider (Groq + Gemini Fallback)
- * Primary: Groq (Unlimited beta, fast)
- * Fallback: Gemini 2.5 Flash (15 RPM, 1500 RPD)
- * Strategy: Always try Groq first, fallback to Gemini on failure
- */
+const API_BASE_URL =
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:3001";
 
-import {
-  generateCourseCatalogGemini,
-  generateCourseStructureGemini,
-  generateLessonContentGemini,
-  generateAssessmentGemini,
-  reviewSubmissionGemini,
-  reviewSubmissionBatchGemini,
-} from "./geminiService";
-
-import {
-  generateCourseCatalogGroq,
-  generateCourseStructureGroq,
-  generateLessonContentGroq,
-  generateAssessmentGroq,
-  reviewSubmissionBatchGroq,
-} from "./groqService";
-
-/**
- * Token cost calculation (in actual tokens, not platform tokens)
- * Gemini is free tier - no costs
- */
 export const AI_TOKEN_COSTS = {
   GENERATE_COURSE_CATALOG: 50, // Estimated tokens for course catalog generation
   GENERATE_COURSE_STRUCTURE: 100, // Estimated tokens for module/lesson structure
@@ -36,125 +11,146 @@ export const AI_TOKEN_COSTS = {
 
 const isGeminiConfigured = () => !!import.meta.env.VITE_GEMINI_API_KEY;
 
-/**
- * Generate personalized course catalog (Groq primary, Gemini fallback)
- */
-export const generateCourseCatalog = async (userProfile) => {
-  const result = await generateCourseCatalogGroq(userProfile);
-  if (!result.success) {
-    console.warn("⚠️ Groq failed, trying Gemini as fallback...");
-    return await generateCourseCatalogGemini(userProfile);
+// Helper function to get auth token
+const getAuthToken = () => {
+  // This will be populated by Supabase auth
+  const session = JSON.parse(
+    localStorage.getItem("sb-emrcbgdeujmvlfvcaxbf-auth-token") || "{}",
+  );
+  return session?.access_token || "";
+};
+
+// Helper function to make authenticated API calls
+const apiCall = async (endpoint, body) => {
+  console.log("body", body);
+
+  const token = getAuthToken();
+
+  console.log("token", token);
+
+  const response = await fetch(`${API_BASE_URL}/api/ai/${endpoint}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(body),
+  });
+
+  const result = await response.json();
+
+  console.log("result", result);
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "API request failed");
   }
+
+  console.log("result", result);
+
   return result;
 };
 
-/**
- * Generate course structure (Groq primary, Gemini fallback)
- */
-export const generateCourseStructure = async (
-  courseTitle,
-  courseDescription,
-  modulesCount,
-) => {
-  const result = await generateCourseStructureGroq(
+export const aiService = {
+  async generateCourseCatalog(userProfile) {
+    try {
+      const result = await apiCall("generate-course-catalog", {
+        ...userProfile,
+      });
+
+      return result.data;
+    } catch (error) {
+      console.error("Error generating course catalog:", error);
+      throw error;
+    }
+  },
+
+  async generateCourseStructure(title, description, modulesCount, userId) {
+    try {
+      const result = await apiCall("generate-course-structure", {
+        title,
+        description,
+        modulesCount,
+        userId,
+      });
+
+      return result.data;
+    } catch (error) {
+      console.error("Error generating course structure:", error);
+      throw error;
+    }
+  },
+
+  async generateLessonContent(
+    title,
+    description,
     courseTitle,
-    courseDescription,
-    modulesCount,
-  );
-  if (!result.success) {
-    console.warn("⚠️ Groq failed, trying Gemini as fallback...");
-    return await generateCourseStructureGemini(
-      courseTitle,
-      courseDescription,
-      modulesCount,
-    );
-  }
-  return result;
+    estimatedMinutes,
+    userId,
+  ) {
+    try {
+      const result = await apiCall("generate-lesson-content", {
+        title,
+        description,
+        courseTitle,
+        estimatedMinutes,
+        userId,
+      });
+
+      return result.data;
+    } catch (error) {
+      console.error("Error generating lesson content:", error);
+      throw error;
+    }
+  },
+
+  async generateAssessment(lessonTitle, lessonContent, assessmentType, userId) {
+    try {
+      const result = await apiCall("generate-assessment", {
+        lessonTitle,
+        lessonContent,
+        assessmentType,
+        userId,
+      });
+
+      return result.data;
+    } catch (error) {
+      console.error("Error generating assessment:", error);
+      throw error;
+    }
+  },
+
+  async reviewSubmission(questions, answers, userId) {
+    try {
+      const result = await apiCall("review-submission", {
+        questions,
+        answers,
+        userId,
+      });
+
+      return result.data;
+    } catch (error) {
+      console.error("Error reviewing submission:", error);
+      throw error;
+    }
+  },
+
+  async reviewSubmissionBatch(questions, submissionAnswers) {
+    try {
+      const result = await apiCall("review-submission-batch", {
+        questions,
+        submissionAnswers,
+      });
+
+      return result.data;
+    } catch (error) {
+      console.error("Error reviewing submission batch:", error);
+      throw error;
+    }
+  },
 };
 
-/**
- * Generate lesson content (Groq primary, Gemini fallback)
- */
-export const generateLessonContent = async (
-  courseTitle,
-  moduleTitle,
-  lessonTitle,
-  lessonType = "reading",
-  skillLevel = "Some Experience",
-) => {
-  const result = await generateLessonContentGroq(
-    courseTitle, // correct order
-    moduleTitle,
-    lessonTitle,
-    lessonType,
-    skillLevel,
-  );
-  if (!result.success) {
-    console.warn("⚠️ Groq failed, trying Gemini as fallback...");
-    return await generateLessonContentGemini(
-      courseTitle,
-      moduleTitle,
-      lessonTitle,
-    );
-  }
-  return result;
-};
-
-/**
- * Generate assessment (Groq primary, Gemini fallback) with type-specific logic
- */
-export const generateAssessment = async (
-  lessonTitle,
-  lessonContent,
-  assessmentType = "coding_challenge",
-  previousLessons = [],
-) => {
-  const result = await generateAssessmentGroq(
-    lessonTitle,
-    lessonContent,
-    assessmentType,
-    previousLessons,
-  );
-  if (!result.success) {
-    console.warn("⚠️ Groq failed, trying Gemini as fallback...");
-    return await generateAssessmentGemini(
-      lessonTitle,
-      lessonContent,
-      assessmentType,
-    );
-  }
-  return result;
-};
-
-/**
- * Review user submission
- */
-export const reviewSubmission = async (
-  assessmentType,
-  question,
-  userAnswer,
-) => {
-  if (!isGeminiConfigured()) {
-    return {
-      success: false,
-      error: "Gemini API key not configured",
-    };
-  }
-
-  return await reviewSubmissionGemini(assessmentType, question, userAnswer);
-};
-
-/**
- * Review entire assessment submission in a single batch call (Groq primary, Gemini fallback)
- */
-export const reviewSubmissionBatch = async (questions, submissionAnswers) => {
-  const result = await reviewSubmissionBatchGroq(questions, submissionAnswers);
-  if (!result.success || !result.review) {
-    console.warn("⚠️ Groq failed, trying Gemini as fallback...");
-    return await reviewSubmissionBatchGemini(questions, submissionAnswers);
-  }
-  return result;
-};
+export default aiService;
 
 /**
  * Check if AI provider is configured

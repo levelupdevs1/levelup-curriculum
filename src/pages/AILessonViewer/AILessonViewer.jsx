@@ -6,12 +6,7 @@ import { useUser } from "../../hooks/useUser";
 import { useLoadingBar } from "../../components/TopLoadingBar";
 import { useLessonNavigation } from "../../hooks/useLessonNavigation";
 import { useXPAward } from "../../hooks/useXPAward";
-import {
-  generateLessonContent,
-  generateAssessment,
-  reviewSubmissionBatch,
-  AI_TOKEN_COSTS,
-} from "../../services/aiServiceReal";
+import { aiService, AI_TOKEN_COSTS } from "../../services/aiServiceReal";
 import { updateCourse } from "../../services/courseDataService";
 import { TOKEN_REWARDS } from "../../services/platformTokenService";
 import { logResourceValidation } from "../../utils/resourceValidation";
@@ -162,7 +157,7 @@ const AILessonViewer = () => {
 
     try {
       // Generate lesson content with real AI
-      const contentResult = await generateLessonContent(
+      const contentResult = await aiService.generateLessonContent(
         enrolledCourse.title,
         module.title,
         lessonTitle,
@@ -195,7 +190,7 @@ const AILessonViewer = () => {
         }
         previousLessons.push(contentResult.content);
 
-        assessmentResult = await generateAssessment(
+        assessmentResult = await aiService.generateAssessment(
           lessonTitle,
           contentResult.content,
           assessmentType,
@@ -257,7 +252,7 @@ const AILessonViewer = () => {
         id: q.id || `q${idx + 1}`,
       }));
 
-      const result = await reviewSubmissionBatch(
+      const result = await aiService.reviewSubmissionBatch(
         normalizedQuestions,
         submission,
       );
