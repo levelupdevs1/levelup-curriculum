@@ -1,4 +1,4 @@
-import { validateProjectSubmission } from "../../src/services/projectValidationService.js";
+import { validateProjectSubmission } from "../middleware/projectValidationService.js";
 import { generateContent } from "../config/gemini.js";
 
 const parseCourseCatalog = (rawContent) => {
@@ -52,7 +52,7 @@ const parseCourseStructure = (rawContent) => {
 
     const titleMatch = block.match(/<<<MODULE_TITLE>>>([\s\S]*?)(?=<<<|$)/);
     const descMatch = block.match(
-      /<<<MODULE_DESCRIPTION>>>([\s\S]*?)(?=<<<|$)/,
+      /<<<MODULE_DESCRIPTION>>>([\s\S]*?)(?=<<<|$)/
     );
 
     if (titleMatch) module.title = titleMatch[1].trim();
@@ -72,22 +72,22 @@ const parseCourseStructure = (rawContent) => {
       const lesson = {};
 
       const lTitleMatch = lessonBlock.match(
-        /<<<LESSON_TITLE>>>([\s\S]*?)(?=<<<|$)/,
+        /<<<LESSON_TITLE>>>([\s\S]*?)(?=<<<|$)/
       );
       const lTypeMatch = lessonBlock.match(
-        /<<<LESSON_TYPE>>>([\s\S]*?)(?=<<<|$)/,
+        /<<<LESSON_TYPE>>>([\s\S]*?)(?=<<<|$)/
       );
       const lMinutesMatch = lessonBlock.match(
-        /<<<LESSON_MINUTES>>>([\s\S]*?)(?=<<<|$)/,
+        /<<<LESSON_MINUTES>>>([\s\S]*?)(?=<<<|$)/
       );
       const lDescMatch = lessonBlock.match(
-        /<<<LESSON_DESCRIPTION>>>([\s\S]*?)(?=<<<|$)/,
+        /<<<LESSON_DESCRIPTION>>>([\s\S]*?)(?=<<<|$)/
       );
       const lAssessMatch = lessonBlock.match(
-        /<<<REQUIRES_ASSESSMENT>>>([\s\S]*?)(?=<<<|$)/,
+        /<<<REQUIRES_ASSESSMENT>>>([\s\S]*?)(?=<<<|$)/
       );
       const lAssessTypeMatch = lessonBlock.match(
-        /<<<ASSESSMENT_TYPE>>>([\s\S]*?)(?=<<<|$)/,
+        /<<<ASSESSMENT_TYPE>>>([\s\S]*?)(?=<<<|$)/
       );
 
       if (lTitleMatch) lesson.title = lTitleMatch[1].trim();
@@ -184,7 +184,7 @@ const parseReview = (rawContent) => {
   const passedMatch = rawContent.match(/<<<PASSED>>>([\s\S]*?)(?=<<<|$)/);
   const scoreMatch = rawContent.match(/<<<OVERALL_SCORE>>>([\s\S]*?)(?=<<<|$)/);
   const overallFeedbackMatch = rawContent.match(
-    /<<<OVERALL_FEEDBACK>>>([\s\S]*?)(?=<<<|$)/,
+    /<<<OVERALL_FEEDBACK>>>([\s\S]*?)(?=<<<|$)/
   );
 
   if (passedMatch) {
@@ -209,10 +209,10 @@ const parseReview = (rawContent) => {
     const correctMatch = block.match(/<<<IS_CORRECT>>>([\s\S]*?)(?=<<<|$)/);
     const feedbackMatch = block.match(/<<<FEEDBACK>>>([\s\S]*?)(?=<<<|$)/);
     const suggestionsMatch = block.match(
-      /<<<SUGGESTIONS>>>([\s\S]*?)(?=<<<|$)/,
+      /<<<SUGGESTIONS>>>([\s\S]*?)(?=<<<|$)/
     );
     const encouragementMatch = block.match(
-      /<<<ENCOURAGEMENT>>>([\s\S]*?)(?=<<<|$)/,
+      /<<<ENCOURAGEMENT>>>([\s\S]*?)(?=<<<|$)/
     );
 
     if (idMatch) qReview.questionId = idMatch[1].trim();
@@ -301,9 +301,7 @@ const parseLessonContent = (rawContent) => {
 export const generateCourseCatalog = async (req, res) => {
   const { userProfile } = req.body;
 
-
   try {
-
     const prompt = `You are an expert educational content designer creating a PERSONALIZED learning path.
 
 === ANTI-HALLUCINATION PROTOCOL (MANDATORY) ===
@@ -393,7 +391,7 @@ Generate at least 3 courses. Include more if the learning goal requires comprehe
 
     // System instruction goes separately
     const systemInstruction = messages.find(
-      (m) => m.role === "system",
+      (m) => m.role === "system"
     )?.content;
 
     // Try each model in rotation until one succeeds
@@ -524,7 +522,7 @@ FINAL CHECK: Count your modules. Must be EXACTLY ${modulesCount}.`;
       }));
 
     const systemInstruction = messages.find(
-      (m) => m.role === "system",
+      (m) => m.role === "system"
     )?.content;
 
     const result = await generateContent({
@@ -631,7 +629,11 @@ ${approach.depth}
 
 Expected content: ${approach.wordCount}
 Code examples: ${approach.examples}
-${language ? `\nIMPORTANT: Use ${language} syntax and conventions in ALL code examples. Reference ${language}-specific documentation.` : "\nIMPORTANT: Use appropriate syntax for the technology being taught. Reference official documentation."}
+${
+  language
+    ? `\nIMPORTANT: Use ${language} syntax and conventions in ALL code examples. Reference ${language}-specific documentation.`
+    : "\nIMPORTANT: Use appropriate syntax for the technology being taught. Reference official documentation."
+}
 
 === CONTENT REQUIREMENTS ===
 
@@ -647,14 +649,14 @@ This is a READING lesson - focus on explanation and understanding:
 - NO hands-on exercises (this is reading/learning, not practice)
 `
     : lessonType === "practice"
-      ? `
+    ? `
 This is a PRACTICE lesson - focus on doing:
 - Brief concept review
 - Multiple practical coding exercises
 - Clear instructions for each exercise
 - Expected outcomes
 `
-      : `
+    : `
 This is a PROJECT lesson - focus on building:
 - Project requirements and goals
 - Technical specifications
@@ -681,7 +683,7 @@ Structure your lesson naturally:
 - Adapt based on whether the lesson is conceptual, practical, or instructional
 `
     : skillLevel === "Experienced"
-      ? `
+    ? `
 For Experienced Developers:
 - Skip basics, dive into technical depth
 - Focus on design decisions and trade-offs
@@ -689,7 +691,7 @@ For Experienced Developers:
 - Discuss when to use different approaches
 - Include production considerations
 `
-      : `
+    : `
 For Intermediate Learners:
 - Balance theory with practical application
 - Show professional patterns and practices
@@ -748,7 +750,9 @@ For Intermediate Learners:
 - [Only include verified sources: MDN, official docs, JavaScript.info, Web.dev]
 - [2-4 relevant resources]
 
-Write comprehensive content (${approach.wordCount}) that teaches this lesson effectively.`;
+Write comprehensive content (${
+      approach.wordCount
+    }) that teaches this lesson effectively.`;
 
     const messages = [
       {
@@ -770,7 +774,7 @@ Write comprehensive content (${approach.wordCount}) that teaches this lesson eff
       }));
 
     const systemInstruction = messages.find(
-      (m) => m.role === "system",
+      (m) => m.role === "system"
     )?.content;
 
     const result = await generateContent({
@@ -816,7 +820,11 @@ export const generateAssessment = async (req, res) => {
       prompt = `Create a QUIZ assessment for this lesson:
 
 Lesson: ${lessonTitle}
-Content Summary: ${typeof lessonContent === "string" ? lessonContent.substring(0, 500) : JSON.stringify(lessonContent).substring(0, 500)}
+Content Summary: ${
+        typeof lessonContent === "string"
+          ? lessonContent.substring(0, 500)
+          : JSON.stringify(lessonContent).substring(0, 500)
+      }
 
 Create 5-7 multiple choice questions:
 - Test conceptual understanding
@@ -845,7 +853,11 @@ The correct option text or index (0-3)
       prompt = `Create PROJECT requirements for this lesson:
 
 Lesson: ${lessonTitle}
-Content Summary: ${typeof lessonContent === "string" ? lessonContent.substring(0, 500) : JSON.stringify(lessonContent).substring(0, 500)}
+Content Summary: ${
+        typeof lessonContent === "string"
+          ? lessonContent.substring(0, 500)
+          : JSON.stringify(lessonContent).substring(0, 500)
+      }
 
 Create project specifications:
 - Clear must-have features
@@ -876,7 +888,11 @@ Submission format: GitHub repository URL required. Live deployment optional.
       prompt = `Create CODING CHALLENGE assessment for this lesson:
 
 Lesson: ${lessonTitle}
-Content Summary: ${typeof lessonContent === "string" ? lessonContent.substring(0, 500) : JSON.stringify(lessonContent).substring(0, 500)}
+Content Summary: ${
+        typeof lessonContent === "string"
+          ? lessonContent.substring(0, 500)
+          : JSON.stringify(lessonContent).substring(0, 500)
+      }
 
 Create 3-5 coding challenges:
 - Test practical application
@@ -926,7 +942,7 @@ input2 -> expected output2
       }));
 
     const systemInstruction = messages.find(
-      (m) => m.role === "system",
+      (m) => m.role === "system"
     )?.content;
 
     const result = await generateContent({
@@ -1005,7 +1021,7 @@ Be constructive, encouraging, and specific. Return ONLY valid JSON.`;
       }));
 
     const systemInstruction = messages.find(
-      (m) => m.role === "system",
+      (m) => m.role === "system"
     )?.content;
 
     const result = await generateContent({
@@ -1053,7 +1069,7 @@ export const reviewSubmissionBatch = async (req, res) => {
     if (submission && typeof submission === "object") {
       const validation = await validateProjectSubmission(
         submission,
-        pq.question,
+        pq.question
       );
       projectValidations[pq.id] = validation;
     }
@@ -1104,7 +1120,11 @@ export const reviewSubmissionBatch = async (req, res) => {
 
       return `
 Question ${idx + 1} (${q.type}): ${q.question}
-${q.options ? `Options: ${q.options.map((opt, i) => `${i + 1}. ${opt}`).join(" | ")}` : ""}
+${
+  q.options
+    ? `Options: ${q.options.map((opt, i) => `${i + 1}. ${opt}`).join(" | ")}`
+    : ""
+}
 Student Answer: ${answerText}
 ---`;
     })
@@ -1218,7 +1238,7 @@ Keep going`;
       }));
 
     const systemInstruction = messages.find(
-      (m) => m.role === "system",
+      (m) => m.role === "system"
     )?.content;
 
     const result = await generateContent({
