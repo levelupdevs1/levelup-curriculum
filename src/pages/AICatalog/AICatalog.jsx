@@ -1,0 +1,345 @@
+import { useState, useEffect, useRef, useMemo } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { useCourseGeneration } from "../../hooks/useCourseGeneration";
+import { useAIToken } from "../../hooks/useAIToken";
+import { useLoadingBar } from "../../components/TopLoadingBar";
+import {
+  aiService,
+  AI_TOKEN_COSTS,
+  isAIConfigured,
+} from "../../services/aiServiceReal";
+import Button from "../../components/Button/Button";
+import AICourseCard from "../../components/AICourseCard/AICourseCard";
+import LoadingSpinner from "../../components/LoadingSpinner/LoadingSpinner";
+import SearchFilter from "../../components/SearchFilter/SearchFilter";
+import Pagination from "../../components/Pagination/Pagination";
+import styles from "./AICatalog.module.css";
+
+const COURSES_PER_PAGE = 6;
+const DIFFICULTY_OPTIONS = ["All", "Beginner", "Intermediate", "Advanced"];
+
+const AICatalog = () => {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const {
+    userProfile,
+    generatedCourses,
+    enrolledCourses,
+    addGeneratedCourses,
+    enrollInCourse,
+  } = useCourseGeneration();
+  const { useTokens: _consumeTokens } = useAIToken();
+  const loadingBar = useLoadingBar();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [difficultyFilter, setDifficultyFilter] = useState("All");
+  const [currentPage, setCurrentPage] = useState(1);
+  const hasGeneratedRef = useRef(false);
+
+  // Check if we should generate new courses (from preference update)
+  const shouldGenerate = searchParams.get("generate") === "true";
+
+  // Filter courses based on active tab, search, and difficulty
+  const filteredCourses = useMemo(() => {
+    let allCourses = [...(generatedCourses || [])];
+
+    let courses =
+      activeTab === "enrolled"
+        ? allCourses.filter(
+            (c) =>
+              c.status === "enrolled" ||
+              enrolledCourses.some((e) => e.id === c.id),
+          )
+        : allCourses;
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      courses = courses.filter(
+        (course) =>
+          course.title?.toLowerCase().includes(query) ||
+          course.description?.toLowerCase().includes(query),
+      );
+    }
+
+    // Apply difficulty filter
+    if (difficultyFilter !== "All") {
+      courses = courses.filter(
+        (course) =>
+          course.difficulty?.toLowerCase() === difficultyFilter.toLowerCase(),
+      );
+    }
+
+    return courses;
+  }, [
+    generatedCourses,
+    enrolledCourses,
+    activeTab,
+    searchQuery,
+    difficultyFilter,
+  ]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredCourses.length / COURSES_PER_PAGE);
+  const paginatedCourses = useMemo(() => {
+    const startIndex = (currentPage - 1) * COURSES_PER_PAGE;
+    return filteredCourses.slice(startIndex, startIndex + COURSES_PER_PAGE);
+  }, [filteredCourses, currentPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, difficultyFilter, activeTab]);
+
+  const generateCourses = async () => {
+    if (!isAIConfigured()) {
+      setError(
+        "Gemini API not configured. Please add VITE_GEMINI_API_KEY to .env.local (free tier available at ai.google.dev)",
+      );
+      return;
+    }
+
+    // DISABLED: No token restrictions
+    // const tokenCost = AI_TOKEN_COSTS.GENERATE_COURSE_CATALOG;
+    // if (!canUseTokens(tokenCost)) {
+    //   setError("Insufficient AI tokens to generate courses");
+    //   return;
+    // }
+
+    setLoading(true);
+    setError(null);
+    loadingBar.start();
+
+    try {
+      const response = await aiService.generateCourseCatalog(userProfile);
+      const result = {
+        courses: response.data,
+        ...response,
+      };
+
+      if (result.success) {
+        // const tokenResult = await consumeTokens(
+        //   result.tokensUsed,
+        //   "generate_course_catalog",
+        //   { courses: result.courses.length, model: result.model },
+        // );
+
+        // if (tokenResult.success) {
+        const addResult = await addGeneratedCourses(result.courses);
+        if (!addResult.success) {
+          setError(addResult.error || "Failed to save courses");
+        }
+        // } else {
+        //   setError(tokenResult.error);
+        // }
+      } else {
+        setError(result.error || "Failed to generate courses");
+      }
+    } catch (err) {
+      setError(err.message || "An error occurred");
+    } finally {
+      setLoading(false);
+      loadingBar.complete();
+    }
+  };
+
+  useEffect(() => {
+    // Don't auto-generate if no user profile yet (hasn't done onboarding)
+    if (!userProfile) {
+      return;
+    }
+
+    // Generate courses if:
+    // 1. No courses exist yet, OR
+    // 2. Coming from preference update with ?generate=true
+    const shouldAutoGenerate = generatedCourses.length === 0 || shouldGenerate;
+
+    if (shouldAutoGenerate && !hasGeneratedRef.current) {
+      hasGeneratedRef.current = true;
+
+      // Clear the generate param from URL
+      if (shouldGenerate) {
+        setSearchParams({});
+      }
+
+      generateCourses();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shouldGenerate]);
+
+  const handleEnroll = async (courseId) => {
+    const isEnrolled = enrolledCourses.some((c) => c.id === courseId);
+    if (isEnrolled) {
+      navigate(`/courses/${courseId}`);
+      return;
+    }
+
+    const result = await enrollInCourse(courseId);
+    if (result.success) {
+      navigate(`/courses/${courseId}`);
+    } else {
+      setError(result.error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loadingContainer}>
+          <LoadingSpinner />
+          <p>Generating personalized courses for you...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.container}>
+      <div className={styles.header}>
+        <div>
+          <h1>Your Personalized Courses</h1>
+          <p>Generated learning paths tailored to your goals</p>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className={styles.tabs}>
+        <button
+          className={`${styles.tab} ${
+            activeTab === "all" ? styles.activeTab : ""
+          }`}
+          onClick={() => setActiveTab("all")}
+        >
+          All Courses ({generatedCourses?.length || 0})
+        </button>
+        <button
+          className={`${styles.tab} ${
+            activeTab === "enrolled" ? styles.activeTab : ""
+          }`}
+          onClick={() => setActiveTab("enrolled")}
+        >
+          Enrolled ({enrolledCourses?.length || 0})
+        </button>
+      </div>
+      {/* Search and Filters */}
+      <SearchFilter
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        filterValue={difficultyFilter}
+        onFilterChange={setDifficultyFilter}
+        filterOptions={DIFFICULTY_OPTIONS.map((option) => ({
+          value: option,
+          label: option === "All" ? "All Levels" : option,
+        }))}
+        searchPlaceholder="Search courses..."
+        filterLabel="Difficulty"
+      />
+
+      {/* Results count */}
+      {filteredCourses.length > 0 && (
+        <p className={styles.resultsCount}>
+          Showing {paginatedCourses.length} of {filteredCourses.length} courses
+        </p>
+      )}
+
+      {error && (
+        <div className={styles.error}>
+          <p>{error}</p>
+          <Button variant="secondary" onClick={() => setError(null)}>
+            Dismiss
+          </Button>
+        </div>
+      )}
+
+      {filteredCourses.length === 0 && !loading && (
+        <div className={styles.empty}>
+          <>
+            <p>No courses generated yet</p>
+            <Button variant="primary" onClick={generateCourses}>
+              Generate Courses
+            </Button>
+          </>
+        </div>
+      )}
+
+      {paginatedCourses.length === 0 && activeTab === "enrolled" && (
+        <div className={styles.empty}>
+          <p>You haven't enrolled in any courses yet</p>
+          <Button variant="secondary" onClick={() => setActiveTab("all")}>
+            Browse All Courses
+          </Button>
+        </div>
+      )}
+
+      {paginatedCourses.length === 0 &&
+        activeTab === "all" &&
+        filteredCourses.length === 0 &&
+        generatedCourses.length > 0 && (
+          <div className={styles.empty}>
+            <p>No courses match your search criteria</p>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setSearchQuery("");
+                setDifficultyFilter("All");
+              }}
+            >
+              Clear Filters
+            </Button>
+          </div>
+        )}
+
+      <div className={styles.coursesGrid}>
+        {paginatedCourses.map((course) => {
+          const modules =
+            course.modules?.modules ||
+            course.modules ||
+            course.structure?.modules ||
+            [];
+          const isEnrolled = enrolledCourses.some((c) => c.id === course.id);
+
+          // Calculate progress for enrolled courses
+          let progress = 0;
+          if (isEnrolled) {
+            // Calculate progress for regular enrolled courses
+            const enrolledCourse = enrolledCourses.find(
+              (c) => c.id === course.id,
+            );
+            if (enrolledCourse?.progress?.completedLessons) {
+              const completedCount =
+                enrolledCourse.progress.completedLessons.length;
+              const totalLessons =
+                modules?.reduce(
+                  (acc, mod) => acc + (mod.lessons?.length || 0),
+                  0,
+                ) || 1;
+              progress = Math.round((completedCount / totalLessons) * 100);
+            }
+          }
+
+          return (
+            <AICourseCard
+              key={course.id}
+              course={course}
+              isEnrolled={isEnrolled}
+              onAction={handleEnroll}
+              showProgress={isEnrolled}
+              progress={progress}
+            />
+          );
+        })}
+      </div>
+
+      {/* Pagination */}
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
+    </div>
+  );
+};
+
+export default AICatalog;

@@ -12,6 +12,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { useUser } from "../../hooks/useUser";
+import logoImage from "../../assets/logo.jpeg";
 import styles from "./MobileMenu.module.css";
 
 const MobileMenu = ({ isOpen, onClose }) => {
@@ -22,7 +23,7 @@ const MobileMenu = ({ isOpen, onClose }) => {
   const menuItems = isAuthenticated
     ? [
         { path: "/dashboard", label: "Dashboard", icon: Trophy },
-        { path: "/courses", label: "Courses", icon: BookOpen },
+        { path: "/course-catalog", label: "Courses", icon: BookOpen },
         { path: "/rewards", label: "Rewards", icon: Award },
         { path: "/discussion", label: "Discussion", icon: MessageSquare },
         { path: "/profile", label: "Profile", icon: User },
@@ -31,7 +32,7 @@ const MobileMenu = ({ isOpen, onClose }) => {
       ]
     : [
         { path: "/landing", label: "Home", icon: Trophy },
-        { path: "/courses", label: "Courses", icon: BookOpen },
+        // { path: "/courses", label: "Courses", icon: BookOpen },
       ];
 
   const handleLinkClick = () => {
@@ -48,7 +49,7 @@ const MobileMenu = ({ isOpen, onClose }) => {
       <div className={styles.menu} onClick={(e) => e.stopPropagation()}>
         <div className={styles.header}>
           <div className={styles.logo}>
-            <Trophy size={24} />
+            <img src={logoImage} alt="Level Up" className={styles.logoImage} />
             <span className={styles.logoText}>Level Up</span>
           </div>
           <button className={styles.closeButton} onClick={onClose}>

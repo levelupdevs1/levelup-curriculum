@@ -16,7 +16,7 @@ export const fetchCourses = async () => {
         `
         *,
         enrolled_count:enrollments(count)
-      `
+      `,
       )
       .order("created_at", { ascending: false });
 
@@ -210,7 +210,7 @@ export const recordLessonCompletion = async (
   courseId,
   moduleId,
   lessonId,
-  points
+  points,
 ) => {
   try {
     const { data, error } = await supabase
@@ -294,7 +294,6 @@ export const fetchLessonMarkdown = async (courseId, filePath) => {
 
       // Construct local file path
       const localPath = `/src/courses/${courseId}/${lessonPath}`;
-      console.log(`📖 Loading lesson from local file: ${localPath}`);
 
       const response = await fetch(localPath);
       if (!response.ok) {
@@ -342,7 +341,7 @@ export const submitAssignment = async (
   userId,
   courseId,
   assignmentId,
-  submissionContent
+  submissionContent,
 ) => {
   try {
     const { data, error } = await supabase
@@ -476,7 +475,7 @@ export const submitPeerReview = async (
   reviewerId,
   submissionId,
   rating,
-  feedback
+  feedback,
 ) => {
   try {
     const { data, error } = await supabase
@@ -580,7 +579,7 @@ export const submitReviewRequest = async (
   userId,
   courseId,
   lessonId,
-  request
+  request,
 ) => {
   try {
     const { data, error } = await supabase

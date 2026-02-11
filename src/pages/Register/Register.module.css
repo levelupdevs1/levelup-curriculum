@@ -4,7 +4,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: 0;
 }
 
 .container {
@@ -125,6 +125,39 @@
   gap: 24px;
 }
 
+.socialLogin {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.googleButton {
+  width: 100%;
+  justify-content: center;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 8px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: #e5e7eb;
+}
+
+.divider span {
+  padding: 0 16px;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+}
+
 .errorMessage {
   background-color: #fef2f2;
   border: 1px solid #fecaca;
@@ -205,7 +238,7 @@
 
 @media (max-width: 768px) {
   .registerPage {
-    padding: 16px;
+    padding: 0;
   }
 
   .container {

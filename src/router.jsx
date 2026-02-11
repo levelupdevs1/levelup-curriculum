@@ -3,13 +3,17 @@ import Layout from "./components/Layout/Layout";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 import AuthRoute from "./components/AuthRoute/AuthRoute";
 import HomeRoute from "./components/HomeRoute/HomeRoute";
+import OnboardingRoute from "./components/OnboardingRoute/OnboardingRoute";
 import Landing from "./pages/Landing/Landing";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
+import AuthCallback from "./pages/AuthCallback/AuthCallback";
+import ConfirmEmail from "./pages/ConfirmEmail/ConfirmEmail";
+import Onboarding from "./pages/Onboarding/Onboarding";
 import Dashboard from "./pages/Dashboard/Dashboard";
-import CourseCatalog from "./pages/CourseCatalog/CourseCatalog";
-import CourseDetail from "./pages/CourseDetail/CourseDetail";
-import LessonViewer from "./pages/LessonViewer/LessonViewer";
+import AICatalog from "./pages/AICatalog/AICatalog";
+import AICourseDetail from "./pages/AICourseDetail/AICourseDetail";
+import AILessonViewer from "./pages/AILessonViewer/AILessonViewer";
 import PeerReview from "./pages/PeerReview/PeerReview";
 import Rewards from "./pages/Rewards/Rewards";
 import Certificates from "./pages/Certificates/Certificates";
@@ -52,6 +56,26 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: "auth/callback",
+        Component: AuthCallback,
+      },
+      {
+        path: "confirm-email",
+        Component: () => (
+          <AuthRoute>
+            <ConfirmEmail />
+          </AuthRoute>
+        ),
+      },
+      {
+        path: "onboarding",
+        Component: () => (
+          <OnboardingRoute>
+            <Onboarding />
+          </OnboardingRoute>
+        ),
+      },
+      {
         path: "dashboard",
         Component: () => (
           <ProtectedRoute>
@@ -60,18 +84,26 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: "courses",
-        Component: CourseCatalog,
+        path: "course-catalog",
+        Component: () => (
+          <ProtectedRoute>
+            <AICatalog />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "courses/:courseId",
-        Component: CourseDetail,
+        Component: () => (
+          <ProtectedRoute>
+            <AICourseDetail />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "courses/:courseId/lessons/:lessonId",
         Component: () => (
           <ProtectedRoute>
-            <LessonViewer />
+            <AILessonViewer />
           </ProtectedRoute>
         ),
       },

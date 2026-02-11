@@ -1,0 +1,277 @@
+.assessmentContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.assessmentCard {
+  padding: 40px;
+}
+
+.review {
+  padding-top: 24px;
+}
+
+.reviewHeader {
+  padding: 24px;
+  border-radius: 8px;
+  margin-bottom: 32px;
+  border: 1px solid #e5e7eb;
+}
+
+.reviewHeader.passed {
+  background-color: #f0fdf4;
+  border-color: #10b981;
+}
+
+.reviewHeader.failed {
+  background-color: #fef2f2;
+  border-color: #ef4444;
+}
+
+.resultIndicator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.resultIndicator h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.reviewHeader.passed .resultIndicator h2 {
+  color: #065f46;
+}
+
+.reviewHeader.failed .resultIndicator h2 {
+  color: #991b1b;
+}
+
+.resultIndicator .score {
+  font-size: 36px;
+  font-weight: 700;
+}
+
+.reviewHeader.passed .score {
+  color: #065f46;
+}
+
+.reviewHeader.failed .score {
+  color: #991b1b;
+}
+
+.scoreInfo {
+  font-size: 14px;
+  color: #6b7280;
+  text-align: right;
+}
+
+.feedback {
+  margin-bottom: 32px;
+}
+
+.overallSection {
+  margin-bottom: 32px;
+}
+
+.overallSection h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 12px 0;
+}
+
+.overallSection p {
+  font-size: 15px;
+  color: #374151;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.detailsSection h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 16px 0;
+}
+
+.questionResult {
+  padding: 16px;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 12px;
+  background-color: #f9fafb;
+}
+
+.questionResult.correct {
+  border-color: #d1fae5;
+  background-color: #f0fdf4;
+}
+
+.questionResult.incorrect {
+  border-color: #fecaca;
+  background-color: #fef2f2;
+}
+
+.questionHeader {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.questionNum {
+  font-weight: 600;
+  font-size: 13px;
+  color: #6b7280;
+  min-width: 32px;
+  padding: 4px 8px;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.questionText {
+  flex: 1;
+  font-size: 15px;
+  color: #111827;
+  font-weight: 500;
+}
+
+.questionHeader .score {
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 40px;
+  text-align: right;
+}
+
+.questionResult.correct .score {
+  color: #065f46;
+}
+
+.questionResult.incorrect .score {
+  color: #991b1b;
+}
+
+.questionResult .feedback {
+  font-size: 14px;
+  color: #374151;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.suggestionsList {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.suggestion {
+  font-size: 14px;
+  color: #6b7280;
+  padding: 6px 0;
+}
+
+.reviewActions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .assessmentCard {
+    padding: 20px;
+  }
+
+  .reviewHeader {
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+
+  .resultIndicator h2 {
+    font-size: 20px;
+  }
+
+  .resultIndicator .score {
+    font-size: 28px;
+  }
+
+  .scoreInfo {
+    font-size: 13px;
+  }
+
+  .overallSection h3,
+  .detailsSection h3 {
+    font-size: 16px;
+  }
+
+  .overallSection p {
+    font-size: 14px;
+  }
+
+  .questionResult {
+    padding: 12px;
+  }
+
+  .questionHeader {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .questionText {
+    font-size: 14px;
+  }
+
+  .questionResult .feedback {
+    font-size: 13px;
+  }
+
+  .reviewActions {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .assessmentCard {
+    padding: 20px;
+  }
+
+  .reviewHeader {
+    padding: 16px;
+  }
+
+  .resultIndicator {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .resultIndicator h2 {
+    font-size: 19px;
+  }
+
+  .resultIndicator .score {
+    font-size: 24px;
+  }
+
+  .questionResult {
+    padding: 10px;
+  }
+
+  .questionHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .questionText {
+    font-size: 13px;
+  }
+
+  /* Hide full navigation text on mobile */
+  .navTextFull {
+    display: none;
+  }
+}

@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from "react";
 import { useUser } from "../../hooks/useUser";
 import {
   Trophy,
@@ -12,63 +11,14 @@ import {
 } from "lucide-react";
 import Card from "../../components/Card/Card";
 import Button from "../../components/Button/Button";
-import ProgressBar from "../../components/ProgressBar/ProgressBar";
-import {
-  getUserTokenClaims,
-  claimTokens,
-} from "../../services/progressService";
 import styles from "./Rewards.module.css";
 
 const Rewards = () => {
-  const { user, profile } = useUser();
-  const [unclaimedLevel, setUnclaimedLevel] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const checkTokenClaims = async () => {
-      if (!user) return;
-
-      try {
-        // Check if user has any unclaimed tokens
-        const claims = await getUserTokenClaims(user.id);
-        if (claims && claims.length > 0) {
-          // Find the highest unclaimed level
-          const unclaimedLevels = claims.filter((c) => !c.claimed_at);
-          if (unclaimedLevels.length > 0) {
-            setUnclaimedLevel(Math.max(...unclaimedLevels.map((c) => c.level)));
-          }
-        }
-      } catch {
-        // Failed to check token claims
-      }
-    };
-
-    checkTokenClaims();
-  }, [user, profile?.current_level]);
-
-  const handleClaimTokens = async () => {
-    if (!user || !unclaimedLevel) return;
-
-    setLoading(true);
-    try {
-      await claimTokens(user.id, unclaimedLevel);
-      setUnclaimedLevel(null);
-      // Could add a toast notification here
-    } catch {
-      // Failed to claim tokens
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { profile } = useUser();
 
   if (!profile) {
     return <div className={styles.container}>Loading...</div>;
   }
-
-  const totalPoints = profile?.total_points || 0;
-  const currentLevel = profile?.current_level || 1;
-  const pointsToNextLevel = currentLevel * 500 + 500 - totalPoints;
-  const progressToNext = ((totalPoints % 500) / 500) * 100;
 
   return (
     <div className={styles.container}>
@@ -76,61 +26,6 @@ const Rewards = () => {
         <h1>Rewards & Achievements</h1>
         <p>Track your level, points, and claim your rewards</p>
       </div>
-
-      {/* Level Progress */}
-      <Card className={styles.levelProgressCard}>
-        <div className={styles.levelProgressHeader}>
-          <div className={styles.levelInfo}>
-            <div className={styles.levelIcon}>
-              <Trophy size={32} />
-            </div>
-            <div className={styles.levelDetails}>
-              <h2>Level {currentLevel}</h2>
-              <p>{totalPoints.toLocaleString()} Total Points</p>
-            </div>
-          </div>
-          {unclaimedLevel && (
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={handleClaimTokens}
-              loading={loading}
-              icon={<Sparkles size={16} />}
-            >
-              Claim Level {unclaimedLevel} Tokens
-            </Button>
-          )}
-        </div>
-
-        {/* Progress to Next Level */}
-        <div className={styles.progressSection}>
-          <div className={styles.progressHeader}>
-            <span>Progress to Level {currentLevel + 1}</span>
-            <span>{Math.round(progressToNext)}%</span>
-          </div>
-          <ProgressBar
-            progress={totalPoints % 500}
-            max={500}
-            height="12px"
-            showLabel={false}
-            color="#ffd700"
-          />
-          <div className={styles.progressInfo}>
-            <span>{pointsToNextLevel} points to next level</span>
-          </div>
-        </div>
-
-        {/* Level Rewards */}
-        <div className={styles.nextLevelRewards}>
-          <h4>Level {currentLevel + 1} Rewards:</h4>
-          <div className={styles.rewardsList}>
-            <div className={styles.rewardItem}>
-              <Award size={16} />
-              <span>{(currentLevel + 1) * 10} Platform Tokens</span>
-            </div>
-          </div>
-        </div>
-      </Card>
 
       {/* Certificates Section - Coming Soon */}
       <div className={styles.certificatesSection}>

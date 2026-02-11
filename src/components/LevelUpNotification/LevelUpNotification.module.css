@@ -1,0 +1,97 @@
+/* Level Up Notification */
+.levelUpNotification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.levelUpContent {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #4a154b 0%, #6d1f6e 100%);
+  padding: 20px 24px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(74, 21, 75, 0.4);
+  border: 2px solid #ffd700;
+}
+
+.levelUpIcon {
+  font-size: 32px;
+}
+
+.levelUpText h3 {
+  margin: 0 0 4px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffd700;
+}
+
+.levelUpText p {
+  margin: 0;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.tokenReward {
+  color: #ffd700 !important;
+  font-weight: 600;
+}
+
+.levelUpClose {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0 8px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.levelUpClose:hover {
+  opacity: 1;
+}
+
+@media (max-width: 480px) {
+  .levelUpNotification {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: calc(100% - 20px);
+  }
+
+  .levelUpContent {
+    padding: 12px 16px;
+    gap: 10px;
+  }
+
+  .levelUpIcon {
+    font-size: 24px;
+  }
+
+  .levelUpText h3 {
+    font-size: 14px;
+  }
+
+  .levelUpText p {
+    font-size: 12px;
+  }
+
+  .levelUpClose {
+    font-size: 20px;
+  }
+}

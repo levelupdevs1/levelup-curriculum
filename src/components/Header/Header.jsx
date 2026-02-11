@@ -1,20 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
-  Search,
-  Bell,
   User,
-  Trophy,
   Coins,
   ChevronDown,
   BookOpen,
-  MessageSquare,
   Award,
   Settings,
   LogOut,
   Menu,
 } from "lucide-react";
+import logoImage from "../../assets/logo.jpeg";
 import { useUser } from "../../hooks/useUser";
+// import { useAIToken } from "../../hooks/useAIToken";
 import Button from "../Button/Button";
 import Input from "../Input/Input";
 import MobileMenu from "../MobileMenu/MobileMenu";
@@ -22,19 +20,11 @@ import styles from "./Header.module.css";
 
 const Header = () => {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-  const [showNotifications, setShowNotifications] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const navigate = useNavigate();
   const dropdownRef = useRef(null);
   const { isAuthenticated, logout } = useUser();
-
-  const handleNotificationClick = () => {
-    setShowNotifications(!showNotifications);
-  };
-
-  const handleCoinsClick = () => {
-    navigate("/rewards");
-  };
+  // const { tokensRemaining } = useAIToken();
 
   const handleProfileClick = () => {
     setShowProfileDropdown(!showProfileDropdown);
@@ -72,7 +62,7 @@ const Header = () => {
     { path: "/profile", label: "Profile", icon: User },
     { path: "/rewards", label: "Rewards", icon: Award },
     { path: "/certificates", label: "Certificates", icon: Award },
-    { path: "/courses", label: "My Courses", icon: BookOpen },
+    { path: "/course-catalog", label: "My Courses", icon: BookOpen },
     { path: "/settings", label: "Settings", icon: Settings },
     {
       path: "/logout",
@@ -99,7 +89,7 @@ const Header = () => {
             to={isAuthenticated ? "/dashboard" : "/landing"}
             className={styles.mobileLogo}
           >
-            <Trophy className={styles.logoIcon} />
+            <img src={logoImage} alt="Level Up" className={styles.logoIcon} />
           </NavLink>
         </div>
 
@@ -109,7 +99,7 @@ const Header = () => {
             to={isAuthenticated ? "/dashboard" : "/landing"}
             className={styles.logo}
           >
-            <Trophy className={styles.logoIcon} />
+            <img src={logoImage} alt="Level Up" className={styles.logoIcon} />
             <span className={styles.logoText}>Level Up</span>
           </NavLink>
 
@@ -125,7 +115,7 @@ const Header = () => {
                   Dashboard
                 </NavLink>
                 <NavLink
-                  to="/courses"
+                  to="/course-catalog"
                   className={({ isActive, isPending }) =>
                     `${styles.navLink} ${isActive ? styles.active : ""} ${
                       isPending ? styles.pending : ""
@@ -155,7 +145,7 @@ const Header = () => {
             ) : (
               <>
                 <NavLink
-                  to="/courses"
+                  to="/landing"
                   className={({ isActive, isPending }) =>
                     `${styles.navLink} ${isActive ? styles.active : ""} ${
                       isPending ? styles.pending : ""
@@ -163,38 +153,21 @@ const Header = () => {
                   }
                   end={false}
                 >
-                  Courses
+                  Home
                 </NavLink>
               </>
             )}
           </nav>
         </div>
 
-        {/* Search Bar */}
-        <div className={styles.centerSection}>
-          <Input
-            placeholder="Search courses, lessons..."
-            icon={<Search size={20} />}
-            className={styles.searchInput}
-          />
-        </div>
-
         {/* User Actions */}
         <div className={styles.rightSection}>
           {isAuthenticated ? (
             <>
-              <Button
-                variant="ghost"
-                size="sm"
-                icon={<Bell size={20} />}
-                onClick={handleNotificationClick}
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                icon={<Coins size={20} />}
-                onClick={handleCoinsClick}
-              />
+              {/* <div className={styles.tokenDisplay}>
+                <Coins size={18} className={styles.tokenIcon} />
+                <span className={styles.tokenValue}>{tokensRemaining}</span>
+              </div> */}
               {/* Desktop Profile Dropdown */}
               <div className={styles.profileDropdown} ref={dropdownRef}>
                 <Button

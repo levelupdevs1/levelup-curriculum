@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Trophy, Github, Twitter, Linkedin } from "lucide-react";
+import { Github, Twitter, Linkedin, Send } from "lucide-react";
+import logoImage from "../../assets/logo.jpeg";
 import styles from "./Footer.module.css";
 
 const Footer = () => {
@@ -11,7 +12,11 @@ const Footer = () => {
           {/* Brand Section */}
           <div className={styles.brandSection}>
             <Link to="/" className={styles.brand}>
-              <Trophy className={styles.brandIcon} />
+              <img
+                src={logoImage}
+                alt="Level Up"
+                className={styles.brandIcon}
+              />
               <span className={styles.brandText}>Level Up</span>
             </Link>
             <p className={styles.brandDescription}>
@@ -27,18 +32,18 @@ const Footer = () => {
               <h4 className={styles.linkGroupTitle}>Platform</h4>
               <ul className={styles.linkList}>
                 <li>
-                  <Link to="/courses" className={styles.link}>
+                  <Link to="/course-catalog" className={styles.link}>
                     Courses
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/rewards" className={styles.link}>
+                    Rewards
                   </Link>
                 </li>
                 <li>
                   <Link to="/discussion" className={styles.link}>
                     Discussion
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/leaderboard" className={styles.link}>
-                    Leaderboard
                   </Link>
                 </li>
               </ul>
@@ -58,9 +63,13 @@ const Footer = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/contact" className={styles.link}>
-                    Contact
-                  </Link>
+                  <a
+                    href="https://forms.gle/9chokrp25tjGweDW6"
+                    target="blank"
+                    className={styles.link}
+                  >
+                    Feedback
+                  </a>
                 </li>
               </ul>
             </div>
@@ -93,15 +102,25 @@ const Footer = () => {
             <div className={styles.socialSection}>
               <h4 className={styles.socialTitle}>Follow Us</h4>
               <div className={styles.socialLinks}>
-                <a href="#" className={styles.socialLink} aria-label="GitHub">
-                  <Github size={20} />
+                <a
+                  href="https://t.me/levelupofficialcommunity"
+                  className={styles.socialLink}
+                  target="blank"
+                  aria-label="Telegram"
+                >
+                  <Send size={20} />
                 </a>
-                <a href="#" className={styles.socialLink} aria-label="Twitter">
+                <a
+                  href="https://x.com/LevelUp1852"
+                  className={styles.socialLink}
+                  target="blank"
+                  aria-label="Twitter"
+                >
                   <Twitter size={20} />
                 </a>
-                <a href="#" className={styles.socialLink} aria-label="LinkedIn">
+                {/* <a href="#" className={styles.socialLink} aria-label="LinkedIn">
                   <Linkedin size={20} />
-                </a>
+                </a> */}
               </div>
             </div>
           </div>

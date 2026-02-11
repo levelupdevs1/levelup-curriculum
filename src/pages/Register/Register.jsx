@@ -2,10 +2,14 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, User, Trophy, Check } from "lucide-react";
 import { useUser } from "../../hooks/useUser";
-import { isSupabaseConfigured } from "../../services/authService";
+import {
+  isSupabaseConfigured,
+  signInWithGoogle,
+} from "../../services/authService";
 import Button from "../../components/Button/Button";
 import Input from "../../components/Input/Input";
 import Card from "../../components/Card/Card";
+import googleIcon from "../../assets/google-icon.svg";
 import styles from "./Register.module.css";
 
 const Register = () => {
@@ -20,7 +24,7 @@ const Register = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register, isLoading } = useUser();
+  const { register, isLoading, _hasCompletedOnboarding } = useUser();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -78,11 +82,15 @@ const Register = () => {
       const result = await register(
         formData.name,
         formData.email,
-        formData.password
+        formData.password,
       );
 
       if (result.success) {
-        navigate("/dashboard", { replace: true });
+        // Redirect to email confirmation page
+        navigate("/confirm-email", {
+          replace: true,
+          state: { email: formData.email },
+        });
       } else {
         setErrors({
           general: result.error || "Registration failed. Please try again.",
@@ -162,6 +170,33 @@ const Register = () => {
               {errors.general && (
                 <div className={styles.errorMessage}>{errors.general}</div>
               )}
+
+              <div className={styles.socialLogin}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="lg"
+                  className={styles.googleButton}
+                  icon={
+                    <img
+                      src={googleIcon}
+                      alt="Google"
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  }
+                  onClick={async () => {
+                    const result = await signInWithGoogle();
+                    if (!result.success) {
+                      setErrors({ general: result.error });
+                    }
+                  }}
+                >
+                  Continue with Google
+                </Button>
+                <div className={styles.divider}>
+                  <span>or</span>
+                </div>
+              </div>
 
               <div className={styles.inputGroup}>
                 <Input

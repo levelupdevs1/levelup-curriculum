@@ -16,9 +16,6 @@ export const supabase = isSupabaseConfigured
 if (import.meta.env.DEV) {
   if (!isSupabaseConfigured) {
     console.log("📖 READ-ONLY MODE: Supabase not configured");
-    console.log("   - Courses will load from local files");
-    console.log("   - Auth and database features disabled");
-    console.log("   - Perfect for testing course content!");
   } else {
     console.log("🔧 DEV MODE: Connected to Supabase");
     console.log("   - Full features enabled");
@@ -43,16 +40,9 @@ export const signUp = async (email, password, fullName, username) => {
   }
 
   try {
-    // Create auth user
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
-      options: {
-        data: {
-          full_name: fullName,
-          username: username,
-        },
-      },
     });
 
     if (authError) {
@@ -60,35 +50,14 @@ export const signUp = async (email, password, fullName, username) => {
     }
 
     if (!authData.user) {
-      return {
-        success: false,
-        error: "Registration failed. Please try again.",
-      };
+      return { success: false, error: "Sign up failed. Please try again." };
     }
 
-    // Create user profile in users table
-    const { data: profileData, error: profileError } = await supabase
-      .from("users")
-      .insert([
-        {
-          id: authData.user.id,
-          email: email,
-          full_name: fullName,
-          username: username,
-          current_level: 1,
-          total_points: 0,
-          created_at: new Date().toISOString(),
-        },
-      ])
-      .select()
-      .single();
+    // Store signup data in localStorage for later use in UserContext
+    localStorage.setItem("signup_full_name", fullName);
+    localStorage.setItem("signup_username", username);
 
-    if (profileError) {
-      console.error("Error creating user profile:", profileError);
-      // Don't return error here - auth user was created, profile creation failure isn't critical
-    }
-
-    return { success: true, user: authData.user, profile: profileData };
+    return { success: true, user: authData.user };
   } catch (error) {
     console.error("Sign up error:", error);
     return { success: false, error: error.message };
@@ -150,6 +119,36 @@ export const signOut = async () => {
     return { success: true };
   } catch (error) {
     console.error("Sign out error:", error);
+    return { success: false, error: error.message };
+  }
+};
+
+/**
+ * Sign in with Google OAuth
+ * @returns {Promise<{success: boolean, error?: string}>}
+ */
+export const signInWithGoogle = async () => {
+  if (!isSupabaseConfigured) {
+    return {
+      success: false,
+      error: "Authentication disabled in read-only mode.",
+    };
+  }
+
+  try {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true, data };
+  } catch (error) {
     return { success: false, error: error.message };
   }
 };

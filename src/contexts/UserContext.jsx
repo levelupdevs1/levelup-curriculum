@@ -5,7 +5,9 @@ import {
   signOut as supabaseSignOut,
   getUserProfile,
   onAuthStateChange,
+  supabase,
 } from "../services/authService";
+import { getUserProfile as getAIUserProfile } from "../services/courseDataService";
 import { UserContext } from "./createUserContext";
 
 export const UserProvider = ({ children }) => {
@@ -15,48 +17,120 @@ export const UserProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
 
   // Listen to auth state changes on mount
+  // Listen to auth state changes on mount
   useEffect(() => {
+    let isSubscribed = true;
     // Set up auth state listener
     const unsubscribe = onAuthStateChange(async (authUser) => {
+      if (!isSubscribed) return;
+
       if (authUser) {
         setUser(authUser);
         setIsAuthenticated(true);
 
+        // Check if user profile exists in users table
+        // Check if user profile exists in users table and create if needed
+        // Use Web Lock to prevent race conditions across tabs
+        await navigator.locks.request(
+          `user_profile_creation_${authUser.id}`,
+          async () => {
+            console.log("Checking user profile for user", authUser.id);
+            const { success: profileExists, profile: existingProfile } =
+              await getUserProfile(authUser.id);
+
+            if (!isSubscribed) return;
+
+            if (!profileExists || !existingProfile) {
+              // User not in users table, insert them
+              const fullName =
+                localStorage.getItem("signup_full_name") ||
+                authUser.user_metadata?.full_name ||
+                "";
+              const username =
+                localStorage.getItem("signup_username") ||
+                authUser.email.split("@")[0] ||
+                "google_user";
+
+              const userData = {
+                id: authUser.id,
+                email: authUser.email,
+                full_name: fullName,
+                username: username,
+                current_level: 1,
+                total_points: 0,
+                created_at: new Date().toISOString(),
+              };
+
+              const { error: insertError } = await supabase
+                .from("users")
+                .upsert(userData, { onConflict: "id" });
+
+              if (insertError) {
+                console.error("Error creating user profile:", insertError);
+              } else {
+                // Clear localStorage
+                localStorage.removeItem("signup_full_name");
+                localStorage.removeItem("signup_username");
+                // Re-fetch profile to update state
+                const { success: refetchSuccess, profile: newProfile } =
+                  await getUserProfile(authUser.id);
+                if (refetchSuccess && newProfile) {
+                  setProfile(newProfile);
+                }
+              }
+            }
+          },
+        );
+
         // Fetch user profile from users table
-        const {
-          success,
-          profile: userProfile,
-          error: profileError,
-        } = await getUserProfile(authUser.id);
+        const { success, profile: userProfile } = await getUserProfile(
+          authUser.id,
+        );
+
+        if (!isSubscribed) return;
+
+        // Check if user has completed onboarding by fetching AI profile data
+        const result = await getAIUserProfile(authUser.id);
+        const profileSuccess = result.success;
+        const aiProfile = result.data;
+
+        // User has completed onboarding if they have an AI profile
+        setHasCompletedOnboarding(profileSuccess && aiProfile !== null);
 
         if (success) {
-          setProfile(userProfile);
-        } else {
-          console.error("Error fetching user profile:", profileError);
-          const defaultProfile = {
-            id: authUser.id,
-            email: authUser.email,
-            full_name: authUser.user_metadata?.full_name || authUser.email,
-            username:
-              authUser.user_metadata?.username || authUser.email.split("@")[0],
-            current_level: 1,
-            total_points: 0,
-            created_at: new Date().toISOString(),
+          // Merge AI profile data (XP, level) with user profile
+          const mergedProfile = {
+            ...userProfile,
+            total_experience:
+              aiProfile?.total_experience || userProfile?.total_points || 0,
+            current_level:
+              aiProfile?.current_level || userProfile?.current_level || 1,
+            platform_tokens_balance: aiProfile?.platform_tokens_balance || 0,
+            skill_level: aiProfile?.skill_level || "beginner",
           };
-          setProfile(defaultProfile);
+          setProfile(mergedProfile);
+        } else {
+          // If profile fetch failed, set profile to null (insert logic above should have created it)
+          setProfile(null);
         }
       } else {
         setUser(null);
         setProfile(null);
         setIsAuthenticated(false);
+        setHasCompletedOnboarding(false);
       }
-      setIsInitializing(false);
+
+      if (isSubscribed) {
+        setIsInitializing(false);
+      }
     });
 
     // Cleanup function
     return () => {
+      isSubscribed = false;
       // Only call unsubscribe if it's a function
       if (typeof unsubscribe === "function") {
         unsubscribe();
@@ -71,19 +145,31 @@ export const UserProvider = ({ children }) => {
   const refreshProfile = async () => {
     if (!user) return;
     try {
-      const {
-        success,
-        profile: userProfile,
-        error: profileError,
-      } = await getUserProfile(user.id);
+      const { success, profile: userProfile } = await getUserProfile(user.id);
+
+      // Re-check onboarding status by fetching AI profile data
+      const result = await getAIUserProfile(user.id);
+      const profileSuccess = result.success;
+      const aiProfile = result.data;
+
+      // User has completed onboarding if they have an AI profile
+      setHasCompletedOnboarding(profileSuccess && aiProfile !== null);
 
       if (success) {
-        setProfile(userProfile);
-      } else {
-        console.error("Error refreshing user profile:", profileError);
+        // Merge AI profile data (XP, level) with user profile
+        const mergedProfile = {
+          ...userProfile,
+          total_experience:
+            aiProfile?.total_experience || userProfile?.total_points || 0,
+          current_level:
+            aiProfile?.current_level || userProfile?.current_level || 1,
+          platform_tokens_balance: aiProfile?.platform_tokens_balance || 0,
+          skill_level: aiProfile?.skill_level || "beginner",
+        };
+        setProfile(mergedProfile);
       }
-    } catch (error) {
-      console.error("Error in refreshProfile:", error);
+    } catch {
+      // Error handled silently
     }
   };
 
@@ -100,7 +186,6 @@ export const UserProvider = ({ children }) => {
 
       return { success: true };
     } catch (err) {
-      console.error("Login error:", err);
       const errorMessage = err.message || "Login failed. Please try again.";
       setError(errorMessage);
       return { success: false, error: errorMessage };
@@ -120,7 +205,7 @@ export const UserProvider = ({ children }) => {
         email,
         password,
         fullName,
-        username
+        username,
       );
 
       if (!success) {
@@ -130,7 +215,6 @@ export const UserProvider = ({ children }) => {
 
       return { success: true };
     } catch (err) {
-      console.error("Register error:", err);
       const errorMessage =
         err.message || "Registration failed. Please try again.";
       setError(errorMessage);
@@ -156,7 +240,6 @@ export const UserProvider = ({ children }) => {
       setIsAuthenticated(false);
       return { success: true };
     } catch (err) {
-      console.error("Logout error:", err);
       const errorMessage = err.message || "Logout failed. Please try again.";
       setError(errorMessage);
       return { success: false, error: errorMessage };
@@ -176,6 +259,7 @@ export const UserProvider = ({ children }) => {
     isLoading,
     isInitializing,
     error,
+    hasCompletedOnboarding,
     login,
     register,
     logout,

@@ -1,350 +1,476 @@
-# 🚀 Level Up - Learn to Earn Platform
+# 🚀 Level Up - AI-Powered Learning Platform
 
-> A community-driven, open-source learning platform where developers earn rewards for learning and contributing. Built on Hedera with blockchain-powered certificates and platform tokens.
+> **Code Your Future, Earn Your Rewards**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Hedera](https://img.shields.io/badge/Built%20on-Hedera-purple)](https://hedera.com)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING_COURSES.md)
+Level Up is an intelligent learning platform that leverages AI to create personalized educational experiences. Learn programming through custom-generated courses, earn rewards as you progress, and track your growth through a comprehensive XP and leveling system.
 
----
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
+![React](https://img.shields.io/badge/React-19.1-61dafb.svg)
+![Supabase](https://img.shields.io/badge/Supabase-Database-3ECF8E.svg)
+![Google Gemini](https://img.shields.io/badge/Google%20Gemini-AI-4285F4.svg)
 
-## 📖 About
+## ✨ Features
 
-**Level Up** is a revolutionary learn-to-earn platform that rewards developers for learning and contributing to the community. Complete courses, earn platform tokens, mint NFT certificates, and engage in peer discussions—all powered by blockchain technology.
+### 🤖 AI-Powered Personalization
 
-### ✨ Key Features
+- **Smart Onboarding**: AI analyzes your learning goals, skill level, and preferences
+- **Custom Course Generation**: Personalized courses created specifically for your learning path
+- **Adaptive Content**: Lessons and assessments tailored to your pace and style
+- **Intelligent Feedback**: AI-powered reviews on your project submissions
 
-- 🎓 **Structured Learning Paths** - Comprehensive courses from beginner to advanced
-- 🪙 **Earn Platform Tokens** - Get rewarded for completing lessons and assignments
-- 🏆 **NFT Certificates** - Mint blockchain-verified certificates for completed courses
-- 💬 **Community Discussions** - Q&A and discussions stored on Hedera Consensus Service
-- 🎯 **Points & Levels System** - Track progress with points and unlock new levels
-- 🤝 **Peer Review** - Submit assignments and get community feedback
-- 🌐 **Open Source** - Anyone can contribute courses via pull requests
+### 📚 Comprehensive Learning Experience
 
----
+- **Dynamic Course Catalog**: Browse AI-generated courses matched to your profile
+- **Interactive Lessons**: Rich content with code examples and practical exercises
+- **Automated Assessments**: Instant feedback on quizzes and coding challenges
+- **Progress Tracking**: Monitor your learning journey across all courses
+
+### 🏆 Gamification & Rewards
+
+- **XP System**: Earn experience points for completing lessons and assessments
+- **Leveling System**: Progress through 10 levels with increasing rewards
+- **Platform Tokens**: Accumulate tokens for achievements and milestones
+- **NFT Certificates**: Blockchain-verified certificates (coming soon)
+
+### 🎯 User-Centric Design
+
+- **Intuitive Dashboard**: Track progress, courses, and achievements at a glance
+- **Responsive Interface**: Seamless experience across all devices
+- **Profile Management**: Update learning preferences and track statistics
+- **Token Management**: Monitor AI token usage and limits
 
 ## 🛠️ Tech Stack
 
-**Frontend:**
+### Frontend
 
-- React + Vite
-- React Router
-- CSS Modules
-- Lucide Icons
+- **React 19.1** - Modern UI library with latest features
+- **Vite 7.1** - Lightning-fast build tool and dev server
+- **React Router 7.9** - Client-side routing and navigation
+- **Lucide React** - Beautiful icon library
+- **React Markdown** - Render rich lesson content
 
-**Backend:**
+### Backend
 
-- Supabase (PostgreSQL + Edge Functions)
-- Row Level Security (RLS)
-- Real-time subscriptions
+- **Node.js + Express** - RESTful API server
+- **Google Gemini AI** - Cutting-edge AI for content generation
+- **Opik Integration** - AI observability and monitoring
+- **CORS Support** - Secure cross-origin requests
 
-**Blockchain:**
+### Database & Auth
 
-- Hedera Hashgraph
-- Hedera Token Service (HTS)
-- Hedera Consensus Service (HCS)
+- **Supabase** - PostgreSQL database with Row Level Security
+- **Supabase Auth** - Secure authentication and user management
+- **JSONB Storage** - Flexible data structures for courses and progress
 
-**DevOps:**
+### Deployment
 
-- GitHub Actions (Auto-sync courses)
-- Git-based content management
+- **Vercel** - Frontend hosting with automatic deployments
+- **Backend API** - Separate service for AI operations
 
----
+## 📋 Prerequisites
+
+- **Node.js** 18+
+- **npm** or **yarn**
+- **Supabase Account** (free tier available)
+- **Google Gemini API Key** (free tier available at [ai.google.dev](https://ai.google.dev))
+- **Opik Account** (optional, for AI observability)
 
 ## 🚀 Quick Start
 
-### Prerequisites
+### 1. Clone the Repository
 
-- Node.js 18+ and npm
-- Supabase account
-- Git
+```bash
+git clone https://github.com/yourusername/LevelUp.git
+cd LevelUp
+```
 
-### Installation
+### 2. Frontend Setup
 
-1. **Clone the repository**
+```bash
+# Install dependencies
+npm install
 
-   ```bash
-   git clone https://github.com/levelupdevs1/levelup-curriculum.git
-   cd levelup-curriculum
-   ```
+# Create environment file
+cp .env.example .env.local
+```
 
-2. **Install dependencies**
+Configure `.env.local`:
 
-   ```bash
-   npm install
-   ```
+```env
+VITE_SUPABASE_URL=your_supabase_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+VITE_GEMINI_API_KEY=your_gemini_api_key
+VITE_BACKEND_URL=http://localhost:3001
+```
 
-3. **Set up environment variables**
+### 3. Backend Setup
 
-   Create a `.env.local` file:
+```bash
+# Navigate to backend
+cd backend
 
-   ```env
-   VITE_SUPABASE_URL=your_supabase_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
+# Install dependencies
+npm install
 
-4. **Set up Supabase**
+# Create environment file
+cp .env.example .env
+```
 
-   Run the SQL migrations in your Supabase dashboard (see `SUPABASE_UPDATES.sql`)
+Configure `backend/.env`:
 
-5. **Run the development server**
+```env
+GEMINI_API_KEY=your_gemini_api_key
+SUPABASE_URL=your_supabase_url
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+OPIK_PROJECT_NAME=levelup
+OPIK_WORKSPACE=default
+```
 
-   ```bash
-   npm run dev
-   ```
+### 4. Database Setup
 
-6. **Open your browser**
+Run the SQL migration in your Supabase project:
 
-   Navigate to `http://localhost:5173`
+```bash
+# Open Supabase SQL Editor and run
+cat NEW_SUPABASE_SETUP.sql
+```
 
----
+This creates 7 essential tables:
 
-## 📚 Project Structure
+- `users` - User accounts and basic info
+- `ai_user_profiles` - Onboarding data and XP tracking
+- `generated_courses` - AI-generated courses with structure
+- `ai_tokens` - AI usage tracking and limits
+- `ai_token_usage` - Detailed AI operation logs
+- `platform_token_transactions` - Reward transactions
+- `platform_token_claims` - Level reward claims
+
+### 5. Run the Application
+
+**Terminal 1 - Frontend:**
+
+```bash
+npm run dev
+```
+
+**Terminal 2 - Backend:**
+
+```bash
+cd backend
+npm run dev
+```
+
+Visit [http://localhost:5173](http://localhost:5173) 🎉
+
+## 📖 Usage
+
+### Getting Started
+
+1. **Sign Up**: Create an account with email/password
+2. **Onboarding**: Answer 4 questions about your learning goals
+3. **AI Generation**: Platform generates 3 personalized courses
+4. **Enroll**: Choose a course and start learning
+5. **Learn & Earn**: Complete lessons, take assessments, earn XP
+
+### User Flow
 
 ```
-level-up/
+Landing Page → Register → Onboarding → AI Course Generation
+→ Course Catalog → Enroll → Course Detail → Lesson Viewer
+→ Assessment → Review → Level Up → Rewards
+```
+
+### Course Structure
+
+Each AI-generated course includes:
+
+- **Modules**: 3-5 thematic learning modules
+- **Lessons**: 3-5 lessons per module with rich content
+- **Assessments**: Quizzes and coding challenges
+- **Projects**: Hands-on practical assignments
+- **Resources**: Additional learning materials
+
+### Token System
+
+**AI Tokens** (for course generation):
+
+- Free Tier: 500 tokens/day
+- Course Catalog: 50 tokens
+- Course Structure: 100 tokens
+- Lesson Content: 150 tokens
+- Assessment: 80 tokens
+
+**Platform Tokens** (rewards):
+
+- Complete Lesson: 5 tokens
+- Pass Assessment: 10 tokens
+- Perfect Score: 25 tokens
+- Complete Course: 100 tokens
+
+## 🏗️ Project Structure
+
+```
+LevelUp/
 ├── src/
-│   ├── components/          # Reusable UI components
-│   ├── contexts/            # React contexts (CourseContext, UserContext)
-│   ├── courses/             # Course content (markdown files)
-│   │   ├── web-development-basics/
-│   │   ├── react-fundamentals/
-│   │   └── javascript-advanced/
-│   ├── hooks/               # Custom React hooks
-│   ├── pages/               # Page components
-│   ├── services/            # API services (auth, courses, progress)
-│   └── utils/               # Helper functions
-├── .github/workflows/       # GitHub Actions
-├── public/                  # Static assets
-└── supabase/               # Supabase Edge Functions
+│   ├── api/              # API integration helpers
+│   ├── assets/           # Static assets
+│   ├── components/       # Reusable UI components
+│   │   ├── Button/
+│   │   ├── Card/
+│   │   ├── LessonContent/
+│   │   ├── AssessmentView/
+│   │   ├── ProgressBar/
+│   │   └── ...
+│   ├── contexts/         # React Context providers
+│   │   ├── UserContext.jsx
+│   │   ├── CourseGenerationContext.jsx
+│   │   └── AITokenContext.jsx
+│   ├── hooks/            # Custom React hooks
+│   │   ├── useUser.js
+│   │   ├── useCourseGeneration.js
+│   │   ├── useAIToken.js
+│   │   └── useXPAward.js
+│   ├── pages/            # Page components
+│   │   ├── Landing/
+│   │   ├── Dashboard/
+│   │   ├── AICatalog/
+│   │   ├── AILessonViewer/
+│   │   └── ...
+│   ├── services/         # API and business logic
+│   │   ├── authService.js
+│   │   ├── aiServiceReal.js
+│   │   ├── courseDataService.js
+│   │   ├── platformTokenService.js
+│   │   └── aiTokenService.js
+│   └── utils/            # Utility functions
+├── backend/              # Express API server
+│   ├── controllers/
+│   │   └── aiController.js
+│   ├── routes/
+│   │   └── ai.js
+│   ├── middleware/
+│   │   ├── auth.js
+│   │   └── errorHandler.js
+│   ├── config/
+│   │   └── gemini.js
+│   └── server.js
+├── supabase/             # Database migrations
+│   └── migrations/
+└── package.json
 ```
 
----
+## 🔑 Key Components
 
-## 🎓 How It Works
+### Contexts
 
-### For Learners
+- **UserContext**: Manages authentication, user profile, and onboarding state
+- **CourseGenerationContext**: Handles AI course generation, enrollment, and progress
+- **AITokenContext**: Tracks AI token usage and tier limits
 
-1. **Sign Up** - Create your account with email and password
-2. **Browse Courses** - Explore courses synced from GitHub
-3. **Enroll & Learn** - Start learning and completing lessons
-4. **Earn Points** - Get 10 points per lesson, 15 per assignment
-5. **Level Up** - Reach 500 points per level
-6. **Claim Tokens** - Receive platform tokens when you level up
-7. **Get Certificates** - Mint NFT certificates for completed courses
+### Services
 
-### For Contributors
+- **authService**: Supabase authentication wrapper
+- **aiServiceReal**: Gemini AI integration for content generation
+- **courseDataService**: Course CRUD operations
+- **platformTokenService**: XP, leveling, and reward calculations
+- **aiTokenService**: AI token management and tracking
 
-1. **Fork the Repository**
-2. **Add/Update Courses** - Create markdown files and `course.json`
-3. **Open a Pull Request**
-4. **Automatic Sync** - Courses sync to Supabase when merged
-5. **Community Impact** - Help others learn and grow
+### Protected Routes
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+- **ProtectedRoute**: Requires authentication + onboarding completion
+- **OnboardingRoute**: Requires authentication, redirects if onboarded
+- **AuthRoute**: Only for logged-out users (login/register)
 
----
+## 🎨 Features in Detail
 
-## 🪙 Token Economics
+### AI Course Generation
 
-### Earning Tokens
+The platform uses Google Gemini to generate:
 
-- **Level Up Rewards**: 10, 50, 70, 100, 150, 200 tokens per level
-- **Tips**: Earn tokens from community members for helpful contributions
-- **Full Ownership**: Tokens sent to your Hedera wallet—you own them
+1. **Course Catalog** (50 tokens): 3 personalized course recommendations
+2. **Course Structure** (100 tokens): Modules and lesson outlines
+3. **Lesson Content** (150 tokens): Full lesson with examples and exercises
+4. **Assessments** (80 tokens): Questions tailored to lesson content
+5. **Feedback** (60 tokens): AI reviews of student submissions
 
-### Using Tokens
+### Progress Tracking
 
-- **Trade**: Sell or swap on decentralized exchanges
-- **Hold**: Keep for potential appreciation
-- **Mint Certificates**: Optionally burn tokens for NFT certificates
-- **AI Review Priority**: Pay tokens for faster assignment feedback
-- **Flexible**: You decide what to do with your earned tokens
+Courses store progress as JSONB:
 
----
-
-## 🏗️ Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      GitHub Repository                       │
-│            (Courses as Markdown + course.json)               │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     │ PR Merged → GitHub Actions
-                     ↓
-┌─────────────────────────────────────────────────────────────┐
-│              Supabase Edge Function (sync-courses)           │
-│           Parses course.json, syncs to database              │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ↓
-┌─────────────────────────────────────────────────────────────┐
-│                   Supabase PostgreSQL                        │
-│    (users, courses, progress, enrollments, submissions)      │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ↓
-┌─────────────────────────────────────────────────────────────┐
-│                    React Frontend (Vite)                     │
-│      Displays courses, tracks progress, manages state        │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     ↓
-┌─────────────────────────────────────────────────────────────┐
-│                   Hedera Hashgraph                           │
-│         (Platform Tokens, NFT Certificates, HCS)             │
-└─────────────────────────────────────────────────────────────┘
+```json
+{
+  "currentModuleIndex": 0,
+  "currentLessonIndex": 2,
+  "completedLessons": ["lesson-1", "lesson-2"]
+}
 ```
 
----
+### XP & Leveling
 
-## 📊 Database Schema
+- **10 Levels Total**: Progress from 1 to 10
+- **XP Thresholds**: 500 → 1500 → 3000 → 5000 → ...
+- **Level Rewards**: 10 → 50 → 70 → 100 → 150 tokens
+- **Tier Multipliers**: Free (1x), Starter (1.2x), Pro (1.5x)
 
-```sql
-users (
-  id, email, full_name, username, wallet_address,
-  total_points, current_level, created_at
-)
+## 🚦 API Endpoints
 
-courses (
-  id, title, description, level, tags, thumbnail,
-  modules (JSONB), git_path, last_synced_at
-)
+### AI Endpoints (`/api/ai`)
 
-enrollments (
-  id, user_id, course_id, enrolled_at, status
-)
+| Method | Endpoint                     | Description                       |
+| ------ | ---------------------------- | --------------------------------- |
+| POST   | `/generate-course-catalog`   | Generate 3 course recommendations |
+| POST   | `/generate-course-structure` | Generate module/lesson structure  |
+| POST   | `/generate-lesson-content`   | Generate full lesson content      |
+| POST   | `/generate-assessment`       | Generate quiz questions           |
+| POST   | `/review-submission`         | AI review of user submission      |
 
-progress (
-  id, user_id, course_id, module_id, lesson_id,
-  completed_at, points_earned
-)
+All endpoints require Bearer token authentication.
 
-submissions (
-  id, user_id, course_id, assignment_id,
-  submission_content, status, points_earned
-)
+## 🧪 Development
 
-completions (
-  id, user_id, course_id, completed_at,
-  certificate_eligible
-)
+### Code Style
 
-token_claims (
-  id, user_id, level, tokens_claimed,
-  claimed_at, tx_hash, status
-)
+- **ESLint**: Configured with React rules
+- **Prettier**: (Recommended) Add `.prettierrc` for formatting
+- **Module CSS**: Component-scoped styling
+
+### Environment Variables
+
+**Frontend (`.env.local`):**
+
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+- `VITE_GEMINI_API_KEY`
+- `VITE_BACKEND_URL`
+
+**Backend (`.env`):**
+
+- `GEMINI_API_KEY`
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `OPIK_PROJECT_NAME`
+- `OPIK_WORKSPACE`
+- `PORT` (optional, defaults to 3001)
+
+### Scripts
+
+**Frontend:**
+
+```bash
+npm run dev      # Start development server
+npm run build    # Build for production
+npm run preview  # Preview production build
+npm run lint     # Run ESLint
 ```
 
----
+**Backend:**
 
-## 🤝 Contributing
+```bash
+npm run dev      # Start with nodemon (auto-reload)
+npm start        # Start production server
+```
 
-We welcome contributions! Here's how you can help:
+## 🐛 Troubleshooting
 
-### Contributing Courses
+### Common Issues
 
-See [CONTRIBUTING_COURSES.md](CONTRIBUTING_COURSES.md) for detailed instructions on:
+**1. Supabase Connection Error**
 
-- Course structure and format
-- Creating `course.json` files
-- Writing markdown lessons
-- Submitting pull requests
+- Verify `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are correct
+- Check Row Level Security policies are enabled
 
-### Contributing Code
+**2. AI Generation Fails**
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+- Confirm `VITE_GEMINI_API_KEY` is valid
+- Check free tier limits at [ai.google.dev](https://ai.google.dev)
+- Verify backend is running on port 3001
 
----
+**3. Token Tracking Issues**
 
-## 📝 Documentation
+- Ensure `ai_tokens` table initialized for user
+- Check `ai_token_usage` table for operation logs
 
-- [Contributing Courses](CONTRIBUTING.md) - How to add or update courses
-- [MVP Status](MVP_STATUS.md) - Current development status
+**4. Progress Not Saving**
 
----
+- Verify RLS policies allow user to update courses
+- Check browser console for Supabase errors
 
-## 🎯 Roadmap
+## 🔒 Security
 
-### Phase 1: MVP ✅
+- **Row Level Security**: All tables protected with RLS policies
+- **Authentication**: Supabase JWT-based auth
+- **Environment Variables**: Sensitive keys never committed
+- **CORS**: Configured for specific origins
+- **API Middleware**: Auth verification on all endpoints
 
-- [x] Course management system
-- [x] User authentication
-- [x] Progress tracking
-- [x] Points & levels
-- [x] GitHub Actions auto-sync
-- [x] Course thumbnails
+## 🚀 Deployment
 
-### Phase 2: Blockchain Integration 🚧
+### Frontend (Vercel)
 
-- [ ] Hedera wallet connection
-- [ ] Platform token (HTS)
-- [ ] NFT certificate minting
-- [ ] Token claiming system
-- [ ] Discussions on HCS
+1. Connect GitHub repository to Vercel
+2. Configure environment variables in Vercel dashboard
+3. Deploy automatically on push to main branch
 
-### Phase 3: Community Features 📅
+### Backend
 
-- [ ] AI-powered code review
-- [ ] Peer review system
-- [ ] Bounties & challenges
-- [ ] Hackathon hosting
-- [ ] Data monetization
+Deploy to your preferred Node.js hosting:
 
----
+- Railway
+- Render
+- Heroku
+- DigitalOcean App Platform
 
-## 🏆 Revenue Model
+Update `VITE_BACKEND_URL` in frontend env after deployment.
 
-- **Sponsor Bounties**: 10-15% platform cut
-- **Hackathon Hosting**: 20% of prize pools
-- **Data Monetization**: Anonymized Q&A data sales
-- **Enterprise Training**: Custom bootcamps for companies
-- **Recruitment Partnerships**: Referral fees
+## 🗺️ Roadmap
 
----
+### ✅ Completed Features
+
+- User authentication and onboarding
+- AI course generation with Gemini
+- Progress tracking and enrollment
+- XP and leveling system
+- Token management
+- Assessment system with AI review
+
+### 🚧 Coming Soon
+
+- NFT certificate minting
+- Discussion forums
+- Peer review system
+- Course sharing and community
+- Mobile app
+- Advanced analytics dashboard
+- Multi-language support
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
+## 🤝 Contributing
 
-## 🌟 Acknowledgments
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-- Built with ❤️ by the Level Up community
-- Powered by [Hedera Hashgraph](https://hedera.com)
-- Backend by [Supabase](https://supabase.com)
-- UI inspired by modern learning platforms
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
----
+## 👏 Acknowledgments
 
-## 📞 Support
+- **Google Gemini** - AI-powered content generation
+- **Supabase** - Backend infrastructure and authentication
+- **Opik** - AI observability and monitoring
+- **Lucide** - Beautiful icon library
+- **React Community** - Amazing ecosystem and tools
 
-- **Documentation**: Check our docs folder
-- **Issues**: [GitHub Issues](https://github.com/levelupdevs1/levelup-curriculum/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/levelupdevs1/levelup-curriculum/discussions)
-- **Email**: support@levelup.dev (coming soon)
+## 📧 Contact
 
----
-
-## 🔗 Links
-
-- **Website**: [Coming Soon]
-- **Twitter**: [Coming Soon]
-- **Discord**: [Coming Soon]
+For questions or support, please open an issue on GitHub.
 
 ---
 
-<p align="center">
-  <strong>Built for developers, by developers. Learn, earn, and level up! 🚀</strong>
-</p>
+**Built with ❤️ for learners worldwide**
 
-<p align="center">
-  Made with ❤️ for the open-source community
-</p>
+_Learn. Build. Earn. Repeat._ 🚀
