@@ -18,7 +18,7 @@ export const trackedGenAI = trackGemini(genAI, {
 
 // Get model with tracking
 export const generateContent = async ({
-  modelName = "gemini-2.5-flash",
+  modelName = process.env.GEMINI_MODEL,
   contents,
   systemInstruction,
 }) => {
