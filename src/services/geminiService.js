@@ -16,7 +16,7 @@ const GEMINI_API_URL =
 
 // Model rotation: try in order until one succeeds
 const FREE_MODELS = [
-  "gemini-2.5-flash-lite", // Primary: 10 RPM, cost-effective
+  import.meta.env.VITE_GEMINI_MODEL, // Primary: 10 RPM, cost-effective
   // "gemini-2.5-flash", // Backup: 5 RPM, hybrid reasoning
   // "gemini-2.0-flash", // Backup: good rate limits
   // "gemini-2.0-flash-lite", // Last resort: smallest model

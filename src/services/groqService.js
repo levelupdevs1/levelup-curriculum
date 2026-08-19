@@ -17,10 +17,10 @@ const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
 // Model rotation priority (for resilience)
 const GROQ_MODELS = [
-  "llama-3.3-70b-versatile",
-  "llama-3.1-70b-versatile",
-  "llama-3.1-8b-instant",
-  "gemma2-9b-it",
+  import.meta.env.VITE_GROQ_MODEL_1,
+  import.meta.env.VITE_GROQ_MODEL_2,
+  import.meta.env.VITE_GROQ_MODEL_3,
+  import.meta.env.VITE_GROQ_MODEL_4,
 ];
 
 /**
