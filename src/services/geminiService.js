@@ -11,8 +11,7 @@
 
 import { validateProjectSubmission } from "./projectValidationService";
 
-const GEMINI_API_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models";
+const GEMINI_API_URL = import.meta.env.VITE_GEMINI_API_URL;
 
 // Model rotation: try in order until one succeeds
 const FREE_MODELS = [
