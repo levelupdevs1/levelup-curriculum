@@ -13,7 +13,7 @@ const GROQ_API_KEYS = [
   import.meta.env.VITE_GROQ_API_KEY_3,
   // Add more as needed
 ].filter((key) => key && key !== "gsk_YOUR_GROQ_API_KEY_HERE"); // Filter out invalid ones
-const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
+const GROQ_API_URL = import.meta.env.VITE_GROQ_API_URL;
 
 // Model rotation priority (for resilience)
 const GROQ_MODELS = [
